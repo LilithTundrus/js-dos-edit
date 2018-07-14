@@ -14,6 +14,9 @@ Some base alpha features:
 - Menu system
 - Undo/Redo system
 - Cut/Copy/Paste support
+- Title that matches the current document
+- Keyboard shortcuts
+- About dialog
 
 Nice-to-haves:
 
