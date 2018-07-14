@@ -1,0 +1,34 @@
+{
+  "name": "js-dos-edit",
+  "version": "0.0.1",
+  "description": "A CLI based editor designed to emulate the feel of the DOS edit program",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LilithTundrus/js-dos-edit.git"
+  },
+  "keywords": [
+    "dos",
+    "edit",
+    "cli",
+    "editor",
+    "gui",
+    "command",
+    "line",
+    "interface",
+    "retro",
+    "classic"
+  ],
+  "author": "Lilith Tundrus",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/LilithTundrus/js-dos-edit/issues"
+  },
+  "homepage": "https://github.com/LilithTundrus/js-dos-edit#readme",
+  "dependencies": {
+    "neo-blessed": "^0.2.0"
+  }
+}
