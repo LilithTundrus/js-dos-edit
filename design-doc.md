@@ -19,6 +19,7 @@ Some base alpha features:
 - About dialog
 - Open dialog
 - Save dialog
+- Selectable text (visually select text to edit/copy/cut)
 
 Nice-to-haves:
 

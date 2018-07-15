@@ -1,5 +1,6 @@
 'use strict';
 // Main entry point for the JS-DOS editor
+// Eventually this will just return an instantiated editor class or something like that
 
 const blessed = require('neo-blessed');
 
@@ -10,7 +11,6 @@ let screen = blessed.screen({
 });
 
 screen.title = 'EDIT - untitled';
-
 
 // Our menubar needs to look like this (the brackets meaning the highlighted character for alt + letter): 
 // [F]ile [E]dit [S}earch [V]iew [O]ptions [H]elp
@@ -35,14 +35,28 @@ screen.title = 'EDIT - untitled';
 // F1=Help Ctrl-C=quit          Col: 1 Line: 1
 
 // Create the main box
-let box = blessed.box({
+let mainWindow = blessed.box({
     top: 'center',
     left: 'center',
     width: '100%',
     height: '100%',
     // Label is the box's title, we likely DON'T want to use this if we can prevent it
     // label: `{light-grey-bg}{bold}Test{/bold}{/light-grey-bg}`,
-    content: 'Stuff to edit will go here',
+    tags: true,
+    style: {
+        fg: 'white',
+        bg: 'black',
+        border: {
+            fg: '#f0f0f0'
+        },
+    },
+});
+
+let textArea = blessed.box({
+    top: 'center',
+    left: 'center',
+    width: '100%',
+    height: '100%',
     tags: true,
     border: {
         type: 'line'
@@ -54,28 +68,30 @@ let box = blessed.box({
             fg: '#f0f0f0'
         },
     },
-    label: ' '
-});
+})
 
 // Append our box to the screen.
-screen.append(box);
+screen.append(mainWindow);
+
+// Append the textArea to the mainWindow
+mainWindow.append(textArea);
 
 // If box is focused, handle `enter`/`return` and give us some more content.
-box.key('enter', function (ch, key) {
+textArea.key('enter', function (ch, key) {
     // box.setContent('{right}Even different {black-fg}content{/black-fg}.{/right}\n');
     // box.setLine(1, 'bar');
     // box.insertLine(1, 'foo');
-    box.setLabel('{right}{light-grey-bg}{black-fg}Test{/black-fg}{/light-grey-bg}{/right}')
+    mainWindow.setLabel('{right}{light-grey-bg}{black-fg}Test{/black-fg}{/light-grey-bg}{/right}')
     screen.render();
 });
 
-// Quit on Escape, q, or Control-C.
+// Quit on Control-C
 screen.key(['C-c'], function (ch, key) {
     return process.exit(0);
 });
 
-// Focus our element.
-box.focus();
+// Focus the textarea by default
+textArea.focus();
 
 // Render the screen.
 screen.render();
