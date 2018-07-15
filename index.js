@@ -1,60 +1,68 @@
 'use strict';
-
 // Main entry point for the JS-DOS editor
 
-var blessed = require('neo-blessed');
+const blessed = require('neo-blessed');
 
 // Create a screen object.
-var screen = blessed.screen({
+let screen = blessed.screen({
     smartCSR: true
 });
 
+screen.title = 'EDIT - untitled';
 
-screen.title = 'EDIT';
 
-// Create a box perfectly centered horizontally and vertically.
-var box = blessed.box({
+// Our menubar needs to look like this (the brackets meaning the highlighted character for alt + letter): 
+// [F]ile [E]dit [S}earch [V]iew [O]ptions [H]elp
+
+// The menubar should go FIRST, even before the main editing box
+// This may be a challenge depending on how blessed works
+
+// After the menubar we'll want our main window
+
+// Inside that window will be the text entry box
+// This box will have the filename as the name of the title
+// We'll want to keep the cursor bound to this box
+
+// The actual text entered will likely need to be a huge string buffer that we keep an index
+// of for the current character that the cursor is on my (handling vertical positioning may be a challenge)
+// This allows us to actually know which character to delete on the screen when it's pressed
+
+// The scrollbar up/down arrow ASCII characters may just have to be static and not actually
+// part of a real scrollbar (I need to look at all of the code for this project)
+
+// At the bottom there should be a character counter and a word counter as well as line/column count:
+// F1=Help          Col: 1 Line: 1
+
+// Create the main box
+let box = blessed.box({
     top: 'center',
     left: 'center',
-    width: '50%',
-    height: '50%',
-    content: 'Hello {bold}world{/bold}!',
+    width: '100%',
+    height: '100%',
+    // Label is the box's title, we likely DON'T want to use this if we can prevent it
+    // label: `{light-grey-bg}{bold}Test{/bold}{/light-grey-bg}`,
+    content: 'Stuff to edit will go here',
     tags: true,
     border: {
         type: 'line'
     },
     style: {
         fg: 'white',
-        bg: 'magenta',
+        bg: 'blue',
         border: {
             fg: '#f0f0f0'
         },
-        hover: {
-            bg: 'green'
-        }
     }
 });
 
 // Append our box to the screen.
 screen.append(box);
 
-// Add a png icon to the box
-var icon = blessed.image({
-    parent: box,
-    top: 0,
-    left: 0,
-    type: 'overlay',
-    width: 'shrink',
-    height: 'shrink',
-    file: __dirname + '/my-program-icon.png',
-    search: false
-});
-
 // If box is focused, handle `enter`/`return` and give us some more content.
 box.key('enter', function (ch, key) {
-    box.setContent('{right}Even different {black-fg}content{/black-fg}.{/right}\n');
-    box.setLine(1, 'bar');
-    box.insertLine(1, 'foo');
+    // box.setContent('{right}Even different {black-fg}content{/black-fg}.{/right}\n');
+    // box.setLine(1, 'bar');
+    // box.insertLine(1, 'foo');
     screen.render();
 });
 
