@@ -17,6 +17,8 @@ Some base alpha features:
 - Title that matches the current document
 - Keyboard shortcuts
 - About dialog
+- Open dialog
+- Save dialog
 
 Nice-to-haves:
 
@@ -24,3 +26,4 @@ Nice-to-haves:
 - Autocompletion
 - Find and replace
 - Some sort of preferences system
+- Tabbed workspace
