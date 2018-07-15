@@ -5,7 +5,8 @@ const blessed = require('neo-blessed');
 
 // Create a screen object.
 let screen = blessed.screen({
-    smartCSR: true
+    smartCSR: true,
+    autoPadding: true
 });
 
 screen.title = 'EDIT - untitled';
@@ -31,7 +32,7 @@ screen.title = 'EDIT - untitled';
 // part of a real scrollbar (I need to look at all of the code for this project)
 
 // At the bottom there should be a character counter and a word counter as well as line/column count:
-// F1=Help          Col: 1 Line: 1
+// F1=Help Ctrl-C=quit          Col: 1 Line: 1
 
 // Create the main box
 let box = blessed.box({
@@ -52,7 +53,8 @@ let box = blessed.box({
         border: {
             fg: '#f0f0f0'
         },
-    }
+    },
+    label: ' '
 });
 
 // Append our box to the screen.
@@ -63,11 +65,12 @@ box.key('enter', function (ch, key) {
     // box.setContent('{right}Even different {black-fg}content{/black-fg}.{/right}\n');
     // box.setLine(1, 'bar');
     // box.insertLine(1, 'foo');
+    box.setLabel('{right}{light-grey-bg}{black-fg}Test{/black-fg}{/light-grey-bg}{/right}')
     screen.render();
 });
 
 // Quit on Escape, q, or Control-C.
-screen.key(['escape', 'q', 'C-c'], function (ch, key) {
+screen.key(['C-c'], function (ch, key) {
     return process.exit(0);
 });
 
