@@ -3,6 +3,7 @@
 // Eventually this will just return an instantiated editor class or something like that
 
 const blessed = require('neo-blessed');
+const IntroBox = require('./intro-box');
 
 // Create a screen object.
 let screen = blessed.screen({
@@ -32,7 +33,10 @@ screen.title = 'EDIT - untitled';
 // part of a real scrollbar (I need to look at all of the code for this project)
 
 // At the bottom there should be a character counter and a word counter as well as line/column count:
-// F1=Help Ctrl-C=quit          Col: 1 Line: 1
+//  Current Document status (IE did it save?)      F1=Help Ctrl-C=quit          Col: 1 Line: 1
+
+// NOTE: Alt codes like ↑ work in blessed!
+
 
 // Create the main box
 let mainWindow = blessed.box({
@@ -68,10 +72,15 @@ let textArea = blessed.box({
             fg: '#f0f0f0'
         },
     },
-})
+});
+
+// Create an instance of an IntroBox and passing the screen as the parent
+let introBox = new IntroBox(screen, textArea).introBox;
 
 // Append our box to the screen.
 screen.append(mainWindow);
+
+screen.append(introBox);
 
 // Append the textArea to the mainWindow
 mainWindow.append(textArea);
@@ -90,8 +99,8 @@ screen.key(['C-c'], function (ch, key) {
     return process.exit(0);
 });
 
-// Focus the textarea by default
-textArea.focus();
+// Focus the PH by default
+// introBox.focus();
 
 // Render the screen.
 screen.render();

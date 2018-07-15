@@ -9,8 +9,14 @@ const blessed = require('neo-blessed');
 // Enter/OK button
 
 class IntroBox {
-    constructor(parent) {
-        this.parent = parent
+    /** Creates an instance of IntroBox. The parent should always bes the blessed screen object
+     * @param {*} parent
+     * @param {*} nextFocusElement
+     * @memberof IntroBox
+     */
+    constructor(parent, nextFocusElement) {
+        this.parent = parent;
+        this.nextFocusElement = nextFocusElement;
         // Create the introBox element and return it using the parent
         this.introBox = blessed.box({
             parent: this.parent,
@@ -18,7 +24,7 @@ class IntroBox {
             top: 'center',
             left: 'center',
             width: '50%',
-            height: 7,
+            height: 9,
             align: 'center',
             valign: 'middle',
             style: {
@@ -26,10 +32,35 @@ class IntroBox {
                 bg: 'light-grey',
             },
             shadow: true,
-            content: 'Welcome to JS DOS Edit',
+            content: 'Welcome to JS DOS Edit\n\nNote that this is still in early development',
         });
 
         // Append a button to the box
+
+        let button = blessed.button({
+            parent: this.introBox,
+            content: `> OK <`,
+            shrink: true,
+            // border: 'line',
+            left: 'center',
+            style: {
+                fg: 'black',
+                bg: '#33F0FF'
+            },
+            height: 1,
+            top: Math.round(this.introBox.height / 2),
+            // bottom: 2,
+            // padding: 0
+        });
+        button.focus();
+
+        button.key(['enter'], () => {
+            this.introBox.destroy();
+            nextFocusElement.focus();
+            // Reset the cursor to the nextFocusElement starting point
+            // parent.cursorReset();
+            parent.render();
+        });
     }
 
     remove() {
