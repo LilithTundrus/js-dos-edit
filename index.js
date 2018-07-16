@@ -36,6 +36,7 @@ screen.title = 'EDIT - untitled';
 //  Current Document status (IE did it save?)      F1=Help Ctrl-C=quit          Col: 1 Line: 1
 
 // NOTE: Alt codes like ↑ work in blessed!
+// TODO: Document everything we do -- this library has no documentation
 
 
 // Create the main box
@@ -69,7 +70,8 @@ let textArea = blessed.box({
         fg: 'white',
         bg: 'blue',
         border: {
-            fg: '#f0f0f0'
+            fg: 'light-grey',
+            // bg: 'blue'
         },
     },
 });

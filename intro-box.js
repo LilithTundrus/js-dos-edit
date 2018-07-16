@@ -30,28 +30,38 @@ class IntroBox {
             style: {
                 fg: 'black',
                 bg: 'light-grey',
+                border: {
+                    // this matches the DOS edit theme
+                    fg: 'black',
+                    bg: 'light-grey'
+                },
+                // label: {
+                //     bg: 'light-grey',
+                //     fg: 'black',
+                //     transparent: true
+                // }
             },
             shadow: true,
             content: 'Welcome to JS DOS Edit\n\nNote that this is still in early development',
         });
 
-        // Append a button to the box
+        // this.introBox.setLabelCenter({ text: 'TEST'})
 
+        // Append a button to the box
         let button = blessed.button({
             parent: this.introBox,
-            content: `> OK <`,
+            content: `► OK ◄`,
             shrink: true,
-            // border: 'line',
             left: 'center',
             style: {
                 fg: 'black',
-                bg: '#33F0FF'
+                bg: '#33F0FF',
             },
+            shadow: true,
             height: 1,
             top: Math.round(this.introBox.height / 2),
-            // bottom: 2,
-            // padding: 0
         });
+        this.introBox.append(button);
         button.focus();
 
         button.key(['enter'], () => {
