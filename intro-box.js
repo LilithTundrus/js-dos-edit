@@ -45,6 +45,8 @@ class IntroBox {
             content: 'Welcome to JS DOS Edit\n\nNote that this is still in early development',
         });
 
+        this.introBox.transparent = true;
+
         // this.introBox.setLabelCenter({ text: 'TEST'})
 
         // Append a button to the box

@@ -39,7 +39,7 @@ screen.title = 'EDIT - untitled';
 // TODO: Document everything we do -- this library has no documentation
 
 
-// Create the main box
+// Create the main box --this should mostly be void of style/borders
 let mainWindow = blessed.box({
     top: 'center',
     left: 'center',
@@ -57,9 +57,37 @@ let mainWindow = blessed.box({
     },
 });
 
-let textArea = blessed.box({
+// Create the file menu box
+let menubar = blessed.box({
+    top: 'top',
+    left: 'center',
+    width: '100%',
+    height: 1,
+    tags: true,
+    style: {
+        fg: 'black',
+        bg: 'light-grey',
+    },
+    content: `  {red-fg}F{/red-fg}ile`
+})
+
+let menubarBottom = blessed.box({
+    top: screen.height -1,
+    left: 'center',
+    width: '100%',
+    height: 1,
+    tags: true,
+    style: {
+        fg: 'black',
+        bg: 'light-grey',
+    },
+    content: `  {red-fg}E{/red-fg}dit`
+})
+
+let textArea = blessed.textarea({
     top: 'center',
     left: 'center',
+    keys: true,
     width: '100%',
     height: '100%',
     tags: true,
@@ -81,11 +109,13 @@ let introBox = new IntroBox(screen, textArea).introBox;
 
 // Append our box to the screen.
 screen.append(mainWindow);
-
 screen.append(introBox);
 
 // Append the textArea to the mainWindow
 mainWindow.append(textArea);
+mainWindow.append(menubar);
+screen.append(menubarBottom);
+
 
 // If box is focused, handle `enter`/`return` and give us some more content.
 textArea.key('enter', function (ch, key) {
@@ -96,8 +126,14 @@ textArea.key('enter', function (ch, key) {
     screen.render();
 });
 
+textArea.on('focus', function () {
+    // text.show();
+    textArea.readInput();
+    // screen.render();                                            //may not be needed
+});
+
 // Quit on Control-C
-screen.key(['C-c'], function (ch, key) {
+textArea.key(['C-c'], function (ch, key) {
     return process.exit(0);
 });
 
