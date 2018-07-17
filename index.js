@@ -36,7 +36,7 @@ screen.title = 'EDIT - untitled';
 //  Current Document status (IE did it save?)      F1=Help Ctrl-C=quit          Col: 1 Line: 1
 
 // NOTE: Alt codes like ↑ work in blessed!
-// TODO: Document everything we do -- this library has no documentation
+// TODO: Document everything we do -- this library has no documentation internally
 
 
 // Create the main box --this should mostly be void of style/borders
@@ -72,7 +72,7 @@ let menubar = blessed.box({
 })
 
 let menubarBottom = blessed.box({
-    top: screen.height -1,
+    bottom: 'bottom' - 1,
     left: 'center',
     width: '100%',
     height: 1,
@@ -81,7 +81,7 @@ let menubarBottom = blessed.box({
         fg: 'black',
         bg: 'light-grey',
     },
-    content: `  {red-fg}E{/red-fg}dit`
+    content: `Null`
 })
 
 let textArea = blessed.textarea({
@@ -116,8 +116,7 @@ mainWindow.append(textArea);
 mainWindow.append(menubar);
 screen.append(menubarBottom);
 
-
-// If box is focused, handle `enter`/`return` and give us some more content.
+// Testing for key events
 textArea.key('enter', function (ch, key) {
     // box.setContent('{right}Even different {black-fg}content{/black-fg}.{/right}\n');
     // box.setLine(1, 'bar');
