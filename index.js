@@ -38,8 +38,7 @@ screen.title = 'EDIT - untitled';
 // NOTE: Alt codes like ↑ work in blessed!
 // TODO: Document everything we do -- this library has no documentation internally
 
-// Create the main box --this should mostly be void of style/borders and the main textArea should
-// take its place eventually
+// Create the main box --this should mostly be void of style/borders and just act as the primary container
 let mainWindow = blessed.box({
     top: 'center',
     left: 'center',
@@ -59,11 +58,15 @@ let menubar = blessed.box({
     width: '100%',
     height: 1,
     tags: true,
+    padding: {
+        left: 1,
+        right: 1
+    },
     style: {
         fg: 'black',
         bg: 'light-grey',
     },
-    content: `  {red-fg}F{/red-fg}ile`
+    content: `{red-fg}F{/red-fg}ile`
 })
 
 let menubarBottom = blessed.box({
@@ -72,25 +75,28 @@ let menubarBottom = blessed.box({
     width: '100%',
     height: 1,
     tags: true,
+    padding: {
+        left: 1,
+        right: 1
+    },
     style: {
         fg: 'black',
         bg: 'light-grey',
     },
-    content: `Null`
+    content: `Unsaved Document\t\t\t< Press Ctrl + W to quit >\t\t\t Line 0 | Col 0`
 })
 
 let textArea = blessed.textarea({
     top: 'center',
     left: 'center',
+    right: '100%',
     keys: true,
     keyable: true,
-    align: 'center',
+    align: 'left',
     width: '100%',
     height: '100%',
     tags: true,
-    border: {
-        type: 'line'
-    },
+
     style: {
         fg: 'bold',
         bg: 'blue',
@@ -100,7 +106,6 @@ let textArea = blessed.textarea({
     },
     scrollbar: {
         ch: '█',
-        inverse: false,
         track: {
             bg: 'black',
             ch: '░'
@@ -124,12 +129,13 @@ mainWindow.append(textArea);
 
 textArea.on('focus', function () {
     // text.show();
+    screen.cursorReset();
     textArea.readInput();
     // screen.render();                                            //may not be needed
 });
 
 // Quit on Control-C
-textArea.key(['C-c'], function (ch, key) {
+textArea.key(['C-w'], function (ch, key) {
     return process.exit(0);
 });
 
