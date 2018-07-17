@@ -66,10 +66,10 @@ let menubar = blessed.box({
         fg: 'black',
         bg: 'light-grey',
     },
-    content: `{red-fg}F{/red-fg}ile`
+    content: `{red-fg}F{/red-fg}ile {red-fg}E{/red-fg}dit {red-fg}V{/red-fg}iew {red-fg}F{/red-fg}ind {red-fg}O{/red-fg}ptions`
 })
 
-let menubarBottom = blessed.box({
+let statusBar = blessed.box({
     bottom: 'bottom' - 1,
     left: 'center',
     width: '100%',
@@ -87,15 +87,17 @@ let menubarBottom = blessed.box({
 })
 
 let textArea = blessed.textarea({
-    top: 'center',
-    left: 'center',
-    right: '100%',
+    top: 1,
+    // left: 'center',
+    // right: '100%',
     keys: true,
     keyable: true,
+    label: 'UNTITLED1',
     align: 'left',
     width: '100%',
     height: '100%',
     tags: true,
+    content: 'Endless',
 
     style: {
         fg: 'bold',
@@ -103,6 +105,13 @@ let textArea = blessed.textarea({
         border: {
             fg: 'light-grey',
         },
+        label: {
+            fg: 'black',
+            bg: 'light-grey'
+        }
+    },
+    border: {
+        type: 'line'
     },
     scrollbar: {
         ch: '█',
@@ -122,7 +131,7 @@ screen.append(mainWindow);
 screen.append(introBox);
 // These should stay part of the screen at all times, so it's appended to the screen
 screen.append(menubar);
-screen.append(menubarBottom);
+screen.append(statusBar);
 
 // Append the textArea to the mainWindow
 mainWindow.append(textArea);
