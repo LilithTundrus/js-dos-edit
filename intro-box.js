@@ -31,23 +31,14 @@ class IntroBox {
                 fg: 'black',
                 bg: 'light-grey',
                 border: {
-                    // this matches the DOS edit theme
+                    // This matches the DOS edit theme
                     fg: 'black',
                     bg: 'light-grey'
                 },
-                // label: {
-                //     bg: 'light-grey',
-                //     fg: 'black',
-                //     transparent: true
-                // }
             },
             shadow: true,
-            content: 'Welcome to JS DOS Edit\n\nNote that this is still in early development',
+            content: 'Welcome to JS DOS Edit\n\nPlease note that this is still in early development!',
         });
-
-        this.introBox.transparent = true;
-
-        // this.introBox.setLabelCenter({ text: 'TEST'})
 
         // Append a button to the box
         let button = blessed.button({
@@ -70,7 +61,7 @@ class IntroBox {
             this.introBox.destroy();
             nextFocusElement.focus();
             // Reset the cursor to the nextFocusElement starting point
-            // parent.cursorReset();
+            // nextFocusElement.cursorReset();
             parent.render();
         });
     }

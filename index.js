@@ -38,22 +38,17 @@ screen.title = 'EDIT - untitled';
 // NOTE: Alt codes like ↑ work in blessed!
 // TODO: Document everything we do -- this library has no documentation internally
 
-
-// Create the main box --this should mostly be void of style/borders
+// Create the main box --this should mostly be void of style/borders and the main textArea should
+// take its place eventually
 let mainWindow = blessed.box({
     top: 'center',
     left: 'center',
     width: '100%',
     height: '100%',
-    // Label is the box's title, we likely DON'T want to use this if we can prevent it
-    // label: `{light-grey-bg}{bold}Test{/bold}{/light-grey-bg}`,
-    tags: true,
+    // tags: true,
     style: {
         fg: 'white',
         bg: 'black',
-        border: {
-            fg: '#f0f0f0'
-        },
     },
 });
 
@@ -88,6 +83,8 @@ let textArea = blessed.textarea({
     top: 'center',
     left: 'center',
     keys: true,
+    keyable: true,
+    align: 'center',
     width: '100%',
     height: '100%',
     tags: true,
@@ -95,11 +92,18 @@ let textArea = blessed.textarea({
         type: 'line'
     },
     style: {
-        fg: 'white',
+        fg: 'bold',
         bg: 'blue',
         border: {
             fg: 'light-grey',
-            // bg: 'blue'
+        },
+    },
+    scrollbar: {
+        ch: '█',
+        inverse: false,
+        track: {
+            bg: 'black',
+            ch: '░'
         },
     },
 });
@@ -107,23 +111,16 @@ let textArea = blessed.textarea({
 // Create an instance of an IntroBox and passing the screen as the parent
 let introBox = new IntroBox(screen, textArea).introBox;
 
-// Append our box to the screen.
+// Append the needed items to the screen
 screen.append(mainWindow);
+// Make sure the intro box is shown in the front 
 screen.append(introBox);
+// These should stay part of the screen at all times, so it's appended to the screen
+screen.append(menubar);
+screen.append(menubarBottom);
 
 // Append the textArea to the mainWindow
 mainWindow.append(textArea);
-mainWindow.append(menubar);
-screen.append(menubarBottom);
-
-// Testing for key events
-textArea.key('enter', function (ch, key) {
-    // box.setContent('{right}Even different {black-fg}content{/black-fg}.{/right}\n');
-    // box.setLine(1, 'bar');
-    // box.insertLine(1, 'foo');
-    mainWindow.setLabel('{right}{light-grey-bg}{black-fg}Test{/black-fg}{/light-grey-bg}{/right}')
-    screen.render();
-});
 
 textArea.on('focus', function () {
     // text.show();
@@ -135,9 +132,6 @@ textArea.on('focus', function () {
 textArea.key(['C-c'], function (ch, key) {
     return process.exit(0);
 });
-
-// Focus the PH by default
-// introBox.focus();
 
 // Render the screen.
 screen.render();
