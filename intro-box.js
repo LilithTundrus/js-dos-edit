@@ -1,5 +1,6 @@
 'use strict';
 const blessed = require('neo-blessed');
+let program = blessed.program();
 
 // This module represents an introduction window for the editor, consisting
 // of multiple elements
@@ -14,7 +15,7 @@ class IntroBox {
      * @param {*} nextFocusElement
      * @memberof IntroBox
      */
-    constructor(parent, nextFocusElement) {
+    constructor(parent, nextFocusElement, statusBarElement) {
         this.parent = parent;
         this.nextFocusElement = nextFocusElement;
         // Create the introBox element and return it using the parent
@@ -40,6 +41,9 @@ class IntroBox {
             content: 'Welcome to JS DOS Edit\n\nPlease note that this is still in early development!',
         });
 
+        // TODO: have this set the status bar up to say Enter=OK
+        // TODO: this really needs to be resetting the screen unless we literally move the cursor ourselves
+
         // Append a button to the box
         let button = blessed.button({
             parent: this.introBox,
@@ -58,6 +62,7 @@ class IntroBox {
         button.focus();
 
         button.key(['enter'], () => {
+            this.introBox.hide();
             this.introBox.destroy();
             nextFocusElement.focus();
             // Reset the cursor to the nextFocusElement starting point

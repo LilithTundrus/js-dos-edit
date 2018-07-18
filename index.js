@@ -3,12 +3,15 @@
 // Eventually this will just return an instantiated editor class or something like that
 
 const blessed = require('neo-blessed');
+let program = blessed.program();
+
 const IntroBox = require('./intro-box');
 
 // Create a screen object.
 let screen = blessed.screen({
     smartCSR: true,
-    autoPadding: true
+    autoPadding: true,
+    program: program
 });
 
 screen.title = 'EDIT - untitled';
@@ -86,11 +89,11 @@ let statusBar = blessed.box({
     content: `Unsaved Document\t\t\t< Press Ctrl + W to quit >\t\t\t Line 0 | Col 0`
 })
 
+// This will likely become a regular box at some point that we end up customizing
 let textArea = blessed.textarea({
     top: 1,
     // left: 'center',
     // right: '100%',
-    keys: true,
     keyable: true,
     label: 'UNTITLED1',
     align: 'left',
@@ -138,12 +141,19 @@ mainWindow.append(textArea);
 
 textArea.on('focus', function () {
     // text.show();
-    screen.cursorReset();
-    textArea.readInput();
-    // screen.render();                                            //may not be needed
+    // screen.cursorReset();
+    program.resetCursor()
+    program.move(1,20)
+    // textArea.readInput();
+    screen.render();                                            //may not be needed
 });
 
-// Quit on Control-C
+textArea.key(['right'], function (ch, key) {
+    // if()
+});
+
+
+// Quit on Control-W
 textArea.key(['C-w'], function (ch, key) {
     return process.exit(0);
 });
