@@ -5,15 +5,17 @@
 const blessed = require('neo-blessed');
 let program = blessed.program();
 
+// Require the class created for the introduction box object that appears first on start
 const IntroBox = require('./intro-box');
 
-// Create a screen object.
+// Create a screen object to work with blessed
 let screen = blessed.screen({
     smartCSR: true,
     autoPadding: true,
     program: program
 });
 
+// Set the title of the terminal window (if any)
 screen.title = 'EDIT - untitled';
 
 // Our menubar needs to look like this (the brackets meaning the highlighted character for alt + letter): 
@@ -56,8 +58,10 @@ let mainWindow = blessed.box({
 
 // Create the file menu box
 let menubar = blessed.box({
+    // the top should be the top of the screen
     top: 'top',
     left: 'center',
+    // Always 100% of the screen width since it's a file menu
     width: '100%',
     height: 1,
     tags: true,
@@ -141,15 +145,18 @@ mainWindow.append(textArea);
 
 textArea.on('focus', function () {
     // text.show();
-    // screen.cursorReset();
-    program.resetCursor()
-    program.move(1,20)
-    // textArea.readInput();
+    program.resetCursor();
+    // This should move the cursor to the start of the text box
+    program.move(-10,20);
+    // program.
     screen.render();                                            //may not be needed
+    textArea.readInput();
+    screen.render();
 });
 
 textArea.key(['right'], function (ch, key) {
-    // if()
+    textArea.setContent(`${textArea.width} aaa ${textArea.height}`)
+    screen.render()
 });
 
 
