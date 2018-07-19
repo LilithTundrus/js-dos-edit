@@ -1,9 +1,16 @@
 (This doc is just for laying out my ideas for the project)
 
 
+Authors: Lilith Tundrus
+
 What this project is:
 
 A DOS Edit-like program that lets you edit text in a 'graphical' way while still using the CLI
+
+What this project is NOT:
+
+It's not intended to be used seriously but is merely practice for me on a semi-complex project
+if it ends up being usable yay!
 
 Some base alpha features:
 - Open Files
@@ -20,6 +27,7 @@ Some base alpha features:
 - Open dialog
 - Save dialog
 - Selectable text (visually select text to edit/copy/cut)
+- Command line args for opening files
 
 Nice-to-haves:
 
