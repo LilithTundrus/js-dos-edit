@@ -151,8 +151,10 @@ textArea.on('focus', function () {
 });
 
 textArea.key(['left'], function (ch, key) {
+    // This callback returns an err and data object, the data object has the x position of cursor we need to poll
     program.getCursor(function (err, data) {
-        if(data.x > 3) {
+        // This VISUALLY keeps the cursor in left bound of the editing window
+        if (data.x > 3) {
             program.cursorBackward();
         }
     })
@@ -161,16 +163,23 @@ textArea.key(['left'], function (ch, key) {
 textArea.key(['right'], function (ch, key) {
     // textArea.setContent(`${JSON.stringify(textArea.position)} ${program}`)
     program.getCursor(function (err, data) {
-        // 
-        // textArea.setContent(`${JSON.stringify(data)}`)
+        if (data.x < screen.width - 1) {
+            program.cursorForward()
+            screen.render()
+        }
     })
-    program.cursorForward()
-    screen.render()
-
-    // Move the cursor to the right IF in bounds
-    program.cursorForward();
 });
 
+textArea.key(['up'], function (ch, key) {
+    // This callback returns an err and data object, the data object has the y position of cursor we need to poll
+    program.getCursor(function (err, data) {
+        // This VISUALLY keeps the cursor in left bound of the editing window
+        if (data.y > 3) {
+            // If the box is in a scrolling state we need to also scroll up as well
+            program.cursorUp();
+        }
+    })
+});
 
 // Quit on Control-W
 textArea.key(['C-w'], function (ch, key) {
