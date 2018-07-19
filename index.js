@@ -175,8 +175,19 @@ textArea.key(['up'], function (ch, key) {
     program.getCursor(function (err, data) {
         // This VISUALLY keeps the cursor in left bound of the editing window
         if (data.y > 3) {
-            // If the box is in a scrolling state we need to also scroll up as well
+            // TODO: If the box is in a scrolling state we need to also scroll up as well
             program.cursorUp();
+        }
+    })
+});
+
+textArea.key(['down'], function (ch, key) {
+    // This callback returns an err and data object, the data object has the y position of cursor we need to poll
+    program.getCursor(function (err, data) {
+        // This VISUALLY keeps the cursor in left bound of the editing window
+        if (data.y < screen.height - 1) {
+            // TODO:  If the box is in a scrolling state we need to also scroll down as well
+            program.cursorDown();
         }
     })
 });
