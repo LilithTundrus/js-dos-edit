@@ -66,7 +66,6 @@ class IntroBox {
             this.introBox.destroy();
             nextFocusElement.focus();
             // Reset the cursor to the nextFocusElement starting point
-            // nextFocusElement.cursorReset();
             parent.render();
         });
     }

@@ -12,7 +12,12 @@ const IntroBox = require('./intro-box');
 let screen = blessed.screen({
     smartCSR: true,
     autoPadding: true,
-    program: program
+    program: program,
+    cursor: {
+        artificial: true,
+        shape: 'line',
+        blink: true
+      }
 });
 
 // Set the title of the terminal window (if any)
@@ -140,13 +145,10 @@ screen.append(statusBar);
 mainWindow.append(textArea);
 
 textArea.on('focus', function () {
-    // text.show();
-    program.resetCursor();
     // This should move the cursor to the start of the text box
-    program.move(-10, 20);
-    // program.
-    screen.render();                                            //may not be needed
-    // textArea.readInput();
+    // program.move(25, 20);
+    program.hideCursor();
+    textArea.setContent('AAAAA')
     screen.render();
 });
 
@@ -154,18 +156,22 @@ textArea.key(['left'], function (ch, key) {
     // This callback returns an err and data object, the data object has the x position of cursor we need to poll
     program.getCursor(function (err, data) {
         // This VISUALLY keeps the cursor in left bound of the editing window
-        if (data.x > 3) {
+        if (data.x > 2) {
+            // Move the cursor forward by one from the current position
+            // TODO: This should wrap up to the next line if there is a line of text/empty spcae above
             program.cursorBackward();
         }
     })
 });
 
 textArea.key(['right'], function (ch, key) {
-    // textArea.setContent(`${JSON.stringify(textArea.position)} ${program}`)
+    // This callback returns an err and data object, the data object has the x position of cursor we need to poll
     program.getCursor(function (err, data) {
+        // This VISUALLY keeps the cursor in right bound of the editing window
         if (data.x < screen.width - 1) {
-            program.cursorForward()
-            screen.render()
+            // Move the cursor forward by one from the current position
+            // TODO: if at the end of a text line this shouldn't go past the length of the text on the current line
+            program.cursorForward();
         }
     })
 });
@@ -173,7 +179,7 @@ textArea.key(['right'], function (ch, key) {
 textArea.key(['up'], function (ch, key) {
     // This callback returns an err and data object, the data object has the y position of cursor we need to poll
     program.getCursor(function (err, data) {
-        // This VISUALLY keeps the cursor in left bound of the editing window
+        // This VISUALLY keeps the cursor in top bound of the editing window plus the menubar height
         if (data.y > 3) {
             // TODO: If the box is in a scrolling state we need to also scroll up as well
             program.cursorUp();
@@ -184,12 +190,12 @@ textArea.key(['up'], function (ch, key) {
 textArea.key(['down'], function (ch, key) {
     // This callback returns an err and data object, the data object has the y position of cursor we need to poll
     program.getCursor(function (err, data) {
-        // This VISUALLY keeps the cursor in left bound of the editing window
+        // This VISUALLY keeps the cursor in bottom bound of the editing window plus the statusbar height
         if (data.y < screen.height - 1) {
             // TODO:  If the box is in a scrolling state we need to also scroll down as well
             program.cursorDown();
         }
-    })
+    });
 });
 
 // Quit on Control-W
