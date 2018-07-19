@@ -94,18 +94,14 @@ let statusBar = blessed.box({
 })
 
 // This will likely become a regular box at some point that we end up customizing
-let textArea = blessed.textarea({
+let textArea = blessed.box({
     top: 1,
-    // left: 'center',
-    // right: '100%',
     keyable: true,
     label: 'UNTITLED1',
     align: 'left',
     width: '100%',
-    height: '100%',
-    tags: true,
-    content: 'Endless',
-
+    height: '100%-1',
+    tags: false,
     style: {
         fg: 'bold',
         bg: 'blue',
@@ -147,16 +143,32 @@ textArea.on('focus', function () {
     // text.show();
     program.resetCursor();
     // This should move the cursor to the start of the text box
-    program.move(-10,20);
+    program.move(-10, 20);
     // program.
     screen.render();                                            //may not be needed
-    textArea.readInput();
+    // textArea.readInput();
     screen.render();
 });
 
+textArea.key(['left'], function (ch, key) {
+    program.getCursor(function (err, data) {
+        if(data.x > 3) {
+            program.cursorBackward();
+        }
+    })
+});
+
 textArea.key(['right'], function (ch, key) {
-    textArea.setContent(`${textArea.width} aaa ${textArea.height}`)
+    // textArea.setContent(`${JSON.stringify(textArea.position)} ${program}`)
+    program.getCursor(function (err, data) {
+        // 
+        // textArea.setContent(`${JSON.stringify(data)}`)
+    })
+    program.cursorForward()
     screen.render()
+
+    // Move the cursor to the right IF in bounds
+    program.cursorForward();
 });
 
 
