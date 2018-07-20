@@ -14,7 +14,7 @@ let screen = blessed.screen({
     autoPadding: true,
     program: program,
     cursor: {
-        artificial: true,
+        // artificial: true,
         shape: 'line',
         blink: true
       }
@@ -45,8 +45,25 @@ screen.title = 'EDIT - untitled';
 // At the bottom there should be a character counter and a word counter as well as line/column count:
 //  Current Document status (IE did it save?)      F1=Help Ctrl-C=quit          Col: 1 Line: 1
 
+/*
+For the text entry area the cursor needs to be kept in bounds as well as what character that
+the cursor is currently over. This will be likely the biggest challenge, the actual text entry.
+
+Another thing to think of is how the keys should be polled and mapped. There is a built-in
+readInput() method sort of works but also comes with its own weirdness like reading the 
+cursor coordinate reporting (which is annoying)
+
+The text entry area will be the most logically complex since things like not allowing the END
+key to go to the end of the text area but to the end of the text ON that line
+
+This is likely what will need the most intelligent code to work properly. A likely solution would be to
+address each line as an individual text area and then always know what line the current cursor position 
+is on
+*/
+
 // NOTE: Alt codes like ↑ work in blessed!
 // TODO: Document everything we do -- this library has no documentation internally
+// TODO: Scrollbars should have up/down arrows and be all the way to the right of the screen instead of right - 1
 
 // Create the main box --this should mostly be void of style/borders and just act as the primary container
 let mainWindow = blessed.box({
@@ -54,7 +71,6 @@ let mainWindow = blessed.box({
     left: 'center',
     width: '100%',
     height: '100%',
-    // tags: true,
     style: {
         fg: 'white',
         bg: 'black',
@@ -99,7 +115,7 @@ let statusBar = blessed.box({
 })
 
 // This will likely become a regular box at some point that we end up customizing
-let textArea = blessed.box({
+let textArea = blessed.textbox({
     top: 1,
     keyable: true,
     label: 'UNTITLED1',
@@ -145,10 +161,8 @@ screen.append(statusBar);
 mainWindow.append(textArea);
 
 textArea.on('focus', function () {
-    // This should move the cursor to the start of the text box
-    // program.move(25, 20);
-    program.hideCursor();
-    textArea.setContent('AAAAA')
+    // This should move the cursor to the start of the text box (somehow)
+    // textArea.readInput()
     screen.render();
 });
 
@@ -196,6 +210,11 @@ textArea.key(['down'], function (ch, key) {
             program.cursorDown();
         }
     });
+});
+
+textArea.key(['a'], function (ch, key) {
+    textArea.setContent(textArea.content + ch);
+    screen.render()
 });
 
 // Quit on Control-W
