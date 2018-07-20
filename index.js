@@ -14,10 +14,10 @@ let screen = blessed.screen({
     autoPadding: true,
     program: program,
     cursor: {
-        // artificial: true,
+        artificial: true,
         shape: 'line',
-        blink: true
-      }
+        blink: false
+    }
 });
 
 // Set the title of the terminal window (if any)
@@ -114,8 +114,8 @@ let statusBar = blessed.box({
     content: `Unsaved Document\t\t\t< Press Ctrl + W to quit >\t\t\t Line 0 | Col 0`
 })
 
-// This will likely become a regular box at some point that we end up customizing
-let textArea = blessed.textbox({
+// This will likely become a regular box at some point that we end up customizing for editor needs
+let textArea = blessed.box({
     top: 1,
     keyable: true,
     label: 'UNTITLED1',
@@ -212,9 +212,27 @@ textArea.key(['down'], function (ch, key) {
     });
 });
 
+// Testing of keeping track of the cursor + text length vars
+let textLength = 0;
+
 textArea.key(['a'], function (ch, key) {
     textArea.setContent(textArea.content + ch);
-    screen.render()
+    textLength++;
+    screen.render();
+});
+
+// This will eventually contain a ton of logic for getting cursorPos/etc.
+textArea.key(['backspace'], function (ch, key) {
+    if (textLength > 1) {
+        textArea.setContent(textArea.content.substring(0, textArea.content.length - 1));
+        textLength--;
+        // On a basic backspace, reset the cursor back to the length of the current line
+        program.cursorBackward();
+    } else {
+        textArea.setContent('');
+    }
+
+    screen.render();
 });
 
 // Quit on Control-W
