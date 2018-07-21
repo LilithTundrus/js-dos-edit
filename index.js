@@ -115,13 +115,14 @@ let statusBar = blessed.box({
 })
 
 // This will likely become a regular box at some point that we end up customizing for editor needs
-let textArea = blessed.box({
+let textArea = blessed.text({
     top: 1,
     keyable: true,
     label: 'UNTITLED1',
     align: 'left',
     width: '100%',
     height: '100%-1',
+    // Don't capture SGR Blessed escape codes, that could cause issues
     tags: false,
     style: {
         fg: 'bold',
@@ -162,7 +163,6 @@ mainWindow.append(textArea);
 
 textArea.on('focus', function () {
     // This should move the cursor to the start of the text box (somehow)
-    // textArea.readInput()
     screen.render();
 });
 
@@ -215,8 +215,14 @@ textArea.key(['down'], function (ch, key) {
 // Testing of keeping track of the cursor + text length vars
 let textLength = 0;
 
-textArea.key(['a'], function (ch, key) {
-    textArea.setContent(textArea.content + ch);
+textArea.key(['a', 'b'], function (ch, key) {
+    // Eventually, this need to be able to get the cursor location and go through a series
+    // of steps to determine if text can be entered or if it is to be overflowed or even how 
+    // to bring the cursor back to the last character of the current line being 'edited'
+    textArea.setText(textArea.content + ch);
+    // Get the current line value + text
+    // Add the character to the end of the line if cursor pos is at the end of the current line
+    // Else, insert the character at the current cursor position
     textLength++;
     screen.render();
 });
