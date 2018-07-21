@@ -69,10 +69,6 @@ class IntroBox {
             parent.render();
         });
     }
-
-    remove() {
-        // Hide the box using blessed methods
-    }
 }
 
 module.exports = IntroBox;
