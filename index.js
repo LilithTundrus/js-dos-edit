@@ -183,9 +183,15 @@ textArea.key(['right'], function (ch, key) {
     program.getCursor(function (err, data) {
         // This VISUALLY keeps the cursor in right bound of the editing window
         if (data.x < screen.width - 1) {
+            // Get the line that the cursor is sitting on minus the borders of the UI/screen
+            let currentLine = textArea.getLine(data.y - 2);
+            // We need to make sure the line has any content in it at all before allowing a right cursor move
+            // Pretty sure a 'line' includes anything written to a part of the text box
+            // that doesn't have a \n to break it
+            if (data.x > currentLine.length + 2) return;
             // Move the cursor forward by one from the current position
-            // TODO: if at the end of a text line this shouldn't go past the length of the text on the current line
             program.cursorForward();
+            screen.render();
         }
     })
 });
