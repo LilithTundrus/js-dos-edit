@@ -184,11 +184,12 @@ textArea.key(['right'], function (ch, key) {
         // This VISUALLY keeps the cursor in right bound of the editing window
         if (data.x < screen.width - 1) {
             // Get the line that the cursor is sitting on minus the borders of the UI/screen
-            let currentLine = textArea.getLine(data.y - 2);
+            let currentLineText = textArea.getLine(data.y - 2);
             // We need to make sure the line has any content in it at all before allowing a right cursor move
+
             // Pretty sure a 'line' includes anything written to a part of the text box
             // that doesn't have a \n to break it
-            if (data.x > currentLine.length + 2) return;
+            if (data.x > currentLineText.length + 2) return;
             // Move the cursor forward by one from the current position
             program.cursorForward();
             screen.render();
@@ -212,12 +213,29 @@ textArea.key(['down'], function (ch, key) {
     program.getCursor(function (err, data) {
         // This VISUALLY keeps the cursor in bottom bound of the editing window plus the statusbar height
         if (data.y < screen.height - 1) {
+            // Get the line that the cursor is sitting on minus the borders of the UI/screen
+            let currentLineText = textArea.getLine(data.y - 2);
+            let allLinesText = textArea.getLines();
+            // This likely isn't sound code
+            // This is just checking if the line above equals the current line and if not
+            // if (currentLineText == textArea.getLine(data.y - 1))
+            if (currentLineText == allLinesText[allLinesText.length - 1]) return;
+            // Using the current line, it needs to be determined if one exists
+            // below it or not before letting the cursor move down
             // TODO:  If the box is in a scrolling state we need to also scroll down as well
             program.cursorDown();
         }
     });
 });
 
+textArea.key(['enter'], function (ch, key) {
+    // This should intelligently insert a \n and flow any text into the next line
+
+    program.getCursor(function (err, data) {
+        textArea.insertLine(data.y - 2, `test ${data.y}`);
+        screen.render();
+    });
+});
 // Testing of keeping track of the cursor + text length vars
 let textLength = 0;
 
@@ -225,6 +243,8 @@ textArea.key(['a', 'b'], function (ch, key) {
     // Eventually, this need to be able to get the cursor location and go through a series
     // of steps to determine if text can be entered or if it is to be overflowed or even how 
     // to bring the cursor back to the last character of the current line being 'edited'
+
+    // Eventually this should only deal with the CURRENT line
     textArea.setText(textArea.content + ch);
     // Get the current line value + text
     // Add the character to the end of the line if cursor pos is at the end of the current line
@@ -235,6 +255,7 @@ textArea.key(['a', 'b'], function (ch, key) {
 
 // This will eventually contain a ton of logic for getting cursorPos/etc.
 textArea.key(['backspace'], function (ch, key) {
+    // TODO: this should eventually only deal with the current line being worked on
     if (textLength > 1) {
         textArea.setContent(textArea.content.substring(0, textArea.content.length - 1));
         textLength--;
@@ -243,7 +264,6 @@ textArea.key(['backspace'], function (ch, key) {
     } else {
         textArea.setContent('');
     }
-
     screen.render();
 });
 
