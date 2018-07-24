@@ -259,7 +259,7 @@ textArea.key(['backspace'], function (ch, key) {
         // Get the line that the cursor is sitting on minus the borders of the UI/screen
         let currentLineText = textArea.getLine(data.y - 2);
         if (currentLineText.length >= 1) {
-            textArea.setLine(data.y - 2, currentLineText.substring(0, currentLineText.length - 1))
+            textArea.setLine(data.y - 3, currentLineText.substring(0, currentLineText.length - 1))
         }
         // Else we need to flow up to the next line and backspace the previous line
         screen.render();
