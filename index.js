@@ -65,6 +65,7 @@ is on
 // NOTE: Alt codes like ↑ work in blessed!
 // TODO: Document everything done here -- this library has no documentation internally
 // TODO: Scrollbars should have up/down arrows and be all the way to the right of the screen instead of right - 1
+// TODO: figure out why the cursor movements aren't working 100% right (I think it's that the y offsets are off)
 
 // Create the main box, this should mostly be void of style/borders and just act as the primary container
 let mainWindow = blessed.box({
@@ -171,7 +172,7 @@ textArea.on('focus', function () {
     introBox = null;
 });
 
-textArea.key(['left'], function (ch, key) {
+textArea.key('left', (ch, key) => {
     // This callback returns an err and data object, the data object has the x position of cursor we need to poll
     program.getCursor(function (err, data) {
         // This VISUALLY keeps the cursor in left bound of the editing window
@@ -183,7 +184,7 @@ textArea.key(['left'], function (ch, key) {
     })
 });
 
-textArea.key(['right'], function (ch, key) {
+textArea.key('right', (ch, key) => {
     // This callback returns an err and data object, the data object has the x position of cursor we need to poll
     program.getCursor(function (err, data) {
         // This VISUALLY keeps the cursor in right bound of the editing window
@@ -202,7 +203,7 @@ textArea.key(['right'], function (ch, key) {
     })
 });
 
-textArea.key(['up'], function (ch, key) {
+textArea.key('up', (ch, key) => {
     // This callback returns an err and data object, the data object has the y position of cursor we need to poll
     program.getCursor(function (err, data) {
         // This VISUALLY keeps the cursor in top bound of the editing window plus the menubar height
@@ -213,7 +214,7 @@ textArea.key(['up'], function (ch, key) {
     })
 });
 
-textArea.key(['down'], function (ch, key) {
+textArea.key('down', (ch, key) => {
     // This callback returns an err and data object, the data object has the y position of cursor we need to poll
     program.getCursor(function (err, data) {
         // This VISUALLY keeps the cursor in bottom bound of the editing window plus the statusbar height
@@ -234,7 +235,7 @@ textArea.key(['down'], function (ch, key) {
     });
 });
 
-textArea.key(['enter'], function (ch, key) {
+textArea.key('enter', (ch, key) => {
     //TODO: This should intelligently insert a \n and flow any text into the next line
     program.getCursor(function (err, data) {
         textArea.insertLine(data.y - 2, `test ${data.y}`);
@@ -242,7 +243,7 @@ textArea.key(['enter'], function (ch, key) {
     });
 });
 
-textArea.key(['a', 'b'], function (ch, key) {
+textArea.key(['a', 'b'], (ch, key) => {
     // TODO: Make sure that if autoreflow is off (it is by default) that the text box horizontally
     // scrolls accordingly
     // Eventually, this need to be able to get the cursor location and go through a series
@@ -256,7 +257,7 @@ textArea.key(['a', 'b'], function (ch, key) {
     screen.render();
 });
 
-textArea.key(['backspace'], function (ch, key) {
+textArea.key('backspace', (ch, key) => {
     program.getCursor(function (err, data) {
         // Get the line that the cursor is sitting on minus the borders of the UI/screen
         let currentLineText = textArea.getLine(data.y - 3);
