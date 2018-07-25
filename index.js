@@ -259,6 +259,11 @@ textArea.key(['backspace'], function (ch, key) {
         let currentLineText = textArea.getLine(data.y - 3);
         if (currentLineText.length >= 1) {
             textArea.setLine(data.y - 3, currentLineText.substring(0, currentLineText.length - 1))
+        } else if (currentLineText.length < 1) {
+            // Reflow to the next line
+            textArea.deleteLine(data.y - 3);
+            program.cursorPrecedingLine();
+            program.cursorForward(textArea.getLine(data.y - 3).length);
         }
         // Else the cursor needs to flow up to the next line and backspace the previous line!
         screen.render();
