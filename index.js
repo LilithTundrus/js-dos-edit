@@ -1,4 +1,6 @@
+// Using ES5 strict mode
 'use strict';
+
 // Main entry point for the JS-DOS editor
 // Eventually this will just return an instantiated editor class or something like that
 
@@ -35,9 +37,8 @@ screen.title = 'EDIT - untitled';
 // This box will have the filename as the name of the title
 // We'll want to keep the cursor bound to this box
 
-// The actual text entered will likely need to be a huge string buffer that we keep an index
-// of for the current character that the cursor is on my (handling vertical positioning may be a challenge)
-// This allows us to actually know which character to delete on the screen when it's pressed
+// The actual text entered is stored in lines, handled one at a time so the amount
+// of text being worked with at once stays low. 
 
 // The scrollbar up/down arrow ASCII characters may just have to be static and not actually
 // part of a real scrollbar (I need to look at all of the code for this project)
@@ -62,10 +63,10 @@ is on
 */
 
 // NOTE: Alt codes like ↑ work in blessed!
-// TODO: Document everything we do -- this library has no documentation internally
+// TODO: Document everything done here -- this library has no documentation internally
 // TODO: Scrollbars should have up/down arrows and be all the way to the right of the screen instead of right - 1
 
-// Create the main box --this should mostly be void of style/borders and just act as the primary container
+// Create the main box, this should mostly be void of style/borders and just act as the primary container
 let mainWindow = blessed.box({
     top: 'center',
     left: 'center',
@@ -74,18 +75,19 @@ let mainWindow = blessed.box({
     style: {
         fg: 'white',
         bg: 'black',
-    },
+    }
 });
 
 // Create the file menu box
 let menubar = blessed.box({
-    // the top should be the top of the screen
+    // The top should be the top of the screen
     top: 'top',
     left: 'center',
     // Always 100% of the screen width since it's a file menu
     width: '100%',
     height: 1,
     tags: true,
+    // Pad the text for the menubar by 1 on each left/right
     padding: {
         left: 1,
         right: 1
@@ -94,8 +96,9 @@ let menubar = blessed.box({
         fg: 'black',
         bg: 'light-grey',
     },
+    // Formatted for the sake of clarity
     content: `{red-fg}F{/red-fg}ile {red-fg}E{/red-fg}dit {red-fg}V{/red-fg}iew {red-fg}F{/red-fg}ind {red-fg}O{/red-fg}ptions`
-})
+});
 
 let statusBar = blessed.box({
     bottom: 'bottom' - 1,
@@ -112,7 +115,7 @@ let statusBar = blessed.box({
         bg: 'light-grey',
     },
     content: `Unsaved Document\t\t\t< Press Ctrl + W to quit >\t\t\t Line 0 | Col 0`
-})
+});
 
 // This will likely become a regular box at some point that we end up customizing for editor needs
 let textArea = blessed.text({
@@ -162,8 +165,10 @@ screen.append(statusBar);
 mainWindow.append(textArea);
 
 textArea.on('focus', function () {
-    // This should move the cursor to the start of the text box (somehow)
+    //TODO: This should move the cursor to the start of the text box (somehow)
     screen.render();
+    // Destroy the introBox completely
+    introBox = null;
 });
 
 textArea.key(['left'], function (ch, key) {
@@ -213,6 +218,7 @@ textArea.key(['down'], function (ch, key) {
     program.getCursor(function (err, data) {
         // This VISUALLY keeps the cursor in bottom bound of the editing window plus the statusbar height
         if (data.y < screen.height - 1) {
+            // TODO: this should reflow to the end of the NEXT line if any, and not allow the cursor to move if no text is below
             // Get the line that the cursor is sitting on minus the borders of the UI/screen
             let currentLineText = textArea.getLine(data.y - 2);
             let allLinesText = textArea.getLines();
@@ -237,16 +243,16 @@ textArea.key(['enter'], function (ch, key) {
 });
 
 textArea.key(['a', 'b'], function (ch, key) {
+    // TODO: Make sure that if autoreflow is off (it is by default) that the text box horizontally
+    // scrolls accordingly
     // Eventually, this need to be able to get the cursor location and go through a series
-    // of steps to determine if text can be entered or if it is to be overflowed or even how 
-    // to bring the cursor back to the last character of the current line being 'edited'
+    // of steps to determine if text can be entered or if it is to be overflowed
 
     // Eventually this should only deal with the CURRENT line
     textArea.setText(textArea.content + ch);
     // Get the current line value + text
     // Add the character to the end of the line if cursor pos is at the end of the current line
     // Else, insert the character at the current cursor position
-    textLength++;
     screen.render();
 });
 
@@ -257,7 +263,15 @@ textArea.key(['backspace'], function (ch, key) {
         if (currentLineText.length >= 1) {
             // TODO: check the cursor.x var and if it's not at the end of the currentLineText
             // string, splice that character out rather than removing the characters at the end of the line
-            textArea.setLine(data.y - 3, currentLineText.substring(0, currentLineText.length - 1));
+
+            // If cursor is at the end of the current line
+            if (data.x == currentLineText.length + 2) {
+                textArea.setLine(data.y - 3, currentLineText.substring(0, currentLineText.length - 1));
+            } else {
+                // Else, a splice is needed rather than a removal
+                // Find the cursor position relative to the text
+            }
+            program.cursorBackward();
         }
         // Else the cursor needs to flow up to the next line and backspace the previous line!
         else if (currentLineText.length < 1 && textArea.getLines().length > 1) {
@@ -274,9 +288,9 @@ textArea.key(['backspace'], function (ch, key) {
 });
 
 // Quit on Control-W
-textArea.key(['C-w'], function (ch, key) {
+textArea.key(['C-w'], () => {
     return process.exit(0);
 });
 
-// Render the screen.
+// Render the screen
 screen.render();
