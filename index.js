@@ -253,27 +253,16 @@ textArea.key(['a', 'b'], function (ch, key) {
     screen.render();
 });
 
-// This will eventually contain a ton of logic for getting cursorPos/etc.
 textArea.key(['backspace'], function (ch, key) {
     program.getCursor(function (err, data) {
         // Get the line that the cursor is sitting on minus the borders of the UI/screen
-        let currentLineText = textArea.getLine(data.y - 2);
+        let currentLineText = textArea.getLine(data.y - 3);
         if (currentLineText.length >= 1) {
             textArea.setLine(data.y - 3, currentLineText.substring(0, currentLineText.length - 1))
         }
-        // Else we need to flow up to the next line and backspace the previous line
+        // Else the cursor needs to flow up to the next line and backspace the previous line!
         screen.render();
     });
-    // // TODO: this should eventually only deal with the current line being worked on
-    // if (textLength > 1) {
-    //     textArea.setContent(textArea.content.substring(0, textArea.content.length - 1));
-    //     textLength--;
-    //     // On a basic backspace, reset the cursor back to the length of the current line
-    //     program.cursorBackward();
-    // } else {
-    //     textArea.setContent('');
-    // }
-    // screen.render();
 });
 
 // Quit on Control-W
