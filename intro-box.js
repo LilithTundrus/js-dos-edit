@@ -1,6 +1,5 @@
 'use strict';
 const blessed = require('neo-blessed');
-let program = blessed.program();
 
 // This module represents an introduction window for the editor, consisting
 // of multiple elements
@@ -42,11 +41,11 @@ class IntroBox {
         });
 
         // TODO: have this set the status bar up to say Enter=OK
-        // TODO: this really needs to be resetting the screen unless we literally move the cursor ourselves
 
         // Append a button to the box
         let button = blessed.button({
             parent: this.introBox,
+            // Using extended characters here
             content: `► OK ◄`,
             shrink: true,
             left: 'center',
@@ -56,16 +55,19 @@ class IntroBox {
             },
             shadow: true,
             height: 1,
+            // Try to center the button in the most elegant way possible
             top: Math.round(this.introBox.height / 2),
         });
+
+        // Append and then focus the button
         this.introBox.append(button);
         button.focus();
 
+        // On enter key, hide and destroy this box as it's no longer needed and focus the next element
         button.key(['enter'], () => {
             this.introBox.hide();
             this.introBox.destroy();
             nextFocusElement.focus();
-            // Reset the cursor to the nextFocusElement starting point
             parent.render();
         });
     }
