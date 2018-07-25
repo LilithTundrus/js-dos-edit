@@ -229,15 +229,12 @@ textArea.key(['down'], function (ch, key) {
 });
 
 textArea.key(['enter'], function (ch, key) {
-    // This should intelligently insert a \n and flow any text into the next line
-
+    //TODO: This should intelligently insert a \n and flow any text into the next line
     program.getCursor(function (err, data) {
         textArea.insertLine(data.y - 2, `test ${data.y}`);
         screen.render();
     });
 });
-// Testing of keeping track of the cursor + text length vars
-let textLength = 0;
 
 textArea.key(['a', 'b'], function (ch, key) {
     // Eventually, this need to be able to get the cursor location and go through a series
