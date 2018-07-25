@@ -258,14 +258,20 @@ textArea.key(['backspace'], function (ch, key) {
         // Get the line that the cursor is sitting on minus the borders of the UI/screen
         let currentLineText = textArea.getLine(data.y - 3);
         if (currentLineText.length >= 1) {
-            textArea.setLine(data.y - 3, currentLineText.substring(0, currentLineText.length - 1))
-        } else if (currentLineText.length < 1) {
+            // TODO: check the cursor.x var and if it's not at the end of the currentLineText
+            // string, splice that character out rather than removing the characters at the end of the line
+            textArea.setLine(data.y - 3, currentLineText.substring(0, currentLineText.length - 1));
+        }
+        // Else the cursor needs to flow up to the next line and backspace the previous line!
+        else if (currentLineText.length < 1 && textArea.getLines().length > 1) {
             // Reflow to the next line
             textArea.deleteLine(data.y - 3);
             program.cursorPrecedingLine();
-            program.cursorForward(textArea.getLine(data.y - 3).length);
+            let preceedingLineText = textArea.getLine(data.y - 3);
+            // Move the cursor forward the length of the text + 1 for the UI border
+            program.cursorForward(preceedingLineText.length + 1);
         }
-        // Else the cursor needs to flow up to the next line and backspace the previous line!
+        // Always render the screen on character changes
         screen.render();
     });
 });
