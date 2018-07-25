@@ -190,7 +190,7 @@ textArea.key('right', (ch, key) => {
         // This VISUALLY keeps the cursor in right bound of the editing window
         if (data.x < screen.width - 1) {
             // Get the line that the cursor is sitting on minus the borders of the UI/screen
-            let currentLineText = textArea.getLine(data.y - 2);
+            let currentLineText = textArea.getLine(data.y - 3);
             // We need to make sure the line has any content in it at all before allowing a right cursor move
 
             // Pretty sure a 'line' includes anything written to a part of the text box
@@ -221,7 +221,7 @@ textArea.key('down', (ch, key) => {
         if (data.y < screen.height - 1) {
             // TODO: this should reflow to the end of the NEXT line if any, and not allow the cursor to move if no text is below
             // Get the line that the cursor is sitting on minus the borders of the UI/screen
-            let currentLineText = textArea.getLine(data.y - 2);
+            let currentLineText = textArea.getLine(data.y - 3);
             let allLinesText = textArea.getLines();
             // This likely isn't sound code
             // This is just checking if the line above equals the current line and if not
@@ -236,7 +236,8 @@ textArea.key('down', (ch, key) => {
 });
 
 textArea.key('enter', (ch, key) => {
-    //TODO: This should intelligently insert a \n and flow any text into the next line
+    // TODO: This should intelligently insert a \n and flow any text into the next line
+    // TODO: this should NOT insert a line at the bottom but on the cursor pos.y + 1, shifting the entire text
     program.getCursor(function (err, data) {
         textArea.insertLine(data.y - 2, `test ${data.y}`);
         screen.render();
@@ -259,32 +260,35 @@ textArea.key(['a', 'b'], (ch, key) => {
 
 textArea.key('backspace', (ch, key) => {
     program.getCursor(function (err, data) {
-        // Get the line that the cursor is sitting on minus the borders of the UI/screen
-        let currentLineText = textArea.getLine(data.y - 3);
-        if (currentLineText.length >= 1) {
-            // TODO: check the cursor.x var and if it's not at the end of the currentLineText
-            // string, splice that character out rather than removing the characters at the end of the line
+        if (data.x > 1) {
+            // Get the line that the cursor is sitting on minus the borders of the UI/screen
+            let currentLineText = textArea.getLine(data.y - 3);
+            if (currentLineText.length >= 1) {
+                // TODO: check the cursor.x var and if it's not at the end of the currentLineText
+                // string, splice that character out rather than removing the characters at the end of the line
 
-            // If cursor is at the end of the current line
-            if (data.x == currentLineText.length + 2) {
-                textArea.setLine(data.y - 3, currentLineText.substring(0, currentLineText.length - 1));
-            } else {
-                // Else, a splice is needed rather than a removal
-                // Find the cursor position relative to the text
+                // If cursor is at the end of the current line
+                if (data.x == currentLineText.length + 2) {
+                    textArea.setLine(data.y - 3, currentLineText.substring(0, currentLineText.length - 1));
+                } else {
+                    // Else, a splice is needed rather than a removal
+                    // Find the cursor position relative to the text
+                }
+                program.cursorBackward();
             }
-            program.cursorBackward();
+            // Else the cursor needs to flow up to the next line and backspace the previous line!
+            else if (currentLineText.length < 1 && textArea.getLines().length > 1) {
+                // Reflow to the next line
+                textArea.deleteLine(data.y - 3);
+                // TODO: figure out why this wraps to the bottom line if in the middle of the text box
+                let preceedingLineText = textArea.getLine(data.y - 4);
+                // Move the cursor forward the length of the text + 1 for the UI border
+                program.cursorForward(preceedingLineText.length + 1);
+                program.cursorUp();
+            }
+            // Always render the screen on character changes
+            screen.render();
         }
-        // Else the cursor needs to flow up to the next line and backspace the previous line!
-        else if (currentLineText.length < 1 && textArea.getLines().length > 1) {
-            // Reflow to the next line
-            textArea.deleteLine(data.y - 3);
-            program.cursorPrecedingLine();
-            let preceedingLineText = textArea.getLine(data.y - 3);
-            // Move the cursor forward the length of the text + 1 for the UI border
-            program.cursorForward(preceedingLineText.length + 1);
-        }
-        // Always render the screen on character changes
-        screen.render();
     });
 });
 
