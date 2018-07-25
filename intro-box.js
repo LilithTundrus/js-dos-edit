@@ -14,7 +14,7 @@ class IntroBox {
      * @param {*} nextFocusElement
      * @memberof IntroBox
      */
-    constructor(parent, nextFocusElement, statusBarElement) {
+    constructor(parent, nextFocusElement) {
         this.parent = parent;
         this.nextFocusElement = nextFocusElement;
         // Create the introBox element and return it using the parent
