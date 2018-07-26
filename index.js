@@ -172,7 +172,7 @@ textArea.on('focus', function () {
     introBox = null;
 });
 
-textArea.key('left', (ch, key) => {
+textArea.key('left', () => {
     // This callback returns an err and data object, the data object has the x position of cursor we need to poll
     program.getCursor(function (err, data) {
         // This VISUALLY keeps the cursor in left bound of the editing window
@@ -184,7 +184,7 @@ textArea.key('left', (ch, key) => {
     })
 });
 
-textArea.key('right', (ch, key) => {
+textArea.key('right', () => {
     // This callback returns an err and data object, the data object has the x position of cursor we need to poll
     program.getCursor(function (err, data) {
         // This VISUALLY keeps the cursor in right bound of the editing window
@@ -195,7 +195,7 @@ textArea.key('right', (ch, key) => {
 
             // Pretty sure a 'line' includes anything written to a part of the text box
             // that doesn't have a \n to break it
-            if (data.x > currentLineText.length + 2) return;
+            if (data.x > currentLineText.length + 1) return;
             // Move the cursor forward by one from the current position
             program.cursorForward();
             screen.render();
@@ -203,18 +203,19 @@ textArea.key('right', (ch, key) => {
     })
 });
 
-textArea.key('up', (ch, key) => {
+textArea.key('up', () => {
     // This callback returns an err and data object, the data object has the y position of cursor we need to poll
     program.getCursor(function (err, data) {
         // This VISUALLY keeps the cursor in top bound of the editing window plus the menubar height
         if (data.y > 3) {
             // TODO: If the box is in a scrolling state we need to also scroll up as well
+            // TODO: Move the cursor to the end of the next line by default
             program.cursorUp();
         }
     })
 });
 
-textArea.key('down', (ch, key) => {
+textArea.key('down', () => {
     // This callback returns an err and data object, the data object has the y position of cursor we need to poll
     program.getCursor(function (err, data) {
         // This VISUALLY keeps the cursor in bottom bound of the editing window plus the statusbar height
@@ -235,7 +236,7 @@ textArea.key('down', (ch, key) => {
     });
 });
 
-textArea.key('enter', (ch, key) => {
+textArea.key('enter', () => {
     // TODO: This should intelligently insert a \n and flow any text into the next line
     // TODO: this should NOT insert a line at the bottom but on the cursor pos.y + 1, shifting the entire text
     program.getCursor(function (err, data) {
@@ -258,7 +259,7 @@ textArea.key(['a', 'b'], (ch, key) => {
     screen.render();
 });
 
-textArea.key('backspace', (ch, key) => {
+textArea.key('backspace', () => {
     program.getCursor(function (err, data) {
         if (data.x > 1) {
             // Get the line that the cursor is sitting on minus the borders of the UI/screen
