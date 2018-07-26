@@ -273,9 +273,15 @@ textArea.key('backspace', (ch, key) => {
                 } else {
                     // Else, a splice is needed rather than a removal
                     // Find the cursor position relative to the text
-                    // Get the current cursor pos.x - 1 for finding which character to slice within the string minus the border
-                    let backspaceIndex = data.x - 1;
-                    textArea.setLine(data.y - 3, currentLineText.replace(currentLineText.charAt(backspaceIndex), ''));
+                    // Get the current cursor pos.x - 2 for finding which character to slice within the string minus the border
+                    let backspaceIndex = data.x - 2;
+                    // This does some weird stuff with the cursor where it resets on every backspace
+                    // it may have something to do with the rendering procedure
+                    textArea.setLine(data.y - 3, currentLineText.substring(0, backspaceIndex - 1) + currentLineText.substring(backspaceIndex, currentLineText.length));
+                    // Set the cursor back one, even after a reset
+                    screen.render();
+                    program.cursorBackward(5);
+                    screen.render()
                 }
                 program.cursorBackward();
             }
