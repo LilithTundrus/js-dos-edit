@@ -273,6 +273,9 @@ textArea.key('backspace', (ch, key) => {
                 } else {
                     // Else, a splice is needed rather than a removal
                     // Find the cursor position relative to the text
+                    // Get the current cursor pos.x - 1 for finding which character to slice within the string minus the border
+                    let backspaceIndex = data.x - 1;
+                    textArea.setLine(data.y - 3, currentLineText.replace(currentLineText.charAt(backspaceIndex), ''));
                 }
                 program.cursorBackward();
             }
@@ -287,8 +290,8 @@ textArea.key('backspace', (ch, key) => {
                 program.cursorUp();
             }
             // Always render the screen on character changes
-            screen.render();
         }
+        screen.render();
     });
 });
 
