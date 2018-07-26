@@ -7,8 +7,12 @@
 const blessed = require('neo-blessed');
 let program = blessed.program();
 
+
 // Require the class created for the introduction box object that appears first on start
 const IntroBox = require('./intro-box');
+
+// Require the functions to handle each keypress
+const keyHandlers = require('./keyHandlers');
 
 // Create a screen object to work with blessed
 let screen = blessed.screen({
@@ -175,43 +179,14 @@ textArea.on('focus', function () {
 textArea.key('left', () => {
     // This callback returns an err and data object, the data object has the x position of cursor we need to poll
     program.getCursor((err, data) => {
-        // This VISUALLY keeps the cursor in left bound of the editing window
-        if (data.x > 2) {
-            // Move the cursor backward by one from the current position
-            program.cursorBackward();
-            // Make sure the action shows up on the screen
-            screen.render();
-        }
-        // Make sure the cursor is all the way to the left before wrapping
-        else if (data.x == 2) {
-            // Get the y location and then get the line one above current position
-            // If there is a line above, wrap to the right of that line and render the screen
-            let previouslineText = textArea.getLine(data.y - 2);
-            // Make sure there's text above AND within the screen bounds
-            if (previouslineText && data.y > 3) {
-                program.cursorForward(previouslineText.length);
-                program.cursorUp();
-            }
-        }
+        keyHandlers.leftArrowHandler(data, program, screen, textArea);
     });
 });
 
 textArea.key('right', () => {
     // This callback returns an err and data object, the data object has the x position of cursor we need to poll
     program.getCursor(function (err, data) {
-        // This VISUALLY keeps the cursor in right bound of the editing window
-        if (data.x < screen.width - 1) {
-            // Get the line that the cursor is sitting on minus the borders of the UI/screen
-            let currentLineText = textArea.getLine(data.y - 3);
-            // We need to make sure the line has any content in it at all before allowing a right cursor move
-
-            // Pretty sure a 'line' includes anything written to a part of the text box
-            // that doesn't have a \n to break it
-            if (data.x > currentLineText.length + 1) return;
-            // Move the cursor forward by one from the current position
-            program.cursorForward();
-            screen.render();
-        }
+        keyHandlers.rightArrowHandler(data, program, screen, textArea);
     })
 });
 
@@ -274,14 +249,11 @@ textArea.key(['a', 'b'], (ch, key) => {
 });
 
 textArea.key('backspace', () => {
-    program.getCursor(function (err, data) {
+    program.getCursor((err, data) => {
         if (data.x > 1) {
             // Get the line that the cursor is sitting on minus the borders of the UI/screen
             let currentLineText = textArea.getLine(data.y - 3);
             if (currentLineText.length >= 1) {
-                // TODO: check the cursor.x var and if it's not at the end of the currentLineText
-                // string, splice that character out rather than removing the characters at the end of the line
-
                 // If cursor is at the end of the current line
                 if (data.x == currentLineText.length + 2) {
                     textArea.setLine(data.y - 3, currentLineText.substring(0, currentLineText.length - 1));
@@ -290,7 +262,7 @@ textArea.key('backspace', () => {
                     // Find the cursor position relative to the text
                     // Get the current cursor pos.x - 2 for finding which character to slice within the string minus the border
                     let backspaceIndex = data.x - 2;
-                    // This does some weird stuff with the cursor where it resets on every backspace
+                    //TODO: FIX! This does some weird stuff with the cursor where it resets on every backspace
                     // it may have something to do with the rendering procedure
                     textArea.setLine(data.y - 3, currentLineText.substring(0, backspaceIndex - 1) + currentLineText.substring(backspaceIndex, currentLineText.length));
                     // Set the cursor back to where the last character was removed, even after a reset
