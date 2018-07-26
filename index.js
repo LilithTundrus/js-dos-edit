@@ -278,10 +278,10 @@ textArea.key('backspace', (ch, key) => {
                     // This does some weird stuff with the cursor where it resets on every backspace
                     // it may have something to do with the rendering procedure
                     textArea.setLine(data.y - 3, currentLineText.substring(0, backspaceIndex - 1) + currentLineText.substring(backspaceIndex, currentLineText.length));
-                    // Set the cursor back one, even after a reset
+                    // Set the cursor back to where the last character was removed, even after a reset
                     screen.render();
-                    program.cursorBackward(5);
-                    screen.render()
+                    program.cursorBackward(currentLineText.length - currentLineText.substring(0, backspaceIndex).length);
+                    screen.render();
                 }
                 program.cursorBackward();
             }
