@@ -174,14 +174,26 @@ textArea.on('focus', function () {
 
 textArea.key('left', () => {
     // This callback returns an err and data object, the data object has the x position of cursor we need to poll
-    program.getCursor(function (err, data) {
+    program.getCursor((err, data) => {
         // This VISUALLY keeps the cursor in left bound of the editing window
         if (data.x > 2) {
-            // Move the cursor forward by one from the current position
-            // TODO: This should wrap up to the next line if there is a line of text/empty spcae above
+            // Move the cursor backward by one from the current position
             program.cursorBackward();
+            // Make sure the action shows up on the screen
+            screen.render();
         }
-    })
+        // Make sure the cursor is all the way to the left before wrapping
+        else if (data.x == 2) {
+            // Get the y location and then get the line one above current position
+            // If there is a line above, wrap to the right of that line and render the screen
+            let previouslineText = textArea.getLine(data.y - 2);
+            // Make sure there's text above AND within the screen bounds
+            if (previouslineText && data.y > 3) {
+                program.cursorForward(previouslineText.length);
+                program.cursorUp();
+            }
+        }
+    });
 });
 
 textArea.key('right', () => {
@@ -205,11 +217,13 @@ textArea.key('right', () => {
 
 textArea.key('up', () => {
     // This callback returns an err and data object, the data object has the y position of cursor we need to poll
-    program.getCursor(function (err, data) {
+    program.getCursor((err, data) => {
         // This VISUALLY keeps the cursor in top bound of the editing window plus the menubar height
         if (data.y > 3) {
             // TODO: If the box is in a scrolling state we need to also scroll up as well
             // TODO: Move the cursor to the end of the next line by default
+            // Get the y location and then get the line one above current position
+            // If there is a line above, wrap to the right of that line and render the screen
             program.cursorUp();
         }
     })
@@ -217,7 +231,7 @@ textArea.key('up', () => {
 
 textArea.key('down', () => {
     // This callback returns an err and data object, the data object has the y position of cursor we need to poll
-    program.getCursor(function (err, data) {
+    program.getCursor((err, data) => {
         // This VISUALLY keeps the cursor in bottom bound of the editing window plus the statusbar height
         if (data.y < screen.height - 1) {
             // TODO: this should reflow to the end of the NEXT line if any, and not allow the cursor to move if no text is below
@@ -239,7 +253,7 @@ textArea.key('down', () => {
 textArea.key('enter', () => {
     // TODO: This should intelligently insert a \n and flow any text into the next line
     // TODO: this should NOT insert a line at the bottom but on the cursor pos.y + 1, shifting the entire text
-    program.getCursor(function (err, data) {
+    program.getCursor((err, data) => {
         textArea.insertLine(data.y - 2, `test ${data.y}`);
         screen.render();
     });
