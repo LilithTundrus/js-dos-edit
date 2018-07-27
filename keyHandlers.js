@@ -40,6 +40,35 @@ function leftArrowHandler(cursor, program, screen, textArea) {
     }
 }
 
+function upArrowHandler(cursor, program, screen, textArea) {
+    // This VISUALLY keeps the cursor in top bound of the editing window plus the menubar height
+    if (cursor.y > 3) {
+        // TODO: If the box is in a scrolling state we need to also scroll up as well
+        // TODO: Move the cursor to the end of the next line by default
+        // Get the y location and then get the line one above current position
+        // If there is a line above, wrap to the right of that line and render the screen
+        // If there is a line above, wrap to the right of that line and render the screen
+        let previouslineText = textArea.getLine(cursor.y - 4);
+        // get the current line for comparison
+        let currentLineText = textArea.getLine(cursor.y - 3);
+
+        // Make sure there's text above AND within the screen bounds
+
+        // If the previous line is longer than the current
+        if (previouslineText.length > cursor.x - 1) {
+            // Find the difference between the current cursor.x and the length of the line above
+            program.cursorForward(previouslineText.length - cursor.x + 2);
+            program.cursorUp();
+            // If both lines are equal
+        } else if (previouslineText.length + 2 == cursor.x && currentLineText.length + 2 == cursor.x) {
+            program.cursorUp();
+        } else {
+            program.cursorBackward(cursor.x - previouslineText.length - 2)
+            program.cursorUp();
+        }
+    }
+}
 
 module.exports.rightArrowHandler = rightArrowHandler;
 module.exports.leftArrowHandler = leftArrowHandler;
+module.exports.upArrowHandler = upArrowHandler;
