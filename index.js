@@ -200,24 +200,7 @@ textArea.key('up', () => {
 textArea.key('down', () => {
     // This callback returns an err and data object, the data object has the y position of cursor we need to poll
     program.getCursor((err, data) => {
-        // This VISUALLY keeps the cursor in bottom bound of the editing window plus the statusbar height
-        if (data.y < screen.height - 1) {
-            // TODO: this should reflow to the end of the NEXT line if any, and not allow the cursor to move if no text is below
-            // Get the line that the cursor is sitting on minus the borders of the UI/screen
-            let currentLineText = textArea.getLine(data.y - 3);
-            let allLinesText = textArea.getLines();
-            // This likely isn't sound code
-            // This is just checking if the line above equals the current line and if not
-            // if (currentLineText == textArea.getLine(data.y - 1))
-            if (currentLineText == allLinesText[allLinesText.length - 1]) return;
-            else {
-                // wrap down to the next line if the cursor is at the end of the current line
-            }
-            // Using the current line, it needs to be determined if one exists
-            // below it or not before letting the cursor move down
-            // TODO:  If the box is in a scrolling state we need to also scroll down as well
-            program.cursorDown();
-        }
+        keyHandlers.downArrowHandler(data, program, screen, textArea);
     });
 });
 
