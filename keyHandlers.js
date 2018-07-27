@@ -46,26 +46,26 @@ function upArrowHandler(cursor, program, screen, textArea) {
     // This VISUALLY keeps the cursor in top bound of the editing window plus the menubar height
     if (cursor.y > 3) {
         // TODO: If the box is in a scrolling state we need to also scroll up as well
-        // TODO: if the cursor is currently in the middle of text, just cursor up, don't force flow 
-        // to the next line
-        // Get the y location and then get the line one above current position
-        // If there is a line above, wrap to the right of that line and render the screen
+
+        // Get the line one above current y position (relative to borders, etc.)
         let previouslineText = textArea.getLine(cursor.y - 4);
-        // get the current line for comparison
+        // Get the current line for comparison
         let currentLineText = textArea.getLine(cursor.y - 3);
 
-        // Make sure there's text above AND within the screen bounds
-
         // If the previous line is longer than the current
-        if (previouslineText.length > cursor.x - 1) {
+        if (previouslineText.length > cursor.x - 1 && cursor.x - 1 > currentLineText.length) {
             // Find the difference between the current cursor.x and the length of the line above
             program.cursorForward(previouslineText.length - cursor.x + 2);
             program.cursorUp();
             // If both lines are equal
         } else if (previouslineText.length + 2 == cursor.x && currentLineText.length + 2 == cursor.x) {
             program.cursorUp();
+            // If the cursor is ahead of the next line up
+        } else if (previouslineText.length < cursor.x - 1) {
+            program.cursorBackward(cursor.x - previouslineText.length - 2);
+            program.cursorUp();
+            // Else, just put the cursor up one -- it's in the middle and there is text above
         } else {
-            program.cursorBackward(cursor.x - previouslineText.length - 2)
             program.cursorUp();
         }
     }
