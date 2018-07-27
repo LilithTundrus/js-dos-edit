@@ -201,6 +201,9 @@ textArea.key('up', () => {
             // If there is a line above, wrap to the right of that line and render the screen
             // If there is a line above, wrap to the right of that line and render the screen
             let previouslineText = textArea.getLine(data.y - 4);
+            // get the current line for comparison
+            let currentLineText = textArea.getLine(data.y - 3);
+
             // Make sure there's text above AND within the screen bounds
 
             // If the previous line is longer than the current
@@ -208,8 +211,11 @@ textArea.key('up', () => {
                 // Find the difference between the current cursor.x and the length of the line above
                 program.cursorForward(previouslineText.length - data.x + 2);
                 program.cursorUp();
+            // If both lines are equal
+            } else if (previouslineText.length + 2 == data.x && currentLineText.length + 2 == data.x) {
+                program.cursorUp();
             } else {
-                program.cursorBackward(data.x - previouslineText.length)
+                program.cursorBackward(data.x - previouslineText.length - 2)
                 program.cursorUp();
             }
         }
