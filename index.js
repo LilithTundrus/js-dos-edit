@@ -199,7 +199,19 @@ textArea.key('up', () => {
             // TODO: Move the cursor to the end of the next line by default
             // Get the y location and then get the line one above current position
             // If there is a line above, wrap to the right of that line and render the screen
-            program.cursorUp();
+            // If there is a line above, wrap to the right of that line and render the screen
+            let previouslineText = textArea.getLine(data.y - 4);
+            // Make sure there's text above AND within the screen bounds
+
+            // If the previous line is longer than the current
+            if (previouslineText.length > data.x - 1) {
+                // Find the difference between the current cursor.x and the length of the line above
+                program.cursorForward(previouslineText.length - data.x + 2);
+                program.cursorUp();
+            } else {
+                program.cursorBackward(data.x - previouslineText.length)
+                program.cursorUp();
+            }
         }
     })
 });
