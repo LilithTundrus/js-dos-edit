@@ -193,32 +193,7 @@ textArea.key('right', () => {
 textArea.key('up', () => {
     // This callback returns an err and data object, the data object has the y position of cursor we need to poll
     program.getCursor((err, data) => {
-        // This VISUALLY keeps the cursor in top bound of the editing window plus the menubar height
-        if (data.y > 3) {
-            // TODO: If the box is in a scrolling state we need to also scroll up as well
-            // TODO: Move the cursor to the end of the next line by default
-            // Get the y location and then get the line one above current position
-            // If there is a line above, wrap to the right of that line and render the screen
-            // If there is a line above, wrap to the right of that line and render the screen
-            let previouslineText = textArea.getLine(data.y - 4);
-            // get the current line for comparison
-            let currentLineText = textArea.getLine(data.y - 3);
-
-            // Make sure there's text above AND within the screen bounds
-
-            // If the previous line is longer than the current
-            if (previouslineText.length > data.x - 1) {
-                // Find the difference between the current cursor.x and the length of the line above
-                program.cursorForward(previouslineText.length - data.x + 2);
-                program.cursorUp();
-            // If both lines are equal
-            } else if (previouslineText.length + 2 == data.x && currentLineText.length + 2 == data.x) {
-                program.cursorUp();
-            } else {
-                program.cursorBackward(data.x - previouslineText.length - 2)
-                program.cursorUp();
-            }
-        }
+        keyHandlers.upArrowHandler(data, program, screen, textArea);
     })
 });
 
@@ -235,6 +210,9 @@ textArea.key('down', () => {
             // This is just checking if the line above equals the current line and if not
             // if (currentLineText == textArea.getLine(data.y - 1))
             if (currentLineText == allLinesText[allLinesText.length - 1]) return;
+            else {
+                // wrap down to the next line if the cursor is at the end of the current line
+            }
             // Using the current line, it needs to be determined if one exists
             // below it or not before letting the cursor move down
             // TODO:  If the box is in a scrolling state we need to also scroll down as well

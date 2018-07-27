@@ -3,6 +3,8 @@
 
 // This file contains the handlers for each key/combination that the editor supports
 
+// TODO: do TODOs and clean up comments
+
 function rightArrowHandler(cursor, program, screen, textArea) {
     // This VISUALLY keeps the cursor in right bound of the editing window
     if (cursor.x < screen.width - 1) {
@@ -44,9 +46,9 @@ function upArrowHandler(cursor, program, screen, textArea) {
     // This VISUALLY keeps the cursor in top bound of the editing window plus the menubar height
     if (cursor.y > 3) {
         // TODO: If the box is in a scrolling state we need to also scroll up as well
-        // TODO: Move the cursor to the end of the next line by default
+        // TODO: if the cursor is currently in the middle of text, just cursor up, don't force flow 
+        // to the next line
         // Get the y location and then get the line one above current position
-        // If there is a line above, wrap to the right of that line and render the screen
         // If there is a line above, wrap to the right of that line and render the screen
         let previouslineText = textArea.getLine(cursor.y - 4);
         // get the current line for comparison
