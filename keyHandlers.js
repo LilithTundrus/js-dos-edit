@@ -74,22 +74,36 @@ function upArrowHandler(cursor, program, screen, textArea) {
 function downArrowHandler(cursor, program, screen, textArea) {
     // This VISUALLY keeps the cursor in bottom bound of the editing window plus the statusbar height
     if (cursor.y < screen.height - 1) {
-        // TODO:  If the box is in a scrolling state we need to also scroll down as well
-        // TODO: get this to act like the up arrow does with cursor reflowing
+        // TODO: If the box is in a scrolling state we need to also scroll down as well
 
-        // Get the line that the cursor is on minus the borders of the UI/screen
+        // Get the line one above current y position (relative to borders, etc.)
+        let nextLineText = textArea.getLine(cursor.y - 2);
+        // Get the current line for comparison
         let currentLineText = textArea.getLine(cursor.y - 3);
+
+        // Don't allow the cursor to move beyond the next line if it's 'empty'
+        // Empty means the same line shows up each time, returned from the textArea check
+        // This likely needs a better, stronger check
         let allLinesText = textArea.getLines();
-        // This likely isn't sound code
-        // This is just checking if the line above equals the current line and if not
-        // if (currentLineText == textArea.getLine(cursor.y - 1))
-        if (currentLineText == allLinesText[allLinesText.length - 1]) return;
-        else {
-            // wrap down to the next line if the cursor is at the end of the current line
+        if (currentLineText == allLinesText[allLinesText.length - 1] && allLinesText.length - 1 == cursor.y - 3) return;
+
+
+        // If the previous line is longer than the current
+        if (nextLineText.length > cursor.x - 1 && cursor.x - 1 > currentLineText.length) {
+            // Find the difference between the current cursor.x and the length of the line above
+            program.cursorForward(nextLineText.length - cursor.x + 2);
+            program.cursorDown();
+            // If both lines are equal
+        } else if (nextLineText.length + 2 == cursor.x && currentLineText.length + 2 == cursor.x) {
+            program.cursorDown();
+            // If the cursor is ahead of the next line down
+        } else if (nextLineText.length < cursor.x - 1) {
+            program.cursorBackward(cursor.x - nextLineText.length - 2);
+            program.cursorDown();
+            // Else, just put the cursor down one -- it's in the middle and there is text above
+        } else {
+            program.cursorDown();
         }
-        // Using the current line, it needs to be determined if one exists
-        // below it or not before letting the cursor move down
-        program.cursorDown();
     }
 }
 
