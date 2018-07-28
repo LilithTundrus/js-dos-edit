@@ -175,18 +175,16 @@ textArea.on('focus', function () {
     //TODO: When a file is opened, start at the top of the first line, but at the end
     screen.render();
     // Get the top and bottom + left/right of the screen to reset the cursor
-    program.getCursor(function (err, data) {
-        // Pull the cursor all the way to the top left no matter where it is
-        program.cursorUp(screen.height);
-        program.cursorBackward(screen.width);
-        // Put the cursor at line 1 column one of the editing window
-        program.cursorForward(1);
-        program.cursorDown(2);
-    });
+    // Pull the cursor all the way to the top left no matter where it is
+    program.cursorUp(screen.height);
+    program.cursorBackward(screen.width);
+    // Put the cursor at line 1 column one of the editing window
+    program.cursorForward(1);
+    program.cursorDown(2);
     // Reset the content of the statusBar (the numbers are placeholders)
     // TODO: make the numbers + filename no longer be placeholders
     statusBar.setContent(`Unsaved Document\t\t\t< Press Ctrl + W to quit >\t\t\t Line 1 | Col 1`);
-    screen.render()
+    screen.render();
     // Destroy the introBox completely
     introBox = null;
 });
@@ -259,7 +257,9 @@ textArea.on('keypress', (ch, key) => {
     if (key.name === 'left' || key.name === 'right' || key.name === 'up' || key.name === 'down') {
         return;
     }
-    if(ch === undefined) return
+
+    // Return, these are keys we can handle later
+    if (ch == undefined) return;
     // Intelligently handle each keypress, even the weird/undefined ones
     // TODO: Make sure that if autoreflow is off (it is by default) that the text box horizontally
     // scrolls accordingly
@@ -271,13 +271,14 @@ textArea.on('keypress', (ch, key) => {
     if (key.name == 'enter') return;
     if (!/^[\x00-\x08\x0b-\x0c\x0e-\x1f\x7f]$/.test(ch)) {
         textArea.setText(textArea.content + ch);
+        screen.render()
     }
     screen.render();
 });
 
 textArea.key('backspace', () => {
     program.getCursor((err, data) => {
-        keyHandlers.backspaceHandler(data, program, screen, textArea);
+        return keyHandlers.backspaceHandler(data, program, screen, textArea);
     });
 });
 
