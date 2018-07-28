@@ -135,7 +135,9 @@ function backspaceHandler(cursor, program, screen, textArea) {
             // TODO: figure out why this wraps to the bottom line if in the middle of the text box
             let preceedingLineText = textArea.getLine(cursor.y - 4);
             // Move the cursor forward the length of the text + 1 for the UI border
-            program.cursorForward(preceedingLineText.length + 1);
+            if (preceedingLineText.length > 1) {
+                program.cursorForward(preceedingLineText.length + 1);
+            }
             program.cursorUp();
         }
         // Always render the screen on character changes
