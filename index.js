@@ -17,7 +17,12 @@ const keyHandlers = require('./keyHandlers');
 let screen = blessed.screen({
     smartCSR: true,
     autoPadding: true,
-    program: program
+    program: program,
+    cursor: {
+        artificial: true,
+        shape: 'line',
+        blink: false
+    }
 });
 
 // Set the title of the terminal window (if any)
