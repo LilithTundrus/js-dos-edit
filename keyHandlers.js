@@ -40,6 +40,7 @@ function leftArrowHandler(cursor, program, screen, textArea) {
     }
 }
 
+// TODO: fix this sometimes going out of bounds when on an empty line
 function upArrowHandler(cursor, program, screen, textArea) {
     // This VISUALLY keeps the cursor in top bound of the editing window plus the menubar height
     if (cursor.y > 3) {
@@ -69,6 +70,7 @@ function upArrowHandler(cursor, program, screen, textArea) {
     }
 }
 
+// TODO: fix this sometimes going out of bounds when on an empty line
 function downArrowHandler(cursor, program, screen, textArea) {
     // This VISUALLY keeps the cursor in bottom bound of the editing window plus the statusbar height
     if (cursor.y < screen.height - 1) {
