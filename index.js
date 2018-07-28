@@ -171,7 +171,8 @@ mainWindow.append(textArea);
 
 textArea.on('focus', function () {
     //TODO: This should move the cursor to the start of the text box (somehow)
-    screen.render();
+    program.cursorPrecedingLine(5)
+    // screen.render();
     // Destroy the introBox completely
     introBox = null;
 });
@@ -208,7 +209,9 @@ textArea.key('enter', () => {
     // TODO: This should intelligently insert a \n and flow any text into the next line
     // TODO: this should NOT insert a line at the bottom but on the cursor pos.y + 1, shifting the entire text
     program.getCursor((err, data) => {
-        textArea.insertLine(data.y - 2, `test ${data.y}`);
+        // This sort of works, could use better logic
+        textArea.insertLine(data.y - 2, '');
+        program.cursorDown();
         screen.render();
     });
 });
@@ -229,41 +232,7 @@ textArea.key(['a', 'b'], (ch, key) => {
 
 textArea.key('backspace', () => {
     program.getCursor((err, data) => {
-        if (data.x > 1) {
-            // Get the line that the cursor is sitting on minus the borders of the UI/screen
-            let currentLineText = textArea.getLine(data.y - 3);
-            if (currentLineText.length >= 1) {
-                // If cursor is at the end of the current line
-                if (data.x == currentLineText.length + 2) {
-                    textArea.setLine(data.y - 3, currentLineText.substring(0, currentLineText.length - 1));
-                } else {
-                    // Else, a splice is needed rather than a removal
-                    // Find the cursor position relative to the text
-                    // Get the current cursor pos.x - 2 for finding which character to slice within the string minus the border
-                    let backspaceIndex = data.x - 2;
-                    //TODO: FIX! This does some weird stuff with the cursor where it resets on every backspace
-                    // it may have something to do with the rendering procedure
-                    textArea.setLine(data.y - 3, currentLineText.substring(0, backspaceIndex - 1) + currentLineText.substring(backspaceIndex, currentLineText.length));
-                    // Set the cursor back to where the last character was removed, even after a reset
-                    screen.render();
-                    program.cursorBackward(currentLineText.length - currentLineText.substring(0, backspaceIndex).length);
-                    screen.render();
-                }
-                program.cursorBackward();
-            }
-            // Else the cursor needs to flow up to the next line and backspace the previous line!
-            else if (currentLineText.length < 1 && textArea.getLines().length > 1) {
-                // Reflow to the next line
-                textArea.deleteLine(data.y - 3);
-                // TODO: figure out why this wraps to the bottom line if in the middle of the text box
-                let preceedingLineText = textArea.getLine(data.y - 4);
-                // Move the cursor forward the length of the text + 1 for the UI border
-                program.cursorForward(preceedingLineText.length + 1);
-                program.cursorUp();
-            }
-            // Always render the screen on character changes
-        }
-        screen.render();
+        keyHandlers.backspaceHandler(data, program, screen, textArea);
     });
 });
 
