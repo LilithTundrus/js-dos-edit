@@ -7,7 +7,6 @@
 const blessed = require('neo-blessed');
 let program = blessed.program();
 
-
 // Require the class created for the introduction box object that appears first on start
 const IntroBox = require('./intro-box');
 
@@ -18,12 +17,7 @@ const keyHandlers = require('./keyHandlers');
 let screen = blessed.screen({
     smartCSR: true,
     autoPadding: true,
-    program: program,
-    cursor: {
-        artificial: true,
-        shape: 'line',
-        blink: false
-    }
+    program: program
 });
 
 // Set the title of the terminal window (if any)
@@ -65,11 +59,10 @@ This is likely what will need the most intelligent code to work properly. A like
 address each line as an individual text area and then always know what line the current cursor position 
 is on
 */
-
 // NOTE: Alt codes like ↑ work in blessed!
 // TODO: Document everything done here -- this library has no documentation internally
 // TODO: Scrollbars should have up/down arrows and be all the way to the right of the screen instead of right - 1
-// TODO: figure out why the cursor movements aren't working 100% right (I think it's that the y offsets are off)
+// TODO: support files being opened from the command line
 
 // Create the main box, this should mostly be void of style/borders and just act as the primary container
 let mainWindow = blessed.box({
@@ -181,6 +174,8 @@ textArea.on('focus', function () {
         program.cursorForward(1);
         program.cursorDown(2);
     });
+    // Reset the content of the statusBar (the numbers are placeholders)
+    // TODO: make the numbers + filename no longer be placeholders
     statusBar.setContent(`Unsaved Document\t\t\t< Press Ctrl + W to quit >\t\t\t Line 0 | Col 0`)
     screen.render()
     // Destroy the introBox completely
