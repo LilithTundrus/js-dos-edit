@@ -28,6 +28,8 @@ let screen = blessed.screen({
 // Set the title of the terminal window (if any)
 screen.title = 'EDIT - untitled';
 
+let validKeys = ['space', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', , , , , , , , , , , , , , , , , , , , , , , , , , , , , ,];
+
 // Our menubar needs to look like this (the brackets meaning the highlighted character for alt + letter): 
 // [F]ile [E]dit [S}earch [V]iew [O]ptions [H]elp
 
@@ -226,14 +228,15 @@ textArea.key('enter', () => {
     });
 });
 
-textArea.key(['a', 'b'], (ch, key) => {
+textArea.key(validKeys, (ch, key) => {
     // TODO: Make sure that if autoreflow is off (it is by default) that the text box horizontally
     // scrolls accordingly
-    // Eventually, this need to be able to get the cursor location and go through a series
+    // TODO: Eventually, this need to be able to get the cursor location and go through a series
     // of steps to determine if text can be entered or if it is to be overflowed
 
     // Eventually this should only deal with the CURRENT line
     textArea.setText(textArea.content + ch);
+    if (key.full == 'space') program.cursorForward();
     // Get the current line value + text
     // Add the character to the end of the line if cursor pos is at the end of the current line
     // Else, insert the character at the current cursor position
