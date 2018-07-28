@@ -170,9 +170,18 @@ screen.append(statusBar);
 mainWindow.append(textArea);
 
 textArea.on('focus', function () {
-    //TODO: This should move the cursor to the start of the text box (somehow)
-    program.cursorPrecedingLine(5)
-    // screen.render();
+    //TODO: When a file is opened, start at the top of the first line, but at the end
+    screen.render();
+    // Get the top and bottom + left/right of the screen to reset the cursor
+    program.getCursor(function (err, data) {
+        // pull the cursor all the way to the top left no matter where it is
+        program.cursorUp(screen.height);
+        program.cursorBackward(screen.width);
+        // Put the cursor at line 1 column one of the editing window
+        program.cursorForward(1);
+        program.cursorDown(2);
+    });
+    screen.render()
     // Destroy the introBox completely
     introBox = null;
 });
@@ -188,14 +197,14 @@ textArea.key('right', () => {
     // This callback returns an err and data object, the data object has the x position of cursor we need to poll
     program.getCursor(function (err, data) {
         keyHandlers.rightArrowHandler(data, program, screen, textArea);
-    })
+    });
 });
 
 textArea.key('up', () => {
     // This callback returns an err and data object, the data object has the y position of cursor we need to poll
     program.getCursor((err, data) => {
         keyHandlers.upArrowHandler(data, program, screen, textArea);
-    })
+    });
 });
 
 textArea.key('down', () => {

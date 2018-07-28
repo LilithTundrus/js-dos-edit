@@ -68,7 +68,6 @@ class IntroBox {
             this.introBox.hide();
             this.introBox.destroy();
             nextFocusElement.focus();
-            parent.render();
         });
     }
 }

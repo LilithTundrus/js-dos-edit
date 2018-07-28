@@ -76,13 +76,13 @@ function downArrowHandler(cursor, program, screen, textArea) {
 
         // Get the line one above current y position (relative to borders, etc.)
         let nextLineText = textArea.getLine(cursor.y - 2);
-        // Get the current line for comparison
+        // Get the current line for comparison (one below the previous line)
         let currentLineText = textArea.getLine(cursor.y - 3);
 
-        // Don't allow the cursor to move beyond the next line if it's 'empty'
-        // Empty means the same line shows up each time, returned from the textArea check
-        // This likely needs a better, stronger check
+        // Don't allow the cursor to move beyond the next line if it's 'empty'. Empty means the same line shows up each time, returned from the textArea check
+        // TODO: This likely needs a better, stronger check
         let allLinesText = textArea.getLines();
+        // If the last entry in the array of lines equals what the cursor line currently is AND the array is at the length of the line cursor is on
         if (currentLineText == allLinesText[allLinesText.length - 1] && allLinesText.length - 1 == cursor.y - 3) return;
 
         // If the next line is longer than the current
@@ -104,7 +104,7 @@ function downArrowHandler(cursor, program, screen, textArea) {
     }
 }
 
-// TODO: on an 'empty' line removal, don't move the cursor back, it should stay in the same spot
+// TODO: Fix the backspaces being off/weird
 function backspaceHandler(cursor, program, screen, textArea) {
     if (cursor.x > 1) {
         // Get the line that the cursor is sitting on minus the borders of the UI/screen
@@ -134,7 +134,7 @@ function backspaceHandler(cursor, program, screen, textArea) {
             textArea.deleteLine(cursor.y - 3);
             // TODO: figure out why this wraps to the bottom line if in the middle of the text box
             let preceedingLineText = textArea.getLine(cursor.y - 4);
-            // Move the cursor forward the length of the text + 1 for the UI border
+            // Move the cursor forward the length of the text + 1 for the UI border if not empty
             if (preceedingLineText.length > 1) {
                 program.cursorForward(preceedingLineText.length + 1);
             }
