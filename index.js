@@ -28,7 +28,8 @@ let screen = blessed.screen({
 // Set the title of the terminal window (if any)
 screen.title = 'EDIT - untitled';
 
-let validKeys = ['space', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', , , , , , , , , , , , , , , , , , , , , , , , , , , , , ,];
+// There's likely a better way to just read all keys but for now this works
+let validKeys = ['space', 'tab', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', ',', '.', '/', '`', 'one', /*'2', '3', '4', '5', '6', '7', '8', '9', '0'*/, , , , , , , , , , , , , , , , ,];
 
 // Our menubar needs to look like this (the brackets meaning the highlighted character for alt + letter): 
 // [F]ile [E]dit [S}earch [V]iew [O]ptions [H]elp
@@ -174,7 +175,7 @@ textArea.on('focus', function () {
     screen.render();
     // Get the top and bottom + left/right of the screen to reset the cursor
     program.getCursor(function (err, data) {
-        // pull the cursor all the way to the top left no matter where it is
+        // Pull the cursor all the way to the top left no matter where it is
         program.cursorUp(screen.height);
         program.cursorBackward(screen.width);
         // Put the cursor at line 1 column one of the editing window
@@ -183,7 +184,7 @@ textArea.on('focus', function () {
     });
     // Reset the content of the statusBar (the numbers are placeholders)
     // TODO: make the numbers + filename no longer be placeholders
-    statusBar.setContent(`Unsaved Document\t\t\t< Press Ctrl + W to quit >\t\t\t Line 0 | Col 0`)
+    statusBar.setContent(`Unsaved Document\t\t\t< Press Ctrl + W to quit >\t\t\t Line 1 | Col 1`);
     screen.render()
     // Destroy the introBox completely
     introBox = null;
@@ -233,15 +234,24 @@ textArea.key(validKeys, (ch, key) => {
     // scrolls accordingly
     // TODO: Eventually, this need to be able to get the cursor location and go through a series
     // of steps to determine if text can be entered or if it is to be overflowed
+    // TODO: handle all special keys that are managed elsehwere
 
     // Eventually this should only deal with the CURRENT line
-    textArea.setText(textArea.content + ch);
+    if (!/^[\x00-\x08\x0b-\x0c\x0e-\x1f\x7f]$/.test(ch)) {
+        textArea.setText(textArea.content + ch);
+    }
     if (key.full == 'space') program.cursorForward();
+    program.tabSet()
+    // cursorForwardTab doesn't actually seem to insert a \t correctly, so it's done by advancing the cursor
+    // by a tab width of 4 (that could start a war later with tabs v spaces)
+    if (key.full == 'tab') program.cursorForward(4);
+
     // Get the current line value + text
     // Add the character to the end of the line if cursor pos is at the end of the current line
     // Else, insert the character at the current cursor position
     screen.render();
 });
+
 
 textArea.key('backspace', () => {
     program.getCursor((err, data) => {
