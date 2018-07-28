@@ -40,9 +40,7 @@ class IntroBox {
             content: 'Welcome to JS DOS Edit\n\nPlease note that this is still in early development!',
         });
 
-        // TODO: have this set the status bar up to say Enter=OK
-
-        // Append a button to the box
+        // Create a button to append to the message box
         let button = blessed.button({
             parent: this.introBox,
             // Using extended characters here
@@ -61,11 +59,9 @@ class IntroBox {
 
         // Append and then focus the button
         this.introBox.append(button);
-        // Set the status bar to what the user can do
-        statusBar.setContent(`Enter=OK`)
-
-        // Force the button to be the focused element
         button.focus();
+        // Set the status bar to what the user can do
+        statusBar.setContent(`Enter=OK`);
 
         // On enter key, hide and destroy this box as it's no longer needed and focus the next element
         button.key(['enter'], () => {
