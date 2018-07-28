@@ -14,7 +14,7 @@ class IntroBox {
      * @param {*} nextFocusElement
      * @memberof IntroBox
      */
-    constructor(parent, nextFocusElement) {
+    constructor(parent, nextFocusElement, statusBar) {
         this.parent = parent;
         this.nextFocusElement = nextFocusElement;
         // Create the introBox element and return it using the parent
@@ -61,6 +61,10 @@ class IntroBox {
 
         // Append and then focus the button
         this.introBox.append(button);
+        // Set the status bar to what the user can do
+        statusBar.setContent(`Enter=OK`)
+
+        // Force the button to be the focused element
         button.focus();
 
         // On enter key, hide and destroy this box as it's no longer needed and focus the next element

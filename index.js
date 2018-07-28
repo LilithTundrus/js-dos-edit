@@ -156,7 +156,7 @@ let textArea = blessed.text({
 });
 
 // Create an instance of an IntroBox and passing the screen as the parent
-let introBox = new IntroBox(screen, textArea).introBox;
+let introBox = new IntroBox(screen, textArea, statusBar).introBox;
 
 // Append the needed items to the screen
 screen.append(mainWindow);
@@ -181,6 +181,7 @@ textArea.on('focus', function () {
         program.cursorForward(1);
         program.cursorDown(2);
     });
+    statusBar.setContent(`Unsaved Document\t\t\t< Press Ctrl + W to quit >\t\t\t Line 0 | Col 0`)
     screen.render()
     // Destroy the introBox completely
     introBox = null;
