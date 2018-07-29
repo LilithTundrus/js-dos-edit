@@ -4,8 +4,11 @@
 // Main entry point for the JS-DOS editor
 // Eventually this will just return an instantiated editor class or something like that
 
+const fs = require('fs');
 const blessed = require('neo-blessed');
-let program = blessed.program();
+let program = blessed.program({
+    useBuffer: true,
+});
 
 // Require the class created for the introduction box object that appears first on start
 const IntroBox = require('./intro-box');
@@ -173,20 +176,22 @@ textArea.on('focus', function () {
     program.cursorUp(screen.height);
     program.cursorBackward(screen.width);
     // Put the cursor at line 1 column one of the editing window
-    program.cursorForward(1);
-    program.cursorDown(2);
-    // Reset the content of the statusBar (the numbers are placeholders)
-    // TODO: make the numbers + filename no longer be placeholders
-    statusBar.setContent(`Unsaved Document\t\t\t< Press Ctrl + W to quit >\t\t\t Line 1 | Col 1`);
-    screen.render();
-    // Destroy the introBox completely
-    introBox = null;
+    program.getCursor((err, data) => {
+        program.cursorForward(1);
+        program.cursorDown(2);
+        // Reset the content of the statusBar (the numbers are placeholders)
+        // TODO: make the numbers + filename no longer be placeholders
+        statusBar.setContent(`Unsaved Document\t\t\t< Press Ctrl + W to quit >\t\t\t Line 1 | Col 1`);
+        screen.render();
+        // Destroy the introBox completely
+        introBox = null;
+    })
 });
 
 program.key('left', () => {
     // This callback returns an err and data object, the data object has the x position of cursor we need to poll
     program.getCursor((err, data) => {
-        keyHandlers.leftArrowHandler(data, program, screen, textArea);
+        if (data) keyHandlers.leftArrowHandler(data, program, screen, textArea);
     });
 });
 
@@ -223,10 +228,7 @@ textArea.key('enter', () => {
 });
 
 textArea.on('keypress', (ch, key) => {
-    if (key.name === 'left' || key.name === 'right' || key.name === 'up' || key.name === 'down') {
-        return;
-    }
-
+    screen.render()
     // Return, these are keys we can handle later
     if (ch == undefined) return;
     // Intelligently handle each keypress, even the weird/undefined ones
@@ -244,13 +246,14 @@ textArea.on('keypress', (ch, key) => {
     if (key.full == 'tab') program.cursorForward(4);
     if (!/^[\x00-\x08\x0b-\x0c\x0e-\x1f\x7f]$/.test(ch)) {
         textArea.setText(textArea.content + ch);
-        screen.render()
+        screen.render();
     }
-    // screen.render();
+    screen.render();
 });
 
 textArea.key('backspace', () => {
     program.getCursor((err, data) => {
+        if (err) return
         return keyHandlers.backspaceHandler(data, program, screen, textArea);
     });
 });
@@ -258,6 +261,9 @@ textArea.key('backspace', () => {
 // Quit on Control-W
 textArea.key(['C-w'], () => {
     return process.exit(0);
+});
+textArea.key(['C-s'], function (ch, key) {
+    fs.writeFileSync('test', textArea.content);
 });
 
 // Render the screen
