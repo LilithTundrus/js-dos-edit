@@ -29,9 +29,6 @@ let screen = blessed.screen({
 // Set the title of the terminal window (if any)
 screen.title = 'EDIT - untitled';
 
-// There's likely a better way to just read all keys but for now this works
-let validKeys = ['space', 'tab', 'a', 'b', 'c',/* 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', ',', '.', '/', '`', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', ';'*/, , , , , , , , , , , , , , , ,];
-
 // Our menubar needs to look like this (the brackets meaning the highlighted character for alt + letter): 
 // [F]ile [E]dit [S}earch [V]iew [O]ptions [H]elp
 
@@ -71,7 +68,8 @@ is on
 // NOTE: Alt codes like ↑ work in blessed!
 // TODO: Document everything done here -- this library has no documentation internally
 // TODO: Scrollbars should have up/down arrows and be all the way to the right of the screen instead of right - 1
-// TODO: support files being opened from the command line
+// TODO: support files being opened from the command line'
+// TODO: get basic editing capability working
 
 // Create the main box, this should mostly be void of style/borders and just act as the primary container
 let mainWindow = blessed.box({
@@ -125,7 +123,7 @@ let statusBar = blessed.box({
 });
 
 // This will likely become a regular box at some point that we end up customizing for editor needs
-let textArea = blessed.text({
+let textArea = blessed.box({
     top: 1,
     keyable: true,
     label: 'UNTITLED1',
@@ -148,6 +146,7 @@ let textArea = blessed.text({
     border: {
         type: 'line'
     },
+    scrollable: true,
     scrollbar: {
         ch: '█',
         track: {
@@ -228,31 +227,6 @@ textArea.key('enter', () => {
     });
 });
 
-// textArea.key(validKeys, (ch, key) => {
-//     // TODO: Make sure that if autoreflow is off (it is by default) that the text box horizontally
-//     // scrolls accordingly
-//     // TODO: Eventually, this need to be able to get the cursor location and go through a series
-//     // of steps to determine if text can be entered or if it is to be overflowed
-//     // TODO: handle all special keys that are managed elsehwere
-
-//     // Eventually this should only deal with the CURRENT line
-//     if (ch) {
-//         if (!/^[\x00-\x08\x0b-\x0c\x0e-\x1f\x7f]$/.test(ch)) {
-//             textArea.setText(textArea.content + ch);
-//         }
-//     }
-
-//     if (key.full == 'space') program.cursorForward();
-//     // cursorForwardTab doesn't actually seem to insert a \t correctly, so it's done by advancing the cursor
-//     // by a tab width of 4 (that could start a war later with tabs v spaces)
-//     if (key.full == 'tab') program.cursorForward(4);
-
-//     // Get the current line value + text
-//     // Add the character to the end of the line if cursor pos is at the end of the current line
-//     // Else, insert the character at the current cursor position
-//     screen.render();
-// });
-
 textArea.on('keypress', (ch, key) => {
     if (key.name === 'left' || key.name === 'right' || key.name === 'up' || key.name === 'down') {
         return;
@@ -269,11 +243,15 @@ textArea.on('keypress', (ch, key) => {
 
     // Eventually this should only deal with the CURRENT line
     if (key.name == 'enter') return;
+    if (key.full == 'space') program.cursorForward();
+    // cursorForwardTab doesn't actually seem to insert a \t correctly, so it's done by advancing the cursor
+    // by a tab width of 4 (that could start a war later with tabs v spaces)
+    if (key.full == 'tab') program.cursorForward(4);
     if (!/^[\x00-\x08\x0b-\x0c\x0e-\x1f\x7f]$/.test(ch)) {
         textArea.setText(textArea.content + ch);
         screen.render()
     }
-    screen.render();
+    // screen.render();
 });
 
 textArea.key('backspace', () => {
