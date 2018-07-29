@@ -144,7 +144,7 @@ function backspaceHandler(cursor, program, screen, textArea) {
         }
         // Always render the screen on character changes
     }
-    screen.render();
+    return screen.render();
 }
 
 module.exports.rightArrowHandler = rightArrowHandler;

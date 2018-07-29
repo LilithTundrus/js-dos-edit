@@ -33,10 +33,8 @@ screen.title = 'EDIT - untitled';
 // [F]ile [E]dit [S}earch [V]iew [O]ptions [H]elp
 
 // The menubar should go FIRST, even before the main editing box
-// This may be a challenge depending on how blessed works
 
 // After the menubar we'll want our main window
-
 // Inside that window will be the text entry box
 // This box will have the filename as the name of the title
 // We'll want to keep the cursor bound to this box
@@ -61,9 +59,6 @@ cursor coordinate reporting (which is annoying)
 The text entry area will be the most logically complex since things like not allowing the END
 key to go to the end of the text area but to the end of the text ON that line
 
-This is likely what will need the most intelligent code to work properly. A likely solution would be to
-address each line as an individual text area and then always know what line the current cursor position 
-is on
 */
 // NOTE: Alt codes like ↑ work in blessed!
 // TODO: Document everything done here -- this library has no documentation internally
