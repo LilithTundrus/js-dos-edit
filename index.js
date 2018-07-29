@@ -68,6 +68,7 @@ key to go to the end of the text area but to the end of the text ON that line
 // TODO: Scrollbars should have up/down arrows and be all the way to the right of the screen instead of right - 1
 // TODO: support files being opened from the command line'
 // TODO: get basic editing capability working
+// TODO: fix a 'possible' memory leak caused by blessed's getCursor function
 
 // Create the main box, this should mostly be void of style/borders and just act as the primary container
 let mainWindow = blessed.box({
@@ -104,6 +105,7 @@ let menubar = blessed.box({
 });
 
 let statusBar = blessed.box({
+    // the bottom of the screen, but up by one
     bottom: 'bottom' - 1,
     left: 'center',
     width: '100%',
@@ -121,7 +123,7 @@ let statusBar = blessed.box({
 });
 
 // This will likely become a regular box at some point that we end up customizing for editor needs
-let textArea = blessed.box({
+let textArea = blessed.text({
     top: 1,
     keyable: true,
     label: 'UNTITLED1',
@@ -170,22 +172,23 @@ mainWindow.append(textArea);
 
 textArea.on('focus', function () {
     //TODO: When a file is opened, start at the top of the first line, but at the end
-    screen.render();
+    // screen.render();
     // Get the top and bottom + left/right of the screen to reset the cursor
     // Pull the cursor all the way to the top left no matter where it is
-    program.cursorUp(screen.height);
-    program.cursorBackward(screen.width);
-    // Put the cursor at line 1 column one of the editing window
     program.getCursor((err, data) => {
+        program.cursorUp(screen.height);
+        program.cursorBackward(screen.width);
+        // Put the cursor at line 1 column one of the editing window
         program.cursorForward(1);
         program.cursorDown(2);
-        // Reset the content of the statusBar (the numbers are placeholders)
-        // TODO: make the numbers + filename no longer be placeholders
-        statusBar.setContent(`Unsaved Document\t\t\t< Press Ctrl + W to quit >\t\t\t Line 1 | Col 1`);
         screen.render();
-        // Destroy the introBox completely
-        introBox = null;
-    })
+    });
+    // Reset the content of the statusBar (the numbers are placeholders)
+    // TODO: make the numbers + filename no longer be placeholders
+    statusBar.setContent(`Unsaved Document\t\t\t< Press Ctrl + W to quit >\t\t\t Line 1 | Col 1`);
+    screen.render();
+    // Destroy the introBox completely
+    introBox = null;
 });
 
 program.key('left', () => {
@@ -227,8 +230,23 @@ textArea.key('enter', () => {
     });
 });
 
+// These two methods don't work just yet
+textArea.key('pageup', function () {
+    textArea.scroll(-1, true);
+    screen.render();
+});
+
+textArea.key('pagedwon', function () {
+    textArea.scroll(1, true);
+    screen.render();
+});
+
+
+
+// For some reason the keypress gets cursor coordinates written to it, or it's registered as a keu??
+// I think this works off of some thing where the coordinates are literally written to the process.stdin somehow
 textArea.on('keypress', (ch, key) => {
-    screen.render()
+    // screen.render();
     // Return, these are keys we can handle later
     if (ch == undefined) return;
     // Intelligently handle each keypress, even the weird/undefined ones
@@ -245,6 +263,7 @@ textArea.on('keypress', (ch, key) => {
     // by a tab width of 4 (that could start a war later with tabs v spaces)
     if (key.full == 'tab') program.cursorForward(4);
     if (!/^[\x00-\x08\x0b-\x0c\x0e-\x1f\x7f]$/.test(ch)) {
+        // if (textArea.content.length + 1 !== textArea.content.length + ch.length) return;
         textArea.setText(textArea.content + ch);
         screen.render();
     }
