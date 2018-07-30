@@ -6,9 +6,7 @@
 
 const fs = require('fs');
 const blessed = require('neo-blessed');
-let program = blessed.program({
-    useBuffer: true,
-});
+let program = blessed.program();
 
 // Require the class created for the introduction box object that appears first on start
 const IntroBox = require('./intro-box');
@@ -26,7 +24,6 @@ let screen = blessed.screen({
         shape: 'line',
         blink: false
     },
-    fullUnicode: true
 });
 
 // Set the title of the terminal window (if any)
@@ -262,11 +259,9 @@ textArea.on('keypress', (ch, key) => {
     // cursorForwardTab doesn't actually seem to insert a \t correctly, so it's done by advancing the cursor
     // by a tab width of 4 (that could start a war later with tabs v spaces)
     if (key.full == 'tab') program.cursorForward(4);
-    if (!/^[\x00-\x08\x0b-\x0c\x0e-\x1f\x7f]$/.test(ch)) {
-        // if (textArea.content.length + 1 !== textArea.content.length + ch.length) return;
-        textArea.setText(textArea.content + ch);
-        screen.render();
-    }
+
+    textArea.setText(textArea.content + ch);
+
     screen.render();
 });
 
