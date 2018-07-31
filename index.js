@@ -61,6 +61,9 @@ key to go to the end of the text area but to the end of the text ON that line
 
 */
 // NOTE: Alt codes like ↑ work in blessed!
+// NOTE: The version of blessed we're using is modified, the keys.js file has a regex to 
+// ignore a couple extra things (mainly cursor reporting bullshit that's just, not handled by blessed.)
+
 // TODO: Document everything done here -- this library has no documentation internally
 // TODO: Scrollbars should have up/down arrows and be all the way to the right of the screen instead of right - 1
 // TODO: support files being opened from the command line'
@@ -191,6 +194,8 @@ textArea.on('focus', function () {
 program.key('left', () => {
     // This callback returns an err and data object, the data object has the x position of cursor we need to poll
     program.getCursor((err, data) => {
+        if (err) return;
+        // Use the custom left keyHandler, passing the needed objects for blessed operations
         if (data) keyHandlers.leftArrowHandler(data, program, screen, textArea);
     });
 });
@@ -198,6 +203,8 @@ program.key('left', () => {
 textArea.key('right', () => {
     // This callback returns an err and data object, the data object has the x position of cursor we need to poll
     program.getCursor(function (err, data) {
+        if (err) return;
+        // Use the custom right keyHandler, passing the needed objects for blessed operations
         keyHandlers.rightArrowHandler(data, program, screen, textArea);
     });
 });
@@ -205,6 +212,8 @@ textArea.key('right', () => {
 textArea.key('up', () => {
     // This callback returns an err and data object, the data object has the y position of cursor we need to poll
     program.getCursor((err, data) => {
+        if (err) return;
+        // Use the custom up keyHandler, passing the needed objects for blessed operations
         keyHandlers.upArrowHandler(data, program, screen, textArea);
     });
 });
@@ -212,10 +221,14 @@ textArea.key('up', () => {
 textArea.key('down', () => {
     // This callback returns an err and data object, the data object has the y position of cursor we need to poll
     program.getCursor((err, data) => {
+        if (err) return;
+        // Use the custom down keyHandler, passing the needed objects for blessed operations
         keyHandlers.downArrowHandler(data, program, screen, textArea);
     });
 });
 
+// For some reason after changing some internal code the enter key is automatic now?
+// It may have something to do with the fact that keypress listens for everything and inserts a \n on an enter key by default
 textArea.key('enter', () => {
     // TODO: This should intelligently insert a \n and flow any text into the next line
     // TODO: this should NOT insert a line at the bottom but on the cursor pos.y + 1, shifting the entire text
@@ -238,12 +251,9 @@ textArea.key('pagedwon', function () {
     screen.render();
 });
 
-
-
 // For some reason the keypress gets cursor coordinates written to it, or it's registered as a keu??
 // I think this works off of some thing where the coordinates are literally written to the process.stdin somehow
 textArea.on('keypress', (ch, key) => {
-    // screen.render();
     // Return, these are keys we can handle later
     if (ch == undefined) return;
     // Intelligently handle each keypress, even the weird/undefined ones
@@ -261,13 +271,13 @@ textArea.on('keypress', (ch, key) => {
     if (key.full == 'tab') program.cursorForward(4);
 
     textArea.setText(textArea.content + ch);
-
     screen.render();
 });
 
 textArea.key('backspace', () => {
     program.getCursor((err, data) => {
-        if (err) return
+        if (err) return;
+        // Use the custom backspace keyHandler, passing the needed objects for blessed operations
         return keyHandlers.backspaceHandler(data, program, screen, textArea);
     });
 });
@@ -277,7 +287,7 @@ textArea.key(['C-w'], () => {
     return process.exit(0);
 });
 textArea.key(['C-s'], function (ch, key) {
-    fs.writeFileSync('test', textArea.content);
+    fs.writeFileSync('test', textArea.content.replace('', ''));
 });
 
 // Render the screen
