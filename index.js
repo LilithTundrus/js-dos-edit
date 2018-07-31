@@ -68,6 +68,11 @@ key to go to the end of the text area but to the end of the text ON that line
 // TODO: Scrollbars should have up/down arrows and be all the way to the right of the screen instead of right - 1
 // TODO: support files being opened from the command line'
 // TODO: get basic editing capability working (without weird bugs/issues)
+// TODO: refactor existing code
+// TODO: get the text editing aspects to act like VS code (reflowing, etc.)
+// TODO: figure how to handle lines being longer than the window width 
+// TODO: get scolling working (also move the scrollbar to the right )
+// TODO: implement a vertical scrollbard (looking at the blessed scrollbar code could yield assistance)
 
 // Create the main box, this should mostly be void of style/borders and just act as the primary container
 let mainWindow = blessed.box({
@@ -229,11 +234,9 @@ textArea.key('down', () => {
 // For some reason after changing some internal code the enter key is automatic now?
 // It may have something to do with the fact that keypress listens for everything and inserts a \n on an enter key by default
 textArea.key('enter', () => {
-    // TODO: This should intelligently insert a \n and flow any text into the next line
-    program.getCursor((err, data) => {
-        program.cursorDown();
-        screen.render();
-    });
+    // This should be fine for now, likely need to do more checks in the future
+    program.cursorDown();
+    screen.render();
 });
 
 //TODO: These two methods don't work just yet
@@ -269,7 +272,7 @@ textArea.on('keypress', (ch, key) => {
 
     // TODO: handle inserting text between words instead of only being able to append
     // (kind of like how backspace currently works)
-    
+
     screen.render();
 });
 
