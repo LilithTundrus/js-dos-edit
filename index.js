@@ -104,7 +104,7 @@ let menubar = blessed.box({
     content: `{red-fg}F{/red-fg}ile {red-fg}E{/red-fg}dit {red-fg}V{/red-fg}iew {red-fg}F{/red-fg}ind {red-fg}O{/red-fg}ptions`
 });
 
-let statusBar = blessed.box({
+let statusBar = blessed.text({
     // the bottom of the screen, but up by one
     bottom: 'bottom' - 1,
     left: 'center',
@@ -240,7 +240,7 @@ textArea.key('enter', () => {
     });
 });
 
-// These two methods don't work just yet
+//TODO: These two methods don't work just yet
 textArea.key('pageup', function () {
     textArea.scroll(-1, true);
     screen.render();
@@ -271,6 +271,9 @@ textArea.on('keypress', (ch, key) => {
     if (key.full == 'tab') program.cursorForward(4);
 
     textArea.setText(textArea.content + ch);
+    program.saveCursor();
+    updateStatusBarRowsAndColumns('test');
+    program.resetCursor();
     screen.render();
 });
 
@@ -282,11 +285,22 @@ textArea.key('backspace', () => {
     });
 });
 
+// Internal function for getting the Line/Column count for the editing window
+// TODO: handle scrolling/text bigger than the editing window
+// TODO: handle the filename
+function updateStatusBarRowsAndColumns(documentName) {
+    program.getCursor((err, data) => {
+        let currentLineTextLength = textArea.getLine(data.y - 3).length;
+        statusBar.setContent(`${documentName}\t\t\t< Press Ctrl + W to quit >\t\t\t Line ${currentLineTextLength} | Col ${data.x - 1}`);
+    });
+}
+
 // Quit on Control-W
 textArea.key(['C-w'], () => {
     return process.exit(0);
 });
 textArea.key(['C-s'], function (ch, key) {
+    // Remove the cursor from the text that for SOME REASON shows up
     fs.writeFileSync('test', textArea.content.replace('', ''));
 });
 
