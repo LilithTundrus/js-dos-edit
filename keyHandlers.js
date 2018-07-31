@@ -52,7 +52,7 @@ function upArrowHandler(cursor, program, screen, textArea) {
         let currentLineText = textArea.getLine(cursor.y - 3);
 
         // If the previous line is longer than the current
-        if (previouslineText.length > cursor.x - 1 && cursor.x - 1 > currentLineText.length) {
+        if (previouslineText.length > cursor.x - 1 && cursor.x - 1 > currentLineText.length && cursor.x > 2) {
             // Find the difference between the current cursor.x and the length of the line above
             program.cursorForward(previouslineText.length - cursor.x + 2);
             program.cursorUp();
@@ -60,7 +60,7 @@ function upArrowHandler(cursor, program, screen, textArea) {
         } else if (previouslineText.length + 2 == cursor.x && currentLineText.length + 2 == cursor.x) {
             program.cursorUp();
             // If the cursor is ahead of the next line up
-        } else if (previouslineText.length < cursor.x - 1) {
+        } else if (previouslineText.length < cursor.x - 1 && cursor.x > 2) {
             program.cursorBackward(cursor.x - previouslineText.length - 2);
             program.cursorUp();
             // Else, just put the cursor up one -- it's in the middle and there is text above

@@ -67,8 +67,7 @@ key to go to the end of the text area but to the end of the text ON that line
 // TODO: Document everything done here -- this library has no documentation internally
 // TODO: Scrollbars should have up/down arrows and be all the way to the right of the screen instead of right - 1
 // TODO: support files being opened from the command line'
-// TODO: get basic editing capability working
-// TODO: fix a 'possible' memory leak caused by blessed's getCursor function
+// TODO: get basic editing capability working (without weird bugs/issues)
 
 // Create the main box, this should mostly be void of style/borders and just act as the primary container
 let mainWindow = blessed.box({
@@ -231,10 +230,7 @@ textArea.key('down', () => {
 // It may have something to do with the fact that keypress listens for everything and inserts a \n on an enter key by default
 textArea.key('enter', () => {
     // TODO: This should intelligently insert a \n and flow any text into the next line
-    // TODO: this should NOT insert a line at the bottom but on the cursor pos.y + 1, shifting the entire text
     program.getCursor((err, data) => {
-        // This sort of works, could use better logic
-        textArea.insertLine(data.y - 2, '');
         program.cursorDown();
         screen.render();
     });
@@ -254,14 +250,13 @@ textArea.key('pagedwon', function () {
 // For some reason the keypress gets cursor coordinates written to it, or it's registered as a keu??
 // I think this works off of some thing where the coordinates are literally written to the process.stdin somehow
 textArea.on('keypress', (ch, key) => {
-    // Return, these are keys we can handle later
+    // Return, these are keys we can handle later (undefined means it isn't a character)
     if (ch == undefined) return;
-    // Intelligently handle each keypress, even the weird/undefined ones
     // TODO: Make sure that if autoreflow is off (it is by default) that the text box horizontally
     // scrolls accordingly
     // TODO: Eventually, this need to be able to get the cursor location and go through a series
     // of steps to determine if text can be entered or if it is to be overflowed
-    // TODO: handle all special keys that are managed elsehwere
+    // TODO: handle all special keys that are managed elsehwere and just return
 
     // Eventually this should only deal with the CURRENT line
     if (key.name == 'enter') return;
@@ -271,9 +266,10 @@ textArea.on('keypress', (ch, key) => {
     if (key.full == 'tab') program.cursorForward(4);
 
     textArea.setText(textArea.content + ch);
-    program.saveCursor();
-    updateStatusBarRowsAndColumns('test');
-    program.resetCursor();
+
+    // TODO: handle inserting text between words instead of only being able to append
+    // (kind of like how backspace currently works)
+    
     screen.render();
 });
 
@@ -285,15 +281,18 @@ textArea.key('backspace', () => {
     });
 });
 
-// Internal function for getting the Line/Column count for the editing window
+// Function for getting the Line/Column count for the editing window
 // TODO: handle scrolling/text bigger than the editing window
 // TODO: handle the filename
-function updateStatusBarRowsAndColumns(documentName) {
-    program.getCursor((err, data) => {
-        let currentLineTextLength = textArea.getLine(data.y - 3).length;
-        statusBar.setContent(`${documentName}\t\t\t< Press Ctrl + W to quit >\t\t\t Line ${currentLineTextLength} | Col ${data.x - 1}`);
-    });
-}
+// TODO: fix this being weird and controlling the cursor, maybe a custom cursor save if we really fucking have to
+// function updateStatusBarRowsAndColumns(documentName) {
+//     program.getCursor((err, data) => {
+//         let currentLineTextLength = textArea.getLine(data.y - 3).length;
+//         statusBar.setContent(`${documentName}\t\t\t< Press Ctrl + W to quit >\t\t\t Line ${data.x - 1} | Col ${currentLineTextLength}`);
+//         program.restoreCursorA();
+//         screen.render();
+//     });
+// }
 
 // Quit on Control-W
 textArea.key(['C-w'], () => {
