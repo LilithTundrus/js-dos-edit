@@ -1,8 +1,7 @@
 // Using ES5 strict mode
 'use strict';
 
-// Main entry point for the JS-DOS editor
-// Eventually this will just return an instantiated editor class or something like that
+// This is the main entry point for the JS-DOS editor
 
 const fs = require('fs');
 const blessed = require('neo-blessed');
@@ -14,6 +13,12 @@ const IntroBox = require('./intro-box');
 const keyHandlers = require('./keyHandlers');
 // Require the set of keys to listen for on keypress event for keys to ignore that custom handlers listen for
 const customKeys = require('./handledKeysSet');
+
+// Import the custom modular blessed components
+const MainWindow = require('./mainWindow');
+const TextArea = require('./textArea');
+const MenuBar = require('./menuBar');
+const StatusBar = require('./statusBar');
 
 // Create a screen object to work with blessed
 let screen = blessed.screen({
@@ -30,12 +35,12 @@ let screen = blessed.screen({
 // Set the title of the terminal window (if any) -- this will eventually take cli arguments
 screen.title = 'EDIT - untitled';
 
-// The menubar needs to look like this (the brackets meaning the highlighted character for alt + letter): 
+// The menuBar needs to look like this (the brackets meaning the highlighted character for alt + letter): 
 // [F]ile [E]dit [S}earch [V]iew [O]ptions [H]elp
 
-// The menubar should go FIRST, even before the main editing box
+// The menuBar should go FIRST, even before the main editing box
 
-// After the menubar will be main window
+// After the menuBar will be main window
 // Inside that window will be the text entry box
 // This box will have the filename as the name of the title
 // The cursor will remain bound to this box
@@ -65,18 +70,15 @@ key to go to the end of the text area but to the end of the text ON that line
 // NOTE: The version of blessed we're using is modified, the keys.js file has a regex to 
 // ignore a couple extra things (mainly cursor reporting bullshit that's just, not handled by blessed.)
 
-// TODO: Document everything done here -- this library has no documentation internally
 // TODO: Scrollbars should have up/down arrows and be all the way to the right of the screen instead of right - 1
-// TODO: support files being opened from the command line'
-// TODO: get basic editing capability working (without weird bugs/issues)
-// TODO: refactor existing code
+// TODO: support files being opened from the command line
 // TODO: get the text editing aspects to act like VS code (reflowing, etc.)
 // TODO: figure how to handle lines being longer than the window width 
 // TODO: get scolling working (also move the scrollbar to the right )
 // TODO: implement a vertical scrollbard (looking at the blessed scrollbar code could yield assistance)
-// TODO: add more info to the statusbar area (if we can get the cursor to stop moving when it updates)
+// TODO: add more info to the statusBar area (if we can get the cursor to stop moving when it updates)
 // TODO: get scrolling working (may end up being really hard because of how text is edited)
-
+// TODO: figure out how to properly insert tabs
 /*
 Current working list:
 
@@ -85,105 +87,25 @@ actual text editing needs to be addressed. So I'll make sure that's perfect firs
 
 First basic editing controls, 
 then scrolling,
+then horizontal scrolling,
 then the rest
 
 For editing controls, the priorities are fixing backspace, getting basic entry to insert _per line_ not at the end of the file
 */
 
-// Create the main box, this should mostly be void of style/borders and just act as the primary container
-let mainWindow = blessed.box({
-    top: 'center',
-    left: 'center',
-    width: '100%',
-    height: '100%',
-    style: {
-        fg: 'white',
-        bg: 'black',
-    }
-});
-
-// Create the file menu box
-let menubar = blessed.box({
-    // The top should be the top of the screen
-    top: 'top',
-    // Always 100% of the screen width since it's a menu strip
-    width: '100%',
-    // Single height, since it's just a menu strip
-    height: 1,
-    tags: true,
-    // Pad the text for the menubar by 1 on each left/right
-    padding: {
-        left: 1,
-        right: 1
-    },
-    style: {
-        fg: 'black',
-        bg: 'light-grey',
-    },
-    // Formatted for the sake of clarity (red on the alt + key activator for the menu)
-    content: `{red-fg}F{/red-fg}ile {red-fg}E{/red-fg}dit {red-fg}V{/red-fg}iew {red-fg}F{/red-fg}ind {red-fg}O{/red-fg}ptions`
-});
-
-let statusBar = blessed.text({
-    // The bottom of the screen, but up by one
-    bottom: 'bottom' - 1,
-    width: '100%',
-    height: 1,
-    tags: true,
-    padding: {
-        left: 1,
-        right: 1
-    },
-    style: {
-        fg: 'black',
-        bg: 'light-grey',
-    },
-    content: `Unsaved Document\t\t\t< Press Ctrl + W to quit >\t\t\t Line 0 | Col 0`
-});
-
-// This will be where the text being edited is displayed
-let textArea = blessed.text({
-    top: 1,
-    keyable: true,
-    label: 'UNTITLED1',
-    align: 'left',
-    width: '100%',
-    height: '100%-1',
-    // Don't capture SGR Blessed escape codes, that could cause issues
-    tags: false,
-    style: {
-        fg: 'bold',
-        bg: 'blue',
-        border: {
-            fg: 'light-grey',
-        },
-        label: {
-            fg: 'black',
-            bg: 'light-grey'
-        }
-    },
-    border: {
-        type: 'line'
-    },
-    scrollable: true,
-    scrollbar: {
-        ch: '█',
-        track: {
-            bg: 'black',
-            ch: '░'
-        },
-    },
-});
-
-// Create an instance of an IntroBox and passing the screen as the parent
+// Create instances of the UI elements, passing the screen as the parent
+let textArea = new TextArea(screen, 'UNTITLED').textArea;
+let mainWindow = new MainWindow(screen).mainWindow;
+let menuBar = new MenuBar(screen).menuBar;
+let statusBar = new StatusBar(screen).statusBar;
 let introBox = new IntroBox(screen, textArea, statusBar).introBox;
 
-// Append the needed items to the screen
+// Append the needed UI elements to the screen
 screen.append(mainWindow);
 // Make sure the intro box is shown in the front 
 screen.append(introBox);
 // These should stay part of the screen at all times, so it's appended to the screen
-screen.append(menubar);
+screen.append(menuBar);
 screen.append(statusBar);
 
 // Append the textArea to the mainWindow
@@ -210,7 +132,7 @@ textArea.on('focus', () => {
     introBox = null;
 });
 
-program.key('left', () => {
+textArea.key('left', () => {
     // This callback returns an err and data object, the data object has the x position of cursor we need to poll
     program.getCursor((err, data) => {
         if (err) return;
@@ -275,7 +197,7 @@ textArea.key('backspace', () => {
 
 // TODO: have this make sure it won't breach any bounds
 textArea.key('space', () => {
-    program.getCursor((err, cursor) => {
+    program.getCursor((err, data) => {
         if (err) return;
         // Use the custom space keyHandler, passing the needed objects for blessed operations
         return keyHandlers.spaceHandler(data, program, screen, textArea);
@@ -284,6 +206,7 @@ textArea.key('space', () => {
 
 textArea.key('tab', () => {
     // TODO: have this make sure it won't breach any bounds
+    // TODO: Figure out how to get this to use actual tabs
     // cursorForwardTab doesn't actually seem to insert a \t correctly, so it's done by advancing the cursor
     // by a tab width of 4 spaces
     textArea.setText(textArea.content + '    ');
@@ -343,7 +266,7 @@ textArea.on('keypress', (ch, key) => {
 textArea.key(['C-w'], () => {
     return process.exit(0);
 });
-textArea.key(['C-s'], function (ch, key) {
+textArea.key(['C-s'], (ch, key) => {
     // Remove the cursor from the text that for SOME REASON shows up
     fs.writeFileSync('test', textArea.content.replace('', ''));
 });
