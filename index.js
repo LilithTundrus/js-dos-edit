@@ -27,18 +27,18 @@ let screen = blessed.screen({
     },
 });
 
-// Set the title of the terminal window (if any)
+// Set the title of the terminal window (if any) -- this will eventually take cli arguments
 screen.title = 'EDIT - untitled';
 
-// Our menubar needs to look like this (the brackets meaning the highlighted character for alt + letter): 
+// The menubar needs to look like this (the brackets meaning the highlighted character for alt + letter): 
 // [F]ile [E]dit [S}earch [V]iew [O]ptions [H]elp
 
 // The menubar should go FIRST, even before the main editing box
 
-// After the menubar we'll want our main window
+// After the menubar will be main window
 // Inside that window will be the text entry box
 // This box will have the filename as the name of the title
-// We'll want to keep the cursor bound to this box
+// The cursor will remain bound to this box
 
 // The actual text entered is stored in lines, handled one at a time so the amount
 // of text being worked with at once stays low. 
@@ -77,6 +77,17 @@ key to go to the end of the text area but to the end of the text ON that line
 // TODO: add more info to the statusbar area (if we can get the cursor to stop moving when it updates)
 // TODO: get scrolling working (may end up being really hard because of how text is edited)
 
+/*
+Current working list:
+
+Right now I think the main idea is that before working on the rest of the text editor, the 
+actual text editing needs to be addressed. So I'll make sure that's perfect first
+
+First basic editing controls, 
+then scrolling,
+then the rest
+*/
+
 // Create the main box, this should mostly be void of style/borders and just act as the primary container
 let mainWindow = blessed.box({
     top: 'center',
@@ -93,9 +104,9 @@ let mainWindow = blessed.box({
 let menubar = blessed.box({
     // The top should be the top of the screen
     top: 'top',
-    left: 'center',
-    // Always 100% of the screen width since it's a file menu
+    // Always 100% of the screen width since it's a menu strip
     width: '100%',
+    // Single height, since it's just a menu strip
     height: 1,
     tags: true,
     // Pad the text for the menubar by 1 on each left/right
@@ -107,14 +118,14 @@ let menubar = blessed.box({
         fg: 'black',
         bg: 'light-grey',
     },
-    // Formatted for the sake of clarity
+    // Formatted for the sake of clarity (red on the alt + key activator for the menu)
     content: `{red-fg}F{/red-fg}ile {red-fg}E{/red-fg}dit {red-fg}V{/red-fg}iew {red-fg}F{/red-fg}ind {red-fg}O{/red-fg}ptions`
 });
 
 let statusBar = blessed.text({
-    // the bottom of the screen, but up by one
+    // The bottom of the screen, but up by one
     bottom: 'bottom' - 1,
-    left: 'center',
+    // left: 'center',
     width: '100%',
     height: 1,
     tags: true,
@@ -129,7 +140,7 @@ let statusBar = blessed.text({
     content: `Unsaved Document\t\t\t< Press Ctrl + W to quit >\t\t\t Line 0 | Col 0`
 });
 
-// This will likely become a regular box at some point that we end up customizing for editor needs
+// This will be where the text being edited is displayed
 let textArea = blessed.text({
     top: 1,
     keyable: true,
@@ -182,7 +193,7 @@ textArea.on('focus', () => {
     // screen.render();
     // Get the top and bottom + left/right of the screen to reset the cursor
     // Pull the cursor all the way to the top left no matter where it is
-    program.getCursor((err, data) => {
+    program.getCursor(() => {
         program.cursorUp(screen.height);
         program.cursorBackward(screen.width);
         // Put the cursor at line 1 column one of the editing window
@@ -263,13 +274,16 @@ textArea.key('backspace', () => {
 
 textArea.key('space', () => {
     // TODO: have this make sure it won't breach any bounds
+    // These operations are basically placeholders meant to just show that these events are firing
+    textArea.setText(textArea.content + ' ');
     program.cursorForward();
 });
 
 textArea.key('tab', () => {
     // TODO: have this make sure it won't breach any bounds
     // cursorForwardTab doesn't actually seem to insert a \t correctly, so it's done by advancing the cursor
-    // by a tab width of 4
+    // by a tab width of 4 spaces
+    textArea.setText(textArea.content + '    ');
     program.cursorForward(4);
 });
 
