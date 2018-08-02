@@ -14,13 +14,14 @@ class MenuBar {
         this.parent = parent;
 
         // Create the menu strip box
-        this.menubar = blessed.box({
+        this.menuBar = blessed.box({
             // The top should be the top of the screen
             top: 'top',
             // Always 100% of the screen width since it's a menu strip
             width: '100%',
             // Single height, since it's just a menu strip
             height: 1,
+            // Allow for color tags (blessed UI mechanic)
             tags: true,
             // Pad the text for the menubar by 1 on each left/right
             padding: {
