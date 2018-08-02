@@ -1,10 +1,10 @@
+// Using ES5 strict mode
 'use strict';
+
 const blessed = require('neo-blessed');
 
 // This module represents an introduction window for the editor, consisting
-// of multiple elements
-
-// Hierarchy:
+// of multiple elements, the hierarchy is:
 // Box centered in the screen with centered intro text with a border + shadow
 // Enter/OK button
 
