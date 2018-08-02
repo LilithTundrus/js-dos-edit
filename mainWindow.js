@@ -14,6 +14,7 @@ class MainWindow {
         this.parent = parent;
 
         this.mainWindow = blessed.box({
+            parent: this.parent,
             top: 'center',
             left: 'center',
             width: '100%',
