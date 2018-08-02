@@ -7,6 +7,7 @@ const blessed = require('neo-blessed');
 // keep this project modular
 
 // Create the main box, this should mostly be void of style/borders and just act as the primary container
+
 // This needs to be a class because on construction blessed tries to attach this to a parent screen
 class MainWindow {
     constructor(parent) {
