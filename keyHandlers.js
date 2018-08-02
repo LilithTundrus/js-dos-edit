@@ -3,6 +3,31 @@
 
 // This file contains the handlers for each key/combination that the editor supports
 
+// This handles all standard character keys
+function mainKeyHandler(cursor, program, screen, textArea, ch) {
+    // This VISUALLY keeps the cursor in left bound of the editing window
+    // TODO: There should also be a check for if the current line is valid to write to
+    // IE it isn't in the middle of a blank editor
+    if (cursor.x < screen.width - 1) {
+        // Get the line that the cursor is sitting on minus the borders of the UI/screen
+        let currentLineText = textArea.getLine(cursor.y - 3);
+
+        // If cursor is at the beginning of the line (move the rest of the text forward and insert the character)
+        if (cursor.x == 2) {
+            textArea.setLine(cursor.y - 3, ch + currentLineText);
+            // Why isn't this working
+            program.cursorBackward(1);
+            screen.render();
+        }
+        // If the cursor is somehwere in the middle (its an insert)
+        // If the cursor is at the end
+        else if (cursor.x >= currentLineText.length + 1) {
+            textArea.setLine(cursor.y - 3, currentLineText + ch);
+        }
+        screen.render();
+    }
+}
+
 function rightArrowHandler(cursor, program, screen, textArea) {
     // This VISUALLY keeps the cursor in right bound of the editing window
     if (cursor.x < screen.width - 1) {
@@ -166,6 +191,7 @@ function spaceHandler(cursor, program, screen, textArea) {
 }
 
 // Export the key handlers
+module.exports.mainKeyHandler = mainKeyHandler;
 module.exports.rightArrowHandler = rightArrowHandler;
 module.exports.leftArrowHandler = leftArrowHandler;
 module.exports.upArrowHandler = upArrowHandler;
