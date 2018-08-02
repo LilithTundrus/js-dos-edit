@@ -106,7 +106,7 @@ function downArrowHandler(cursor, program, screen, textArea) {
     }
 }
 
-// TODO: Fix the backspaces being off/weird
+// TODO: Fix the backspaces being off/weird/being able to get out of text bounds
 function backspaceHandler(cursor, program, screen, textArea) {
     if (cursor.x > 1) {
         // Get the line that the cursor is sitting on minus the borders of the UI/screen
@@ -147,8 +147,28 @@ function backspaceHandler(cursor, program, screen, textArea) {
     return screen.render();
 }
 
+function spaceHandler(cursor, program, screen, textArea) {
+    // This VISUALLY keeps the cursor in left bound of the editing window
+    if (cursor.x < screen.width - 1) {
+        // Get the line that the cursor is sitting on minus the borders of the UI/screen
+        let currentLineText = textArea.getLine(cursor.y - 3);
+
+        // If cursor is at the beginning of the line
+        // If the cursor is somehwere in the middle
+
+        // If the cursor is at the end of the line
+        if (cursor.x >= currentLineText.length + 1) {
+            textArea.setLine(cursor.y - 3, currentLineText + ' ');
+            program.cursorForward();
+        }
+        screen.render();
+    }
+}
+
+// Export the key handlers
 module.exports.rightArrowHandler = rightArrowHandler;
 module.exports.leftArrowHandler = leftArrowHandler;
 module.exports.upArrowHandler = upArrowHandler;
 module.exports.downArrowHandler = downArrowHandler;
 module.exports.backspaceHandler = backspaceHandler;
+module.exports.spaceHandler = spaceHandler;

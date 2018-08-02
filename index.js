@@ -86,6 +86,8 @@ actual text editing needs to be addressed. So I'll make sure that's perfect firs
 First basic editing controls, 
 then scrolling,
 then the rest
+
+For editing controls, the priorities are fixing backspace, getting basic entry to insert _per line_ not at the end of the file
 */
 
 // Create the main box, this should mostly be void of style/borders and just act as the primary container
@@ -125,7 +127,6 @@ let menubar = blessed.box({
 let statusBar = blessed.text({
     // The bottom of the screen, but up by one
     bottom: 'bottom' - 1,
-    // left: 'center',
     width: '100%',
     height: 1,
     tags: true,
@@ -272,11 +273,13 @@ textArea.key('backspace', () => {
     });
 });
 
+// TODO: have this make sure it won't breach any bounds
 textArea.key('space', () => {
-    // TODO: have this make sure it won't breach any bounds
-    // These operations are basically placeholders meant to just show that these events are firing
-    textArea.setText(textArea.content + ' ');
-    program.cursorForward();
+    program.getCursor((err, cursor) => {
+        if (err) return;
+        // Use the custom space keyHandler, passing the needed objects for blessed operations
+        return keyHandlers.spaceHandler(data, program, screen, textArea);
+    });
 });
 
 textArea.key('tab', () => {
@@ -299,10 +302,27 @@ textArea.on('keypress', (ch, key) => {
     // of steps to determine if text can be entered or if it is to be overflowed
     // TODO: This should only deal with the CURRENT line
     // TODO: Else, a handler should be returned for inserting text
-    
+
+    program.getCursor((err, cursor) => {
+        // TODO: this should eventually exit since an error is a major issue
+        if (err) return;
+        // This VISUALLY keeps the cursor in left bound of the editing window
+        if (cursor.x < screen.width - 1) {
+            // Get the line that the cursor is sitting on minus the borders of the UI/screen
+            let currentLineText = textArea.getLine(cursor.y - 3);
+
+            // If cursor is at the beginning of the line
+            // If the cursor is somehwere in the middle
+            // If the cursor is at the end
+            if (cursor.x >= currentLineText.length + 1) {
+                textArea.setLine(cursor.y - 3, currentLineText + ch);
+            }
+            screen.render();
+        }
+    });
     // TODO: handle inserting text between words instead of only being able to append
     // (kind of like how backspace currently works)
-    textArea.setText(textArea.content + ch);
+    // textArea.setText(textArea.content + ch);
     screen.render();
 });
 
