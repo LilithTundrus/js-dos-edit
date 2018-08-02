@@ -3,6 +3,7 @@
 
 // This is the main entry point for the JS-DOS editor
 
+// Node/NPM package requires
 const fs = require('fs');
 const blessed = require('neo-blessed');
 let program = blessed.program();
@@ -32,7 +33,7 @@ let screen = blessed.screen({
     },
 });
 
-// Set the title of the terminal window (if any) -- this will eventually take cli arguments
+// Set the title of the terminal window (if any) -- this will eventually take cli arguments for reading a file to be edited
 screen.title = 'EDIT - untitled';
 
 // The menuBar needs to look like this (the brackets meaning the highlighted character for alt + letter): 
@@ -64,7 +65,6 @@ cursor coordinate reporting (which is annoying)
 
 The text entry area will be the most logically complex since things like not allowing the END
 key to go to the end of the text area but to the end of the text ON that line
-
 */
 // NOTE: Alt codes like ↑ work in blessed!
 // NOTE: The version of blessed we're using is modified, the keys.js file has a regex to 
@@ -79,8 +79,9 @@ key to go to the end of the text area but to the end of the text ON that line
 // TODO: add more info to the statusBar area (if we can get the cursor to stop moving when it updates)
 // TODO: get scrolling working (may end up being really hard because of how text is edited)
 // TODO: figure out how to properly insert tabs
-/*
-Current working list:
+// TODO: Create a folder structure for this project
+
+/* Current working list:
 
 Right now I think the main idea is that before working on the rest of the text editor, the 
 actual text editing needs to be addressed. So I'll make sure that's perfect first
@@ -219,23 +220,22 @@ textArea.on('keypress', (ch, key) => {
     if (ch == undefined) return;
     // If the key is already handled elsewhere, return
     else if (customKeys.has(key.name)) return;
-    // TODO: Make sure that if autoreflow is off (it is by default) that the text box horizontally
-    // scrolls accordingly
+    // TODO: Make sure that if autoreflow is off (it is by default) that the text box horizontally scrolls accordingly
     // TODO: Eventually, this need to be able to get the cursor location and go through a series
     // of steps to determine if text can be entered or if it is to be overflowed
-    // TODO: This should only deal with the CURRENT line
-    // TODO: Else, a handler should be returned for inserting text
 
+    // Determine where to insert the character that was entered based on the cursor position
     program.getCursor((err, cursor) => {
         // TODO: this should eventually exit since an error is a major issue
         if (err) return;
+        // TODO: split this to its own special keyhandler
         // This VISUALLY keeps the cursor in left bound of the editing window
         if (cursor.x < screen.width - 1) {
             // Get the line that the cursor is sitting on minus the borders of the UI/screen
             let currentLineText = textArea.getLine(cursor.y - 3);
 
-            // If cursor is at the beginning of the line
-            // If the cursor is somehwere in the middle
+            // If cursor is at the beginning of the line (move the rest of the text forward and insert the character)
+            // If the cursor is somehwere in the middle (its an insert)
             // If the cursor is at the end
             if (cursor.x >= currentLineText.length + 1) {
                 textArea.setLine(cursor.y - 3, currentLineText + ch);
@@ -243,9 +243,6 @@ textArea.on('keypress', (ch, key) => {
             screen.render();
         }
     });
-    // TODO: handle inserting text between words instead of only being able to append
-    // (kind of like how backspace currently works)
-    // textArea.setText(textArea.content + ch);
     screen.render();
 });
 
