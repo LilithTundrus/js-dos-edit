@@ -10,9 +10,10 @@ let program = blessed.program();
 
 // Require the class created for the introduction box object that appears first on start
 const IntroBox = require('./intro-box');
-
 // Require the functions to handle each keypress
 const keyHandlers = require('./keyHandlers');
+// Require the set of keys to listen for on keypress event for keys to ignore that custom handlers listen for
+const customKeys = require('./handledKeysSet');
 
 // Create a screen object to work with blessed
 let screen = blessed.screen({
@@ -73,6 +74,8 @@ key to go to the end of the text area but to the end of the text ON that line
 // TODO: figure how to handle lines being longer than the window width 
 // TODO: get scolling working (also move the scrollbar to the right )
 // TODO: implement a vertical scrollbard (looking at the blessed scrollbar code could yield assistance)
+// TODO: add more info to the statusbar area (if we can get the cursor to stop moving when it updates)
+// TODO: get scrolling working (may end up being really hard because of how text is edited)
 
 // Create the main box, this should mostly be void of style/borders and just act as the primary container
 let mainWindow = blessed.box({
@@ -174,7 +177,7 @@ screen.append(statusBar);
 // Append the textArea to the mainWindow
 mainWindow.append(textArea);
 
-textArea.on('focus', function () {
+textArea.on('focus', () => {
     //TODO: When a file is opened, start at the top of the first line, but at the end
     // screen.render();
     // Get the top and bottom + left/right of the screen to reset the cursor
@@ -240,39 +243,13 @@ textArea.key('enter', () => {
 });
 
 //TODO: These two methods don't work just yet
-textArea.key('pageup', function () {
+textArea.key('pageup', () => {
     textArea.scroll(-1, true);
     screen.render();
 });
 
-textArea.key('pagedwon', function () {
+textArea.key('pagedwon', () => {
     textArea.scroll(1, true);
-    screen.render();
-});
-
-// For some reason the keypress gets cursor coordinates written to it, or it's registered as a keu??
-// I think this works off of some thing where the coordinates are literally written to the process.stdin somehow
-textArea.on('keypress', (ch, key) => {
-    // Return, these are keys we can handle later (undefined means it isn't a character)
-    if (ch == undefined) return;
-    // TODO: Make sure that if autoreflow is off (it is by default) that the text box horizontally
-    // scrolls accordingly
-    // TODO: Eventually, this need to be able to get the cursor location and go through a series
-    // of steps to determine if text can be entered or if it is to be overflowed
-    // TODO: handle all special keys that are managed elsehwere and just return
-
-    // Eventually this should only deal with the CURRENT line
-    if (key.name == 'enter') return;
-    if (key.full == 'space') program.cursorForward();
-    // cursorForwardTab doesn't actually seem to insert a \t correctly, so it's done by advancing the cursor
-    // by a tab width of 4 (that could start a war later with tabs v spaces)
-    if (key.full == 'tab') program.cursorForward(4);
-
-    textArea.setText(textArea.content + ch);
-
-    // TODO: handle inserting text between words instead of only being able to append
-    // (kind of like how backspace currently works)
-
     screen.render();
 });
 
@@ -282,6 +259,37 @@ textArea.key('backspace', () => {
         // Use the custom backspace keyHandler, passing the needed objects for blessed operations
         return keyHandlers.backspaceHandler(data, program, screen, textArea);
     });
+});
+
+textArea.key('space', () => {
+    // TODO: have this make sure it won't breach any bounds
+    program.cursorForward();
+});
+
+textArea.key('tab', () => {
+    // TODO: have this make sure it won't breach any bounds
+    // cursorForwardTab doesn't actually seem to insert a \t correctly, so it's done by advancing the cursor
+    // by a tab width of 4
+    program.cursorForward(4);
+});
+
+// This catches all keypresses
+textArea.on('keypress', (ch, key) => {
+    // Return, these are keys we can handle later (undefined means it isn't a character)
+    if (ch == undefined) return;
+    // If the key is already handled elsewhere, return
+    else if (customKeys.has(key.name)) return;
+    // TODO: Make sure that if autoreflow is off (it is by default) that the text box horizontally
+    // scrolls accordingly
+    // TODO: Eventually, this need to be able to get the cursor location and go through a series
+    // of steps to determine if text can be entered or if it is to be overflowed
+    // TODO: This should only deal with the CURRENT line
+    // TODO: Else, a handler should be returned for inserting text
+    
+    // TODO: handle inserting text between words instead of only being able to append
+    // (kind of like how backspace currently works)
+    textArea.setText(textArea.content + ch);
+    screen.render();
 });
 
 // Function for getting the Line/Column count for the editing window
