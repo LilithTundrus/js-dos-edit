@@ -6,7 +6,6 @@
 // Node/NPM package requires
 const fs = require('fs');
 const blessed = require('neo-blessed');
-let program = blessed.program();
 
 // Require the class created for the introduction box object that appears first on start
 const IntroBox = require('./intro-box');
@@ -21,6 +20,7 @@ const TextArea = require('./textArea');
 const MenuBar = require('./menuBar');
 const StatusBar = require('./statusBar');
 
+let program = blessed.program();
 // Create a screen object to work with blessed
 let screen = blessed.screen({
     smartCSR: true,
@@ -54,7 +54,6 @@ screen.title = 'EDIT - untitled';
 
 // At the bottom there should be a character counter and a word counter as well as line/column count:
 //  Current Document status (IE did it save?)      F1=Help Ctrl-C=quit          Col: 1 Line: 1
-
 /*
 For the text entry area the cursor needs to be kept in bounds as well as what character that
 the cursor is currently over. This will be likely the biggest challenge, the actual text entry.
@@ -101,23 +100,23 @@ let menuBar = new MenuBar(screen).menuBar;
 let statusBar = new StatusBar(screen).statusBar;
 let introBox = new IntroBox(screen, textArea, statusBar).introBox;
 
-// Append the needed UI elements to the screen
+// Append the needed UI elements to the screen (in visual order)
 screen.append(mainWindow);
+screen.append(menuBar);
+// NOTE: if commands aren't working right, try appending to the mainWindow like it was previously
+screen.append(textArea);
+screen.append(statusBar);
 // Make sure the intro box is shown in the front 
 screen.append(introBox);
-// These should stay part of the screen at all times, so it's appended to the screen
-screen.append(menuBar);
-screen.append(statusBar);
-
-// Append the textArea to the mainWindow
-mainWindow.append(textArea);
+// Reset the cursor after appending all of the UI elements
+program.resetCursor();
 
 textArea.on('focus', () => {
     //TODO: When a file is opened, start at the top of the first line, but at the end
     // screen.render();
     // Get the top and bottom + left/right of the screen to reset the cursor
     // Pull the cursor all the way to the top left no matter where it is
-    program.getCursor(() => {
+    program.getCursor((err, data) => {
         program.cursorUp(screen.height);
         program.cursorBackward(screen.width);
         // Put the cursor at line 1 column one of the editing window
@@ -127,7 +126,7 @@ textArea.on('focus', () => {
     });
     // Reset the content of the statusBar (the numbers are placeholders)
     // TODO: make the numbers + filename no longer be placeholders
-    statusBar.setContent(`Unsaved Document\t\t\t< Press Ctrl + W to quit >\t\t\t Line 1 | Col 1`);
+    statusBar.setContent(`Unsaved Document\t\t\t< Ctrl+W=Quit  F1=Help >\t\t\t Line 1 | Col 1`);
     screen.render();
     // Destroy the introBox completely
     introBox = null;
@@ -225,23 +224,10 @@ textArea.on('keypress', (ch, key) => {
     // of steps to determine if text can be entered or if it is to be overflowed
 
     // Determine where to insert the character that was entered based on the cursor position
-    program.getCursor((err, cursor) => {
+    program.getCursor((err, data) => {
         // TODO: this should eventually exit since an error is a major issue
         if (err) return;
-        // TODO: split this to its own special keyhandler
-        // This VISUALLY keeps the cursor in left bound of the editing window
-        if (cursor.x < screen.width - 1) {
-            // Get the line that the cursor is sitting on minus the borders of the UI/screen
-            let currentLineText = textArea.getLine(cursor.y - 3);
-
-            // If cursor is at the beginning of the line (move the rest of the text forward and insert the character)
-            // If the cursor is somehwere in the middle (its an insert)
-            // If the cursor is at the end
-            if (cursor.x >= currentLineText.length + 1) {
-                textArea.setLine(cursor.y - 3, currentLineText + ch);
-            }
-            screen.render();
-        }
+        return keyHandlers.mainKeyHandler(data, program, screen, textArea, ch)
     });
     screen.render();
 });
