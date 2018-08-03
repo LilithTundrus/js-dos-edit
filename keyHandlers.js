@@ -171,17 +171,17 @@ function backspaceHandler(cursor, program, screen, textArea) {
         else if (currentLineText.length < 1 && textArea.getLines().length > 1) {
             // Reflow to the next line
             textArea.deleteLine(cursor.y - 3);
-            // TODO: figure out why this wraps to the bottom line if in the middle of the text box
             let preceedingLineText = textArea.getLine(cursor.y - 4);
-            // Move the cursor forward the length of the text + 1 for the UI border if not empty
-            if (preceedingLineText.length > 1) {
-                program.cursorForward(preceedingLineText.length + 1);
-            }
-            program.cursorUp();
+            // Render the line being deleted
+            screen.render();
+            // Position the cursor up to the next line
+            program.cursorPos(cursor.y - 2, cursor.x - 1 + preceedingLineText.length);
+            // Render the cursor change
+            screen.render();
         }
-        // Always render the screen on character changes
     }
-    return screen.render();
+    // Always render the screen at the end of the function to be sure the changes made always show
+    screen.render();
 }
 
 function spaceHandler(cursor, program, screen, textArea) {
@@ -221,6 +221,7 @@ function spaceHandler(cursor, program, screen, textArea) {
 }
 
 // TODO: figure out why this sometimes behaves oddly on what it considers a 'line'
+// I think it has something to do with the Y offsets (the top/bottom of the screen)
 function enterHandler(cursor, program, screen, textArea) {
     // Get the line that the cursor is sitting on minus the borders of the UI/screen
     let currentLineText = textArea.getLine(cursor.y - 3);
