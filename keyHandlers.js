@@ -23,10 +23,14 @@ function mainKeyHandler(cursor, program, screen, textArea, ch) {
             screen.render();
         }
         // If the cursor is somehwere in the middle (its an insert)
-
         // If the cursor is at the end
         else if (cursor.x >= currentLineText.length + 1) {
             textArea.setLine(cursor.y - 3, currentLineText + ch);
+        } else {
+            textArea.setLine(cursor.y - 3, currentLineText.substring(0, cursor.x - 2) + ch + currentLineText.substring(cursor.x - 2));
+            screen.render();
+            program.cursorBackward(currentLineText.length - currentLineText.substring(0, cursor.x - 1).length + 1)
+            screen.render();
         }
         screen.render();
     }
