@@ -14,7 +14,7 @@ class TextArea {
         this.parent = parent;
 
         // Create the menu strip box
-        this.textArea = blessed.text({
+        this.textArea = blessed.box({
             // The top of this element should be the screen width plus 1
             top: 1,
             keyable: true,
@@ -41,8 +41,8 @@ class TextArea {
             border: {
                 type: 'line'
             },
-            // Scrollbar styles, likely a placeholder for the future
             scrollable: true,
+            // Scrollbar styles, likely a placeholder for the future
             scrollbar: {
                 ch: '█',
                 track: {
