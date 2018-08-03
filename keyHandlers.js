@@ -137,6 +137,9 @@ function downArrowHandler(cursor, program, screen, textArea) {
         } else {
             program.cursorDown();
         }
+    } else if (cursor.y == screen.height - 1) {
+        textArea.scroll(1);
+        screen.render();
     }
 }
 
