@@ -5,10 +5,11 @@
 
 // This handles all standard character keys
 function mainKeyHandler(cursor, program, screen, textArea, ch) {
-    // This VISUALLY keeps the cursor in left bound of the editing window
     // TODO: There should also be a check for if the current line is valid to write to
     // IE it isn't in the middle of a blank editor
-    // TODO: Scrol horizontally if this doesn't occur
+
+    // TODO: Scroll horizontally if this check doesn't occur
+    // This VISUALLY keeps the cursor in left bound of the editing window
     if (cursor.x < screen.width - 1) {
         // Get the line that the cursor is sitting on minus the borders of the UI/screen
         let currentLineText = textArea.getLine(cursor.y - 3);
@@ -181,18 +182,35 @@ function backspaceHandler(cursor, program, screen, textArea) {
 }
 
 function spaceHandler(cursor, program, screen, textArea) {
-    // This VISUALLY keeps the cursor in left bound of the editing window
+    // TODO: Scroll horizontally if this check doesn't occur
+    // This VISUALLY keeps the cursor in right bound of the editing window
     if (cursor.x < screen.width - 1) {
         // Get the line that the cursor is sitting on minus the borders of the UI/screen
         let currentLineText = textArea.getLine(cursor.y - 3);
 
-        // If cursor is at the beginning of the line
-        // If the cursor is somehwere in the middle
-
-        // If the cursor is at the end of the line
-        if (cursor.x >= currentLineText.length + 1) {
+        // If cursor is at the beginning of the line (move the rest of the text forward and insert the character)
+        if (cursor.x == 2 && currentLineText.length > 1) {
+            textArea.setLine(cursor.y - 3, ' ' + currentLineText);
+            // Render the text change
+            screen.render();
+            program.cursorBackward(currentLineText.length);
+            program.cursorForward();
+            // Render the cursor change
+            screen.render();
+        }
+        // If the cursor is somehwere in the middle (its an insert)
+        // If the cursor is at the end
+        else if (cursor.x >= currentLineText.length + 1) {
             textArea.setLine(cursor.y - 3, currentLineText + ' ');
             program.cursorForward();
+        } else {
+            textArea.setLine(cursor.y - 3, currentLineText.substring(0, cursor.x - 2) + ' ' + currentLineText.substring(cursor.x - 2));
+            // Render the text change
+            screen.render();
+            program.cursorBackward(currentLineText.length - currentLineText.substring(0, cursor.x - 1).length + 1)
+            // program.cursorForward();
+            // Render the cursor change
+            screen.render();
         }
         screen.render();
     }
