@@ -65,6 +65,7 @@ cursor coordinate reporting (which is annoying)
 The text entry area will be the most logically complex since things like not allowing the END
 key to go to the end of the text area but to the end of the text ON that line
 */
+// NOTE: the M denotes meta (alt key) for key listeners
 // NOTE: Alt codes like ↑ work in blessed!
 // NOTE: The version of blessed we're using is modified, the keys.js file has a regex to 
 // ignore a couple extra things (mainly cursor reporting bullshit that's just, not handled by blessed.)
@@ -171,10 +172,16 @@ textArea.key('down', () => {
 // For some reason after changing some internal code the enter key is automatic now?
 // It may have something to do with the fact that keypress listens for everything and inserts a \n on an enter key by default
 textArea.key('enter', () => {
-    screen.render();
-    // This should be fine for now, likely need to do more checks in the future
-    program.cursorDown();
-    screen.render();
+    program.getCursor((err, data) => {
+        screen.render();
+        // This should be fine for now, likely need to do more checks in the future
+        // Insert an empty line below the current
+        textArea.insertLine(data.y - 2, '');
+
+        // TODO: this needs to set the cursor back to the line
+        program.cursorDown();
+        screen.render();
+    });
 });
 
 //TODO: These two methods don't work just yet
@@ -183,7 +190,7 @@ textArea.key('pageup', () => {
     screen.render();
 });
 
-textArea.key('pagedwon', () => {
+textArea.key('pagedown', () => {
     textArea.scroll(1, true);
     screen.render();
 });
@@ -228,6 +235,8 @@ textArea.on('keypress', (ch, key) => {
     program.getCursor((err, data) => {
         // TODO: this should eventually exit since an error is a major issue
         if (err) return;
+        // This shouldn't be needed but the \r code sometimes gets into here
+        if (ch === '\r') return;
         return keyHandlers.mainKeyHandler(data, program, screen, textArea, ch)
     });
     screen.render();
@@ -253,6 +262,10 @@ textArea.key(['C-w'], () => {
 textArea.key(['C-s'], (ch, key) => {
     // Remove the cursor from the text that for SOME REASON shows up
     fs.writeFileSync('test', textArea.content.replace('', ''));
+});
+
+textArea.key(['f4'], (ch, key) => {
+    return process.exit();
 });
 
 // Render the screen
