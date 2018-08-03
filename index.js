@@ -103,7 +103,7 @@ let introBox = new IntroBox(screen, textArea, statusBar).introBox;
 // Append the needed UI elements to the screen (in visual order)
 screen.append(mainWindow);
 screen.append(menuBar);
-// NOTE: if commands aren't working right, try appending to the mainWindow like it was previously
+// NOTE: if commands/actions aren't working right, try appending to the mainWindow like it was previously
 screen.append(textArea);
 screen.append(statusBar);
 // Make sure the intro box is shown in the front 
@@ -171,6 +171,7 @@ textArea.key('down', () => {
 // For some reason after changing some internal code the enter key is automatic now?
 // It may have something to do with the fact that keypress listens for everything and inserts a \n on an enter key by default
 textArea.key('enter', () => {
+    screen.render();
     // This should be fine for now, likely need to do more checks in the future
     program.cursorDown();
     screen.render();

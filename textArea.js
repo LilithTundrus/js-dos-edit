@@ -18,6 +18,7 @@ class TextArea {
             // The top of this element should be the screen width plus 1
             top: 1,
             keyable: true,
+            // keys: true,
             label: fileLabel,
             // Left-align the text
             align: 'left',
@@ -41,15 +42,15 @@ class TextArea {
             border: {
                 type: 'line'
             },
-            scrollable: true,
-            // Scrollbar styles, likely a placeholder for the future
-            scrollbar: {
-                ch: '█',
-                track: {
-                    bg: 'black',
-                    ch: '░'
-                },
-            },
+            // scrollable: true,
+            // // Scrollbar styles, likely a placeholder for the future
+            // scrollbar: {
+            //     ch: '█',
+            //     track: {
+            //         bg: 'black',
+            //         ch: '░'
+            //     },
+            // },
         });
     }
 }
