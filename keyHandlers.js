@@ -201,12 +201,13 @@ function spaceHandler(cursor, program, screen, textArea) {
             // Render the cursor change
             screen.render();
         }
-        // If the cursor is somehwere in the middle (its an insert)
         // If the cursor is at the end
         else if (cursor.x >= currentLineText.length + 1) {
             textArea.setLine(cursor.y - 3, currentLineText + ' ');
             program.cursorForward();
-        } else {
+        }
+        // If the cursor is somehwere in the middle (its an insert)
+        else {
             textArea.setLine(cursor.y - 3, currentLineText.substring(0, cursor.x - 2) + ' ' + currentLineText.substring(cursor.x - 2));
             // Render the text change
             screen.render();
@@ -220,18 +221,38 @@ function spaceHandler(cursor, program, screen, textArea) {
 }
 
 function enterHandler(cursor, program, screen, textArea) {
-    screen.render();
-    // This should be fine for now, likely need to do more checks in the future
-    // Insert an empty line below the current one
-    textArea.insertLine(cursor.y - 2, '');
-    program.cursorDown();
-    program.saveCursor();
-    // TODO: this needs to set the cursor back to the line
-    // TODO: if this is in the middle of text, split the text onto the next line
-    // if it's at the end, insert a blank line
-    // if it's at the beginnging, move the line down by one (maybe insert ABOVE the line?)
-    screen.render();
-    program.restoreCursor();
+    // TODO: this needs to set the cursor back to the current line
+
+    // Get the line that the cursor is sitting on minus the borders of the UI/screen
+    let currentLineText = textArea.getLine(cursor.y - 3);
+
+    if (cursor.x == 2 && currentLineText.length > 1) {
+        // Insert a line ABOVE the current line so the content flows down by one
+        textArea.insertLine(cursor.y - 4, '');
+        // Render the line change
+        screen.render();
+        // Set the cursor back to the beginning of the line, even after the 
+        // Y, X notation for row:column
+        program.cursorPos(cursor.y, cursor.x - 1);
+        // Render the cursor change
+        screen.render();
+    }
+    // If the cursor is at the end
+    else if (cursor.x >= currentLineText.length + 1) {
+        // Insert a line BELOW the current line
+        textArea.insertLine(cursor.y - 2, '');
+        // Render the line change
+        screen.render();
+        // Set the cursor back to the beginning of the line, even after the 
+        // Y, X notation for row:column
+        program.cursorPos(cursor.y, 2);
+        // Render the cursor change
+        screen.render();
+    } else {
+        // The enter key was pressed in between the text (probably)
+
+        // Split the text and reflow the text that was in front of the cursor to the next line
+    }
     screen.render();
 }
 
