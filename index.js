@@ -169,31 +169,22 @@ textArea.key('down', () => {
     });
 });
 
-// For some reason after changing some internal code the enter key is automatic now?
-// It may have something to do with the fact that keypress listens for everything and inserts a \n on an enter key by default
 textArea.key('enter', () => {
     program.getCursor((err, data) => {
-        screen.render();
-        // This should be fine for now, likely need to do more checks in the future
-        // Insert an empty line below the current
-        textArea.insertLine(data.y - 2, '');
-
-        // TODO: this needs to set the cursor back to the line
-        program.cursorDown();
-        screen.render();
+        keyHandlers.enterHandler(data, program, screen, textArea);
     });
 });
 
 //TODO: These two methods don't work just yet
-textArea.key('pageup', () => {
-    textArea.scroll(-1, true);
-    screen.render();
-});
+// textArea.key('pageup', () => {
+//     textArea.scroll(-1, true);
+//     screen.render();
+// });
 
-textArea.key('pagedown', () => {
-    textArea.scroll(1, true);
-    screen.render();
-});
+// textArea.key('pagedown', () => {
+//     textArea.scroll(1, true);
+//     screen.render();
+// });
 
 textArea.key('backspace', () => {
     program.getCursor((err, data) => {
@@ -227,6 +218,8 @@ textArea.on('keypress', (ch, key) => {
     if (ch == undefined) return;
     // If the key is already handled elsewhere, return
     else if (customKeys.has(key.name)) return;
+    // This shouldn't be needed but the \r code sometimes gets into here
+    if (ch === '\r') return;
     // TODO: Make sure that if autoreflow is off (it is by default) that the text box horizontally scrolls accordingly
     // TODO: Eventually, this need to be able to get the cursor location and go through a series
     // of steps to determine if text can be entered or if it is to be overflowed
@@ -235,8 +228,6 @@ textArea.on('keypress', (ch, key) => {
     program.getCursor((err, data) => {
         // TODO: this should eventually exit since an error is a major issue
         if (err) return;
-        // This shouldn't be needed but the \r code sometimes gets into here
-        if (ch === '\r') return;
         return keyHandlers.mainKeyHandler(data, program, screen, textArea, ch)
     });
     screen.render();

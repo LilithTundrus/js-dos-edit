@@ -219,6 +219,22 @@ function spaceHandler(cursor, program, screen, textArea) {
     }
 }
 
+function enterHandler(cursor, program, screen, textArea) {
+    screen.render();
+    // This should be fine for now, likely need to do more checks in the future
+    // Insert an empty line below the current one
+    textArea.insertLine(cursor.y - 2, '');
+    program.cursorDown();
+    program.saveCursor();
+    // TODO: this needs to set the cursor back to the line
+    // TODO: if this is in the middle of text, split the text onto the next line
+    // if it's at the end, insert a blank line
+    // if it's at the beginnging, move the line down by one (maybe insert ABOVE the line?)
+    screen.render();
+    program.restoreCursor();
+    screen.render();
+}
+
 // Export the key handlers
 module.exports.mainKeyHandler = mainKeyHandler;
 module.exports.rightArrowHandler = rightArrowHandler;
@@ -227,3 +243,4 @@ module.exports.upArrowHandler = upArrowHandler;
 module.exports.downArrowHandler = downArrowHandler;
 module.exports.backspaceHandler = backspaceHandler;
 module.exports.spaceHandler = spaceHandler;
+module.exports.enterHandler = enterHandler;
