@@ -220,9 +220,8 @@ function spaceHandler(cursor, program, screen, textArea) {
     }
 }
 
+// TODO: figure out why this sometimes behaves oddly on what it considers a 'line'
 function enterHandler(cursor, program, screen, textArea) {
-    // TODO: this needs to set the cursor back to the current line
-
     // Get the line that the cursor is sitting on minus the borders of the UI/screen
     let currentLineText = textArea.getLine(cursor.y - 3);
 
@@ -252,6 +251,16 @@ function enterHandler(cursor, program, screen, textArea) {
         // The enter key was pressed in between the text (probably)
 
         // Split the text and reflow the text that was in front of the cursor to the next line
+        textArea.setLine(cursor.y - 3, currentLineText.substring(0, cursor.x - 2));
+        // Set the line below to be the rest of the text
+        textArea.insertLine(cursor.y - 2, currentLineText.substring(cursor.x - 2));
+        // Render the line changes
+        screen.render();
+        // Set the cursor back to the beginning of the line, even after the 
+        // Y, X notation for row:column
+        program.cursorPos(cursor.y, 1);
+        // Render the cursor change
+        screen.render();
     }
     screen.render();
 }
