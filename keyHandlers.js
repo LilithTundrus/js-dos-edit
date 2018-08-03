@@ -152,6 +152,13 @@ function backspaceHandler(cursor, program, screen, textArea) {
             // If cursor is at the end of the current line
             if (cursor.x == currentLineText.length + 2) {
                 textArea.setLine(cursor.y - 3, currentLineText.substring(0, currentLineText.length - 1));
+                // For some reason blessed automatically handles whitespace backspacing
+                // If the character at the END of the line isn't a space 
+                if (currentLineText.charAt(currentLineText.length - 1) !== ' ') {
+                    program.cursorBackward();
+                }
+                screen.render();
+
             } else {
                 // Else, a splice is needed rather than a removal
                 // Find the cursor position relative to the text
