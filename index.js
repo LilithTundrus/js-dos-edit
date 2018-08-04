@@ -3,68 +3,6 @@
 
 // This is the main entry point for the JS-DOS editor
 
-// Node/NPM package requires
-const fs = require('fs');
-const blessed = require('neo-blessed');
-
-// Require the class created for the introduction box object that appears first on start
-const IntroBox = require('./intro-box');
-// Require the functions to handle each keypress
-const keyHandlers = require('./keyHandlers');
-// Require the set of keys to listen for on keypress event for keys to ignore that custom handlers listen for
-const customKeys = require('./handledKeysSet');
-
-// Import the custom modular blessed components
-const MainWindow = require('./mainWindow');
-const TextArea = require('./textArea');
-const MenuBar = require('./menuBar');
-const StatusBar = require('./statusBar');
-
-let program = blessed.program();
-// Create a screen object to work with blessed
-let screen = blessed.screen({
-    smartCSR: true,
-    autoPadding: true,
-    program: program,
-    cursor: {
-        artificial: true,
-        shape: 'line',
-        blink: false
-    },
-});
-
-// Set the title of the terminal window (if any) -- this will eventually take cli arguments for reading a file to be edited
-screen.title = 'EDIT - untitled';
-
-// The menuBar needs to look like this (the brackets meaning the highlighted character for alt + letter): 
-// [F]ile [E]dit [S}earch [V]iew [O]ptions [H]elp
-
-// The menuBar should go FIRST, even before the main editing box
-
-// After the menuBar will be main window
-// Inside that window will be the text entry box
-// This box will have the filename as the name of the title
-// The cursor will remain bound to this box
-
-// The actual text entered is stored in lines, handled one at a time so the amount
-// of text being worked with at once stays low. 
-
-// The scrollbar up/down arrow ASCII characters may just have to be static and not actually
-// part of a real scrollbar (I need to look at all of the code for this project)
-
-// At the bottom there should be a character counter and a word counter as well as line/column count:
-//  Current Document status (IE did it save?)      F1=Help Ctrl-C=quit          Col: 1 Line: 1
-/*
-For the text entry area the cursor needs to be kept in bounds as well as what character that
-the cursor is currently over. This will be likely the biggest challenge, the actual text entry.
-
-Another thing to think of is how the keys should be polled and mapped. There is a built-in
-readInput() method sort of works but also comes with its own weirdness like reading the 
-cursor coordinate reporting (which is annoying)
-
-The text entry area will be the most logically complex since things like not allowing the END
-key to go to the end of the text area but to the end of the text ON that line
-*/
 // NOTE: the M denotes meta (alt key) for key listeners
 // NOTE: Alt codes like ↑ work in blessed!
 // NOTE: The version of blessed we're using is modified, the keys.js file has a regex to 
@@ -100,6 +38,39 @@ then the rest
 
 For editing controls, the priorities are fixing backspace, getting basic entry to insert _per line_ not at the end of the file
 */
+
+// Node/NPM package requires
+const fs = require('fs');
+const blessed = require('neo-blessed');
+
+// Require the class created for the introduction box object that appears first on start
+const IntroBox = require('./intro-box');
+// Require the functions to handle each keypress
+const keyHandlers = require('./keyHandlers');
+// Require the set of keys to listen for on keypress event for keys to ignore that custom handlers listen for
+const customKeys = require('./handledKeysSet');
+
+// Import the custom modular blessed components
+const MainWindow = require('./mainWindow');
+const TextArea = require('./textArea');
+const MenuBar = require('./menuBar');
+const StatusBar = require('./statusBar');
+
+let program = blessed.program();
+// Create a screen object to work with blessed
+let screen = blessed.screen({
+    smartCSR: true,
+    autoPadding: true,
+    program: program,
+    cursor: {
+        artificial: true,
+        shape: 'line',
+        blink: false
+    },
+});
+
+// Set the title of the terminal window (if any) -- this will eventually take cli arguments for reading a file to be edited
+screen.title = 'EDIT - untitled';
 
 // Create instances of the UI elements, passing the screen as the parent
 let textArea = new TextArea(screen, 'UNTITLED').textArea;
