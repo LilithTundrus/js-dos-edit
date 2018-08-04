@@ -93,6 +93,9 @@ First basic editing controls,
 then fixing the arrow keys to work like VS code 
 then scrolling,
 then horizontal scrolling,
+menus,
+error handling,
+user-facing error handling
 then the rest
 
 For editing controls, the priorities are fixing backspace, getting basic entry to insert _per line_ not at the end of the file
@@ -142,16 +145,16 @@ textArea.key('left', () => {
     program.getCursor((err, data) => {
         if (err) return;
         // Use the custom left keyHandler, passing the needed objects for blessed operations
-        if (data) keyHandlers.leftArrowHandler(data, program, screen, textArea);
+        return keyHandlers.leftArrowHandler(data, program, screen, textArea);
     });
 });
 
 textArea.key('right', () => {
     // This callback returns an err and data object, the data object has the x position of cursor we need to poll
-    program.getCursor(function (err, data) {
+    program.getCursor((err, data) => {
         if (err) return;
         // Use the custom right keyHandler, passing the needed objects for blessed operations
-        keyHandlers.rightArrowHandler(data, program, screen, textArea);
+        return keyHandlers.rightArrowHandler(data, program, screen, textArea);
     });
 });
 
@@ -160,7 +163,7 @@ textArea.key('up', () => {
     program.getCursor((err, data) => {
         if (err) return;
         // Use the custom up keyHandler, passing the needed objects for blessed operations
-        keyHandlers.upArrowHandler(data, program, screen, textArea);
+        return keyHandlers.upArrowHandler(data, program, screen, textArea);
     });
 });
 
@@ -169,26 +172,16 @@ textArea.key('down', () => {
     program.getCursor((err, data) => {
         if (err) return;
         // Use the custom down keyHandler, passing the needed objects for blessed operations
-        keyHandlers.downArrowHandler(data, program, screen, textArea);
+        return keyHandlers.downArrowHandler(data, program, screen, textArea);
     });
 });
 
 textArea.key('enter', () => {
+    if (err) return;
     program.getCursor((err, data) => {
-        keyHandlers.enterHandler(data, program, screen, textArea);
+        return keyHandlers.enterHandler(data, program, screen, textArea);
     });
 });
-
-//TODO: These two methods don't work just yet
-// textArea.key('pageup', () => {
-//     textArea.scroll(-1, true);
-//     screen.render();
-// });
-
-// textArea.key('pagedown', () => {
-//     textArea.scroll(1, true);
-//     screen.render();
-// });
 
 textArea.key('backspace', () => {
     program.getCursor((err, data) => {
@@ -218,21 +211,17 @@ textArea.key('tab', () => {
 
 // This catches all keypresses
 textArea.on('keypress', (ch, key) => {
-    // Return, these are keys we can handle later (undefined means it isn't a character)
+    // Return, these are keys we can handle elsewhere (undefined means it isn't a display character)
     if (ch == undefined) return;
     // If the key is already handled elsewhere, return
     else if (customKeys.has(key.name)) return;
-    // This shouldn't be needed but the \r code sometimes gets into here
+    // This shouldn't be needed, but the \r code sometimes gets into here
     if (ch === '\r') return;
-    // TODO: Make sure that if autoreflow is off (it is by default) that the text box horizontally scrolls accordingly
-    // TODO: Eventually, this need to be able to get the cursor location and go through a series
-    // of steps to determine if text can be entered or if it is to be overflowed
 
     // Determine where to insert the character that was entered based on the cursor position
     program.getCursor((err, data) => {
-        // TODO: this should eventually exit since an error is a major issue
         if (err) return;
-        return keyHandlers.mainKeyHandler(data, program, screen, textArea, ch)
+        return keyHandlers.mainKeyHandler(data, program, screen, textArea, ch);
     });
     screen.render();
 });
@@ -254,12 +243,12 @@ textArea.on('keypress', (ch, key) => {
 textArea.key(['C-w'], () => {
     return process.exit(0);
 });
-textArea.key(['C-s'], (ch, key) => {
+textArea.key(['C-s'], () => {
     // Remove the cursor from the text that for SOME REASON shows up
     fs.writeFileSync('test', textArea.content.replace('', ''));
 });
 
-textArea.key(['f4'], (ch, key) => {
+textArea.key(['f4'], () => {
     return process.exit();
 });
 
