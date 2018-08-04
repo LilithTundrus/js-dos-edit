@@ -171,6 +171,9 @@ function backspaceHandler(cursor, program, screen, textArea) {
             // Reender the text change
             screen.render();
             // Move the cursor to the above line where the merge was made
+            program.cursorPos(cursor.y - 2, cursor.x + preceedingLineText.length)
+            // Render the cursor change
+            screen.render();
         }
         // Else, a splice is needed rather than a removal
         else {
