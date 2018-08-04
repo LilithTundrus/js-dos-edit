@@ -7,8 +7,8 @@
 function mainKeyHandler(cursor, program, screen, textArea, ch) {
     // TODO: There should also be a check for if the current line is valid to write to
     // IE it isn't in the middle of a blank editor
-
     // TODO: Scroll horizontally if this check doesn't occur
+
     // This VISUALLY keeps the cursor in left bound of the editing window
     if (cursor.x < screen.width - 1) {
         // Get the line that the cursor is sitting on minus the borders of the UI/screen
@@ -16,24 +16,33 @@ function mainKeyHandler(cursor, program, screen, textArea, ch) {
 
         // If cursor is at the beginning of the line (move the rest of the text forward and insert the character)
         if (cursor.x == 2 && currentLineText.length > 1) {
+            // Add the character to the end of the line
             textArea.setLine(cursor.y - 3, ch + currentLineText);
             // Render the text change
             screen.render();
+            // Offset the auto-cursor-restore to move the cursor back to the last position it was in
             program.cursorBackward(currentLineText.length);
             // Render the cursor change
             screen.render();
         }
-        // If the cursor is somehwere in the middle (its an insert)
         // If the cursor is at the end
         else if (cursor.x >= currentLineText.length + 1) {
+            // Add the character to the end of the line, the cursor auto-renders and moves forward on its own in this case
             textArea.setLine(cursor.y - 3, currentLineText + ch);
-        } else {
+        }
+        // If the cursor is somehwere in the middle (its an insert)
+        else {
             textArea.setLine(cursor.y - 3, currentLineText.substring(0, cursor.x - 2) + ch + currentLineText.substring(cursor.x - 2));
+            // Render the text change
             screen.render();
             program.cursorBackward(currentLineText.length - currentLineText.substring(0, cursor.x - 1).length + 1)
+            // Render the cursor change
             screen.render();
         }
+        // Always render the screen at the end of the function to be sure the changes made correctly show
         screen.render();
+    } else {
+        // This is where my vertical scroll code would go IF I HAD ANY
     }
 }
 
@@ -49,6 +58,7 @@ function rightArrowHandler(cursor, program, screen, textArea) {
         if (cursor.x > currentLineText.length + 1) return;
         // Move the cursor forward by one from the current position
         program.cursorForward();
+        // Render the cursor change
         screen.render();
     }
 }
@@ -58,7 +68,7 @@ function leftArrowHandler(cursor, program, screen, textArea) {
     if (cursor.x > 2) {
         // Move the cursor backward by one from the current position
         program.cursorBackward();
-        // Make sure the action shows up on the screen
+        // Render the cursor change
         screen.render();
     }
     // Make sure the cursor is all the way to the left before wrapping
@@ -68,6 +78,8 @@ function leftArrowHandler(cursor, program, screen, textArea) {
         let previouslineText = textArea.getLine(cursor.y - 2);
         // Make sure there's text above AND within the screen bounds
         if (previouslineText && cursor.y > 3) {
+            // TODO: also make sure that the cursor STARTS at the beginning of the current line so the cursor isn't out in the middle of nowhere
+            // Move the cursor forward by the length of the above text and up by one
             program.cursorForward(previouslineText.length);
             program.cursorUp();
         }
@@ -150,6 +162,7 @@ function backspaceHandler(cursor, program, screen, textArea) {
 
     // Get the line that the cursor is sitting on minus the borders of the UI/screen
     let currentLineText = textArea.getLine(cursor.y - 3);
+
     if (currentLineText.length >= 1) {
         // If cursor is at the end of the current line
         if (cursor.x == currentLineText.length + 2) {
@@ -164,6 +177,8 @@ function backspaceHandler(cursor, program, screen, textArea) {
         // Cursor is at the beginning of the full line 
         else if (cursor.x == 2 && textArea.getLines().length > 1) {
             // Flow the current text up to the next line
+
+            // Get the previous line's text
             let preceedingLineText = textArea.getLine(cursor.y - 4);
 
             textArea.setLine(cursor.y - 4, preceedingLineText + currentLineText);
@@ -186,7 +201,9 @@ function backspaceHandler(cursor, program, screen, textArea) {
             program.cursorBackward(currentLineText.length - currentLineText.substring(0, backspaceIndex).length);
             screen.render();
         }
-        program.cursorBackward();
+        if (cursor.x > 1) {
+            program.cursorBackward();
+        }
     }
     // Else the cursor needs to flow up to the next line and backspace the previous line!
     else if (currentLineText.length < 1 && textArea.getLines().length > 1) {
@@ -196,11 +213,13 @@ function backspaceHandler(cursor, program, screen, textArea) {
         // Render the line being deleted
         screen.render();
         // Position the cursor up to the next line
-        program.cursorPos(cursor.y - 2, cursor.x - 1 + preceedingLineText.length);
-        // Render the cursor change
-        screen.render();
+        if (cursor.x > 1 && cursor.y > 2) {
+            program.cursorPos(cursor.y - 2, cursor.x - 1 + preceedingLineText.length);
+            // Render the cursor change
+            screen.render();
+        }
     }
-    // Always render the screen at the end of the function to be sure the changes made always show
+    // Always render the screen at the end of the function to be sure the changes made correctly show
     screen.render();
 }
 
