@@ -156,7 +156,6 @@ function downArrowHandler(cursor, program, screen, textArea) {
 }
 
 // TODO: Fix the backspaces being able to get out of text bounds
-// TODO: handle wrapping a line up to the next if at the beginning of text
 function backspaceHandler(cursor, program, screen, textArea) {
     if (cursor.x <= 1) return;
 
@@ -198,10 +197,14 @@ function backspaceHandler(cursor, program, screen, textArea) {
             textArea.setLine(cursor.y - 3, currentLineText.substring(0, backspaceIndex - 1) + currentLineText.substring(backspaceIndex, currentLineText.length));
             // Set the cursor back to where the last character was removed, even after a reset
             screen.render();
-            program.cursorBackward(currentLineText.length - currentLineText.substring(0, backspaceIndex).length);
-            screen.render();
+            if (cursor.x > 2) {
+
+                program.cursorBackward(currentLineText.length - currentLineText.substring(0, backspaceIndex).length);
+                // Render the cursor change
+                screen.render();
+            }
         }
-        if (cursor.x > 1) {
+        if (cursor.x > 2) {
             program.cursorBackward();
         }
     }
@@ -261,6 +264,7 @@ function spaceHandler(cursor, program, screen, textArea) {
 
 // TODO: figure out why this sometimes behaves oddly on what it considers a 'line'
 // I think it has something to do with the Y offsets (the top/bottom of the screen)
+// TODO: fix the below enter not moving the cursor to X1
 function enterHandler(cursor, program, screen, textArea) {
     // Get the line that the cursor is sitting on minus the borders of the UI/screen
     let currentLineText = textArea.getLine(cursor.y - 3);
