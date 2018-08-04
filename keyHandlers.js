@@ -275,6 +275,7 @@ function enterHandler(cursor, program, screen, textArea) {
     // Get the line that the cursor is sitting on minus the borders of the UI/screen
     let currentLineText = textArea.getLine(cursor.y - 3);
 
+    // If cursor is at the beginning of the line
     if (cursor.x == 2 && currentLineText.length > 1) {
         // Insert a line ABOVE the current line so the content flows down by one
         textArea.insertLine(cursor.y - 4, '');

@@ -43,14 +43,13 @@ For editing controls, the priorities are fixing backspace, getting basic entry t
 const fs = require('fs');
 const blessed = require('neo-blessed');
 
-// Require the class created for the introduction box object that appears first on start
+// Require the class created for the introduction box blessed component that appears first on start
 const IntroBox = require('./intro-box');
 // Require the functions to handle each keypress
 const keyHandlers = require('./keyHandlers');
 // Require the set of keys to listen for on keypress event for keys to ignore that custom handlers listen for
 const customKeys = require('./handledKeysSet');
-
-// Import the custom modular blessed components
+// Require the custom modular blessed components
 const MainWindow = require('./mainWindow');
 const TextArea = require('./textArea');
 const MenuBar = require('./menuBar');
@@ -82,7 +81,6 @@ let introBox = new IntroBox(screen, textArea, statusBar).introBox;
 // Append the needed UI elements to the screen (in visual order)
 screen.append(mainWindow);
 screen.append(menuBar);
-// NOTE: if commands/actions aren't working right, try appending to the mainWindow like it was previously
 screen.append(textArea);
 screen.append(statusBar);
 // Make sure the intro box is shown in the front 
@@ -92,7 +90,6 @@ program.resetCursor();
 
 textArea.on('focus', () => {
     //TODO: When a file is opened, start at the top of the first line, but at the end
-    // screen.render();
     // Get the top and bottom + left/right of the screen to reset the cursor
     // Pull the cursor all the way to the top left no matter where it is
     program.getCursor((err, data) => {
@@ -112,7 +109,7 @@ textArea.on('focus', () => {
 });
 
 textArea.key('left', () => {
-    // This callback returns an err and data object, the data object has the x position of cursor we need to poll
+    // This callback returns an err and data object, the data object has the x/y position of the cursor
     program.getCursor((err, data) => {
         if (err) return;
         // Use the custom left keyHandler, passing the needed objects for blessed operations
@@ -121,7 +118,7 @@ textArea.key('left', () => {
 });
 
 textArea.key('right', () => {
-    // This callback returns an err and data object, the data object has the x position of cursor we need to poll
+    // This callback returns an err and data object, the data object has the x/y position of the cursor
     program.getCursor((err, data) => {
         if (err) return;
         // Use the custom right keyHandler, passing the needed objects for blessed operations
@@ -130,7 +127,7 @@ textArea.key('right', () => {
 });
 
 textArea.key('up', () => {
-    // This callback returns an err and data object, the data object has the y position of cursor we need to poll
+    // This callback returns an err and data object, the data object has the x/y position of the cursor
     program.getCursor((err, data) => {
         if (err) return;
         // Use the custom up keyHandler, passing the needed objects for blessed operations
@@ -139,7 +136,7 @@ textArea.key('up', () => {
 });
 
 textArea.key('down', () => {
-    // This callback returns an err and data object, the data object has the y position of cursor we need to poll
+    // This callback returns an err and data object, the data object has the x/y position of the cursor
     program.getCursor((err, data) => {
         if (err) return;
         // Use the custom down keyHandler, passing the needed objects for blessed operations
@@ -148,13 +145,15 @@ textArea.key('down', () => {
 });
 
 textArea.key('enter', () => {
-    if (err) return;
+    // This callback returns an err and data object, the data object has the x/y position of the cursor
     program.getCursor((err, data) => {
+        if (err) return;
         return keyHandlers.enterHandler(data, program, screen, textArea);
     });
 });
 
 textArea.key('backspace', () => {
+    // This callback returns an err and data object, the data object has the x/y position of the cursor
     program.getCursor((err, data) => {
         if (err) return;
         // Use the custom backspace keyHandler, passing the needed objects for blessed operations
@@ -164,6 +163,7 @@ textArea.key('backspace', () => {
 
 // TODO: have this make sure it won't breach any bounds
 textArea.key('space', () => {
+    // This callback returns an err and data object, the data object has the x/y position of the cursor
     program.getCursor((err, data) => {
         if (err) return;
         // Use the custom space keyHandler, passing the needed objects for blessed operations
@@ -190,6 +190,7 @@ textArea.on('keypress', (ch, key) => {
     if (ch === '\r') return;
 
     // Determine where to insert the character that was entered based on the cursor position
+    // This callback returns an err and data object, the data object has the x/y position of the cursor
     program.getCursor((err, data) => {
         if (err) return;
         return keyHandlers.mainKeyHandler(data, program, screen, textArea, ch);
@@ -214,7 +215,10 @@ textArea.on('keypress', (ch, key) => {
 textArea.key(['C-w'], () => {
     return process.exit(0);
 });
+
+// Test file writing functions
 textArea.key(['C-s'], () => {
+    
     // Remove the cursor from the text that for SOME REASON shows up
     fs.writeFileSync('test', textArea.content.replace('', ''));
 });
