@@ -143,49 +143,59 @@ function downArrowHandler(cursor, program, screen, textArea) {
     }
 }
 
-// TODO: Fix the backspaces being off/weird/being able to get out of text bounds
+// TODO: Fix the backspaces being able to get out of text bounds
+// TODO: handle wrapping a line up to the next if at the beginning of text
 function backspaceHandler(cursor, program, screen, textArea) {
-    if (cursor.x > 1) {
-        // Get the line that the cursor is sitting on minus the borders of the UI/screen
-        let currentLineText = textArea.getLine(cursor.y - 3);
-        if (currentLineText.length >= 1) {
-            // If cursor is at the end of the current line
-            if (cursor.x == currentLineText.length + 2) {
-                textArea.setLine(cursor.y - 3, currentLineText.substring(0, currentLineText.length - 1));
-                // For some reason blessed automatically handles whitespace backspacing
-                // If the character at the END of the line isn't a space 
-                if (currentLineText.charAt(currentLineText.length - 1) !== ' ') {
-                    program.cursorBackward();
-                }
-                screen.render();
+    if (cursor.x <= 1) return;
 
-            } else {
-                // Else, a splice is needed rather than a removal
-                // Find the cursor position relative to the text
-                // Get the current cursor pos.x - 2 for finding which character to slice within the string minus the border
-                let backspaceIndex = cursor.x - 2;
-                //TODO: FIX! This does some weird stuff with the cursor where it resets on every backspace
-                // it may have something to do with the rendering procedure
-                textArea.setLine(cursor.y - 3, currentLineText.substring(0, backspaceIndex - 1) + currentLineText.substring(backspaceIndex, currentLineText.length));
-                // Set the cursor back to where the last character was removed, even after a reset
-                screen.render();
-                program.cursorBackward(currentLineText.length - currentLineText.substring(0, backspaceIndex).length);
-                screen.render();
+    // Get the line that the cursor is sitting on minus the borders of the UI/screen
+    let currentLineText = textArea.getLine(cursor.y - 3);
+    if (currentLineText.length >= 1) {
+        // If cursor is at the end of the current line
+        if (cursor.x == currentLineText.length + 2) {
+            textArea.setLine(cursor.y - 3, currentLineText.substring(0, currentLineText.length - 1));
+            // For some reason blessed automatically handles whitespace backspacing
+            // If the character at the END of the line isn't a space 
+            if (currentLineText.charAt(currentLineText.length - 1) !== ' ') {
+                program.cursorBackward();
             }
-            program.cursorBackward();
+            screen.render();
         }
-        // Else the cursor needs to flow up to the next line and backspace the previous line!
-        else if (currentLineText.length < 1 && textArea.getLines().length > 1) {
-            // Reflow to the next line
-            textArea.deleteLine(cursor.y - 3);
+        // Cursor is at the beginning of the full line 
+        else if (cursor.x == 2 && textArea.getLines().length > 1) {
+            // Flow the current text up to the next line
             let preceedingLineText = textArea.getLine(cursor.y - 4);
-            // Render the line being deleted
+
+            textArea.setLine(cursor.y - 4, preceedingLineText + currentLineText);
+            textArea.deleteLine(cursor.y - 3);
+            // Reender the text change
             screen.render();
-            // Position the cursor up to the next line
-            program.cursorPos(cursor.y - 2, cursor.x - 1 + preceedingLineText.length);
-            // Render the cursor change
+            // Move the cursor to the above line where the merge was made
+        }
+        // Else, a splice is needed rather than a removal
+        else {
+            // Find the cursor position relative to the text
+            // Get the current cursor pos.x - 2 for finding which character to slice within the string minus the border
+            let backspaceIndex = cursor.x - 2;
+            textArea.setLine(cursor.y - 3, currentLineText.substring(0, backspaceIndex - 1) + currentLineText.substring(backspaceIndex, currentLineText.length));
+            // Set the cursor back to where the last character was removed, even after a reset
+            screen.render();
+            program.cursorBackward(currentLineText.length - currentLineText.substring(0, backspaceIndex).length);
             screen.render();
         }
+        program.cursorBackward();
+    }
+    // Else the cursor needs to flow up to the next line and backspace the previous line!
+    else if (currentLineText.length < 1 && textArea.getLines().length > 1) {
+        // Reflow to the next line
+        textArea.deleteLine(cursor.y - 3);
+        let preceedingLineText = textArea.getLine(cursor.y - 4);
+        // Render the line being deleted
+        screen.render();
+        // Position the cursor up to the next line
+        program.cursorPos(cursor.y - 2, cursor.x - 1 + preceedingLineText.length);
+        // Render the cursor change
+        screen.render();
     }
     // Always render the screen at the end of the function to be sure the changes made always show
     screen.render();
