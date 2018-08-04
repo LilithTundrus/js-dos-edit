@@ -3,7 +3,7 @@
 
 // This file contains the handlers for each key/combination that the editor supports
 
-// TODO: Maybe split the major keys out into their own function
+// TODO: Maybe split the major keys out into their own function since they're getting a bit long
 
 // This handles all standard character keys
 function mainKeyHandler(cursor, program, screen, textArea, ch) {
@@ -187,6 +187,7 @@ function backspaceHandler(cursor, program, screen, textArea) {
             // Reender the text change
             screen.render();
             // Move the cursor to the above line where the merge was made
+            // Y, X notation for row:column
             program.cursorPos(cursor.y - 2, cursor.x + preceedingLineText.length)
             // Render the cursor change
             screen.render();
@@ -217,8 +218,9 @@ function backspaceHandler(cursor, program, screen, textArea) {
         let preceedingLineText = textArea.getLine(cursor.y - 4);
         // Render the line being deleted
         screen.render();
-        // Position the cursor up to the next line
         if (cursor.x > 1 && cursor.y > 2) {
+            // Position the cursor up to the next line
+            // Y, X notation for row:column
             program.cursorPos(cursor.y - 2, cursor.x - 1 + preceedingLineText.length);
             // Render the cursor change
             screen.render();
@@ -230,6 +232,7 @@ function backspaceHandler(cursor, program, screen, textArea) {
 
 function spaceHandler(cursor, program, screen, textArea) {
     // TODO: Scroll horizontally if this check doesn't occur
+
     // This VISUALLY keeps the cursor in right bound of the editing window
     if (cursor.x < screen.width - 1) {
         // Get the line that the cursor is sitting on minus the borders of the UI/screen
@@ -237,6 +240,7 @@ function spaceHandler(cursor, program, screen, textArea) {
 
         // If cursor is at the beginning of the line (move the rest of the text forward and insert the character)
         if (cursor.x == 2 && currentLineText.length > 1) {
+            // Add the space to the start of the line
             textArea.setLine(cursor.y - 3, ' ' + currentLineText);
             // Render the text change
             screen.render();
@@ -256,7 +260,6 @@ function spaceHandler(cursor, program, screen, textArea) {
             // Render the text change
             screen.render();
             program.cursorBackward(currentLineText.length - currentLineText.substring(0, cursor.x - 1).length + 1)
-            // program.cursorForward();
             // Render the cursor change
             screen.render();
         }
@@ -277,7 +280,7 @@ function enterHandler(cursor, program, screen, textArea) {
         textArea.insertLine(cursor.y - 4, '');
         // Render the line change
         screen.render();
-        // Set the cursor back to the beginning of the line, even after the 
+        // Set the cursor back to the beginning of the line
         // Y, X notation for row:column
         program.cursorPos(cursor.y, cursor.x - 1);
         // Render the cursor change
@@ -289,7 +292,7 @@ function enterHandler(cursor, program, screen, textArea) {
         textArea.insertLine(cursor.y - 2, '');
         // Render the line change
         screen.render();
-        // Set the cursor back to the beginning of the line, even after the 
+        // Set the cursor back to the beginning of the line
         // Y, X notation for row:column
         program.cursorPos(cursor.y, 2);
         // Render the cursor change
@@ -303,7 +306,7 @@ function enterHandler(cursor, program, screen, textArea) {
         textArea.insertLine(cursor.y - 2, currentLineText.substring(cursor.x - 2));
         // Render the line changes
         screen.render();
-        // Set the cursor back to the beginning of the line, even after the 
+        // Set the cursor back to the beginning of the line
         // Y, X notation for row:column
         program.cursorPos(cursor.y, 1);
         // Render the cursor change
