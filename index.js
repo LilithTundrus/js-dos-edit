@@ -69,6 +69,8 @@ key to go to the end of the text area but to the end of the text ON that line
 // NOTE: Alt codes like ↑ work in blessed!
 // NOTE: The version of blessed we're using is modified, the keys.js file has a regex to 
 // ignore a couple extra things (mainly cursor reporting bullshit that's just, not handled by blessed.)
+// Note: blessed is weird, if you make a change and it doesn't happen, try rendering in between each of
+// the steps, they may not occur otherwise (which is weird)
 
 // TODO: Scrollbars should have up/down arrows and be all the way to the right of the screen instead of right - 1
 // TODO: support files being opened from the command line
@@ -80,13 +82,15 @@ key to go to the end of the text area but to the end of the text ON that line
 // TODO: get scrolling working (may end up being really hard because of how text is edited)
 // TODO: figure out how to properly insert tabs
 // TODO: Create a folder structure for this project
+// TODO: documents keyhandlers better
 
 /* Current working list:
 
 Right now I think the main idea is that before working on the rest of the text editor, the 
 actual text editing needs to be addressed. So I'll make sure that's perfect first
 
-First basic editing controls, 
+First basic editing controls,
+then fixing the arrow keys to work like VS code 
 then scrolling,
 then horizontal scrolling,
 then the rest

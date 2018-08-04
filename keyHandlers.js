@@ -3,6 +3,8 @@
 
 // This file contains the handlers for each key/combination that the editor supports
 
+// TODO: Maybe split the major keys out into their own function
+
 // This handles all standard character keys
 function mainKeyHandler(cursor, program, screen, textArea, ch) {
     // TODO: There should also be a check for if the current line is valid to write to
@@ -155,7 +157,7 @@ function downArrowHandler(cursor, program, screen, textArea) {
     }
 }
 
-// TODO: Fix the backspaces being able to get out of text bounds
+// TODO: Make sure when reflowing up to the next line that it won't go out of bounds
 function backspaceHandler(cursor, program, screen, textArea) {
     if (cursor.x <= 1) return;
 
@@ -265,6 +267,7 @@ function spaceHandler(cursor, program, screen, textArea) {
 // TODO: figure out why this sometimes behaves oddly on what it considers a 'line'
 // I think it has something to do with the Y offsets (the top/bottom of the screen)
 // TODO: fix the below enter not moving the cursor to X1
+// TODO: fix this not working on 2 character lines
 function enterHandler(cursor, program, screen, textArea) {
     // Get the line that the cursor is sitting on minus the borders of the UI/screen
     let currentLineText = textArea.getLine(cursor.y - 3);
@@ -291,9 +294,9 @@ function enterHandler(cursor, program, screen, textArea) {
         program.cursorPos(cursor.y, 2);
         // Render the cursor change
         screen.render();
-    } else {
-        // The enter key was pressed in between the text (probably)
-
+    }
+    // The enter key was pressed in between the text
+    else {
         // Split the text and reflow the text that was in front of the cursor to the next line
         textArea.setLine(cursor.y - 3, currentLineText.substring(0, cursor.x - 2));
         // Set the line below to be the rest of the text
