@@ -21,6 +21,8 @@
 // TODO: figure out how to properly insert tabs
 // TODO: Create a folder structure for this project
 // TODO: documents keyhandlers better
+// TODO: Figure out why sometimes when entering text into a blank line it can sometimes pull text from
+// the above lines
 
 /* Current working list:
 
@@ -28,7 +30,7 @@ Right now I think the main idea is that before working on the rest of the text e
 actual text editing needs to be addressed. So I'll make sure that's perfect first
 
 First basic editing controls,
-then fixing the arrow keys to work like VS code 
+then fixing the arrow keys to work like VS code
 then scrolling,
 then horizontal scrolling,
 menus,
@@ -38,7 +40,6 @@ then the rest
 
 For editing controls, the priorities are fixing backspace, getting basic entry to insert _per line_ not at the end of the file
 */
-
 // Node/NPM package requires
 const fs = require('fs');
 const blessed = require('neo-blessed');
