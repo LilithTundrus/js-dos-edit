@@ -132,23 +132,28 @@ function downArrowHandler(cursor, program, screen, textArea) {
         // Don't allow the cursor to move beyond the next line if it's 'empty'. Empty means the same line shows up each time, returned from the textArea check
         // TODO: This likely needs a better, stronger check
         let allLinesText = textArea.getLines();
+
+        // TOD: make this a better check
         // If the last entry in the array of lines equals what the cursor line currently is AND the array is at the length of the line cursor is on
         if (currentLineText == allLinesText[allLinesText.length - 1] && allLinesText.length - 1 == cursor.y - 3 && cursor.x > 2) return;
 
         // If the next line is longer than the current
-        if (nextLineText.length > cursor.x - 1 && cursor.x - 1 > currentLineText.length) {
+        if (nextLineText.length > cursor.x - 1 && cursor.x - 1 > currentLineText.length && currentLineText.length > 0) {
             // Find the difference between the current cursor.x and the length of the line above
             program.cursorForward(nextLineText.length - cursor.x + 2);
             program.cursorDown();
-            // If both lines are equal
-        } else if (nextLineText.length + 2 == cursor.x && currentLineText.length + 2 == cursor.x) {
+        }
+        // If both lines are equal
+        else if (nextLineText.length + 2 == cursor.x && currentLineText.length + 2 == cursor.x) {
             program.cursorDown();
-            // If the cursor is ahead of the next line down
-        } else if (nextLineText.length < cursor.x - 1 && cursor.x > 2) {
+        }
+        // If the cursor is ahead of the next line down
+        else if (nextLineText.length < cursor.x - 1 && cursor.x > 2) {
             program.cursorBackward(cursor.x - nextLineText.length - 2);
             program.cursorDown();
-            // Else, just put the cursor down one -- it's in the middle and there is text above
-        } else {
+        }
+        // Else, just put the cursor down one -- it's in the middle and there is text above
+        else {
             program.cursorDown();
         }
     } else if (cursor.y == screen.height - 1) {
