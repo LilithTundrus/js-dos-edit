@@ -7,15 +7,14 @@
 // NOTE: Alt codes like ↑ work in blessed!
 // NOTE: The version of blessed we're using is modified, the keys.js file has a regex to 
 // ignore a couple extra things (mainly cursor reporting bullshit that's just, not handled by blessed.)
-// Note: blessed is weird, if you make a change and it doesn't happen, try rendering in between each of
-// the steps, they may not occur otherwise (which is weird)
+// NOTE: blessed is weird, if you make a change and it doesn't happen, try rendering in between each of
+// the steps, they may not occur otherwise
 
 // TODO: Scrollbars should have up/down arrows and be all the way to the right of the screen instead of right - 1
 // TODO: support files being opened from the command line
-// TODO: get the text editing aspects to act like VS code (reflowing, etc.)
 // TODO: figure how to handle lines being longer than the window width 
-// TODO: get scolling working (also move the scrollbar to the right )
-// TODO: implement a vertical scrollbard (looking at the blessed scrollbar code could yield assistance)
+// TODO: get scolling working (also move the scrollbar to the right)
+// TODO: implement a vertical scrollbar (looking at the blessed scrollbar code could yield assistance)
 // TODO: add more info to the statusBar area (if we can get the cursor to stop moving when it updates)
 // TODO: get scrolling working (may end up being really hard because of how text is edited)
 // TODO: figure out how to properly insert tabs
@@ -23,15 +22,16 @@
 // TODO: documents keyhandlers better
 // TODO: Figure out why sometimes when entering text into a blank line it can sometimes pull text from
 // the above lines
+// TODO: fix this bug:
+// TypeError: this._clines.rtof is not a function
 
 /* Current working list:
 
 Right now I think the main idea is that before working on the rest of the text editor, the 
 actual text editing needs to be addressed. So I'll make sure that's perfect first
 
-First basic editing controls,
-then fixing the arrow keys to work like VS code
-then scrolling,
+First basic editing controls, - DONE (sort of)
+then scrolling (and scrollbars), - WORKING ON
 then horizontal scrolling,
 menus,
 error handling,

@@ -16,9 +16,16 @@ function mainKeyHandler(cursor, program, screen, textArea, ch) {
         // Get the line that the cursor is sitting on minus the borders of the UI/screen
         let currentLineText = textArea.getLine(cursor.y - 3);
 
+        // If there's no text to begin with
+        if (cursor.x == 2 && currentLineText.length < 1) {
+            // Add the character to the beginning of the line
+            textArea.setLine(cursor.y - 3, ch);
+            // Render the text change
+            screen.render();
+        }
         // If cursor is at the beginning of the line (move the rest of the text forward and insert the character)
-        if (cursor.x == 2 && currentLineText.length > 1) {
-            // Add the character to the end of the line
+        else if (cursor.x == 2 && currentLineText.length > 1) {
+            // Add the character to the beginning of the line
             textArea.setLine(cursor.y - 3, ch + currentLineText);
             // Render the text change
             screen.render();
