@@ -267,17 +267,14 @@ function spaceHandler(cursor, program, screen, textArea) {
     }
 }
 
-// TODO: figure out why this sometimes behaves oddly on what it considers a 'line'
-// I think it has something to do with the Y offsets (the top/bottom of the screen)
-// TODO: fix this not working on 2 character lines
 function enterHandler(cursor, program, screen, textArea) {
     // Get the line that the cursor is sitting on minus the borders of the UI/screen
     let currentLineText = textArea.getLine(cursor.y - 3);
 
     // If cursor is at the beginning of the line
-    if (cursor.x == 2 && currentLineText.length > 1) {
-        // Insert a line ABOVE the current line so the content flows down by one
-        textArea.insertLine(cursor.y - 4, '');
+    if (cursor.x == 2 && currentLineText.length >= 1) {
+        // Insert a line ABOVE the current line so the content flows down by one, but on the 'same' line
+        textArea.insertLine(cursor.y - 3, '');
         // Render the line change
         screen.render();
         // Set the cursor back to the beginning of the line
