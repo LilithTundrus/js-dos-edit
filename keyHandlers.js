@@ -269,7 +269,6 @@ function spaceHandler(cursor, program, screen, textArea) {
 
 // TODO: figure out why this sometimes behaves oddly on what it considers a 'line'
 // I think it has something to do with the Y offsets (the top/bottom of the screen)
-// TODO: fix the below enter not moving the cursor to X1
 // TODO: fix this not working on 2 character lines
 function enterHandler(cursor, program, screen, textArea) {
     // Get the line that the cursor is sitting on minus the borders of the UI/screen
@@ -288,14 +287,14 @@ function enterHandler(cursor, program, screen, textArea) {
         screen.render();
     }
     // If the cursor is at the end
-    else if (cursor.x >= currentLineText.length + 1) {
+    else if (cursor.x > currentLineText.length + 1) {
         // Insert a line BELOW the current line
         textArea.insertLine(cursor.y - 2, '');
         // Render the line change
         screen.render();
         // Set the cursor back to the beginning of the line
         // Y, X notation for row:column
-        program.cursorPos(cursor.y, 2);
+        program.cursorPos(cursor.y, 1);
         // Render the cursor change
         screen.render();
     }
