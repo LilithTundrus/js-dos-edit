@@ -42,15 +42,18 @@ class TextArea {
             border: {
                 type: 'line'
             },
-            // scrollable: true,
-            // // Scrollbar styles, likely a placeholder for the future
-            // scrollbar: {
-            //     ch: '█',
-            //     track: {
-            //         bg: 'black',
-            //         ch: '░'
-            //     },
-            // },
+            scrollable: true,
+            // Scrollbar styles, likely a placeholder for the future
+            scrollbar: {
+                ch: '█',
+                track: {
+                    bg: 'black',
+                    ch: '░'
+                },
+            },
+            // Limit files to 16,000 lines (ambitious at best)
+            baseLimit: 16000,
+            alwaysScroll: true,
         });
     }
 }

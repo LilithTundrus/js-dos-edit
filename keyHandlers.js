@@ -16,7 +16,7 @@ function mainKeyHandler(cursor, program, screen, textArea, ch) {
         // Get the line that the cursor is sitting on minus the borders of the UI/screen
         let currentLineText = textArea.getLine(cursor.y - 3);
 
-        // If there's no text to begin with
+        // If there's no text to begin with (this should be what avoids weird text ghosting onto a new line)
         if (cursor.x == 2 && currentLineText.length < 1) {
             // Add the character to the beginning of the line
             textArea.setLine(cursor.y - 3, ch);
@@ -123,6 +123,12 @@ function upArrowHandler(cursor, program, screen, textArea) {
             program.cursorUp();
         }
     }
+    // 
+    else {
+        screen.render();
+        textArea.scroll(-1);
+        screen.render();
+    }
 }
 
 // TODO: fix this sometimes going out of bounds when on an empty line
@@ -164,8 +170,9 @@ function downArrowHandler(cursor, program, screen, textArea) {
             program.cursorDown();
         }
     } else if (cursor.y == screen.height - 1) {
-        // textArea.scroll(1);
-        // screen.render();
+        screen.render();
+        textArea.scroll(1);
+        screen.render();
     }
 }
 
