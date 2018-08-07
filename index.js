@@ -14,7 +14,7 @@
 // TODO: support files being opened from the command line
 // TODO: figure how to handle lines being longer than the window width 
 // TODO: get scolling working (also move the scrollbar to the right)
-// TODO: implement a vertical scrollbar (looking at the blessed scrollbar code could yield assistance)
+// TODO: implement a horizontal scrollbar (looking at the blessed scrollbar code could yield assistance)
 // TODO: add more info to the statusBar area (if we can get the cursor to stop moving when it updates)
 // TODO: get scrolling working (may end up being really hard because of how text is edited)
 // TODO: figure out how to properly insert tabs
@@ -25,6 +25,7 @@
 // TODO: handle that when the textArea is in a scrolling state, text entry gets messed up 
 // (it likely has to do with how we're not accounting for the scrolling index with the relative cursor
 // position)
+// TODO: get scrolling/custom scrolling working
 
 /* Current working list:
 

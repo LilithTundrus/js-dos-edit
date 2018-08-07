@@ -128,7 +128,7 @@ function upArrowHandler(cursor, program, screen, textArea) {
         // TODO: This needs to more cleanly handle this (the x position of the cursor janks around)
         textArea.scroll(-1);
         screen.render();
-        program.cursorPos(3, cursor.x);
+        program.cursorPos(2, cursor.x);
         screen.render();
     }
 }
@@ -171,8 +171,9 @@ function downArrowHandler(cursor, program, screen, textArea) {
         else {
             program.cursorDown();
         }
-        // Scroll the text down by one
-    } else if (cursor.y == screen.height - 1) {
+    }
+    // Scroll the text down by one
+    else if (cursor.y == screen.height - 1) {
         // TODO: This needs to more cleanly handle this (the x position of the cursor janks around)
         textArea.scroll(1);
         screen.render();
