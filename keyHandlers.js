@@ -128,7 +128,8 @@ function upArrowHandler(cursor, program, screen, textArea) {
         // TODO: This needs to more cleanly handle this (the x position of the cursor janks around)
         textArea.scroll(-1);
         screen.render();
-        program.cursorPos(2, cursor.x);
+        // For some reason setting the y on this to 2 scrolls more 'smoothly' than 3 (less cursor jank)
+        program.cursorPos(2, cursor.x - 1);
         screen.render();
     }
 }
@@ -178,7 +179,7 @@ function downArrowHandler(cursor, program, screen, textArea) {
         textArea.scroll(1);
         screen.render();
         // For some reason the screen - 2 is what sets the cursor to the bottom position that's needed
-        program.cursorPos(screen.height - 2, cursor.x);
+        program.cursorPos(screen.height - 2, cursor.x - 1);
         screen.render();
     }
 }

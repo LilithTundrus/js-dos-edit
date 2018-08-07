@@ -71,6 +71,12 @@ let screen = blessed.screen({
     },
 });
 
+// TODO: Figure out why this doesn't work
+program.on('resize', () => {
+    program.cursorPos(3, 2);
+    screen.render();
+})
+
 // Set the title of the terminal window (if any) -- this will eventually take cli arguments for reading a file to be edited
 screen.title = 'EDIT - untitled';
 
