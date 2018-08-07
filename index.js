@@ -20,10 +20,11 @@
 // TODO: figure out how to properly insert tabs
 // TODO: Create a folder structure for this project
 // TODO: documents keyhandlers better
-// TODO: Figure out why sometimes when entering text into a blank line it can sometimes pull text from
-// the above lines
 // TODO: fix this bug:
 // TypeError: this._clines.rtof is not a function
+// TODO: handle that when the textArea is in a scrolling state, text entry gets messed up 
+// (it likely has to do with how we're not accounting for the scrolling index with the relative cursor
+// position)
 
 /* Current working list:
 

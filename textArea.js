@@ -53,6 +53,7 @@ class TextArea {
             },
             // Limit files to 16,000 lines (ambitious at best)
             baseLimit: 16000,
+            // This fixes any issues with the box not scrolling on scroll method calls
             alwaysScroll: true,
         });
     }
