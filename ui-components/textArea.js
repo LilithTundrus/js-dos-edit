@@ -23,7 +23,7 @@ class TextArea {
             // Left-align the text
             align: 'left',
             // Keep the width of this element to 100% of the screen
-            width: '100%',
+            width: '100%+1',
             // Height should be the entire screen minus 1 because of the statusBar (not doing this hide part of the text entry window)
             height: '100%-1',
             // Don't capture SGR blessed escape codes, that could cause issues
@@ -43,7 +43,7 @@ class TextArea {
                 type: 'line'
             },
             scrollable: true,
-            // Scrollbar styles, likely a placeholder for the future
+            // Scrollbar styles
             scrollbar: {
                 ch: '█',
                 track: {
