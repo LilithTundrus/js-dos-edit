@@ -51,7 +51,7 @@ class IntroBox {
                 fg: 'black',
                 bg: '#33F0FF',
             },
-            shadow: true,
+            // shadow: true,
             height: 1,
             // Try to center the button in the most elegant way possible
             top: Math.round(this.introBox.height / 2),

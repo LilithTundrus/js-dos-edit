@@ -47,16 +47,16 @@ const fs = require('fs');
 const blessed = require('neo-blessed');
 
 // Require the class created for the introduction box blessed component that appears first on start
-const IntroBox = require('./intro-box');
+const IntroBox = require('./ui-components/intro-box');
 // Require the functions to handle each keypress
-const keyHandlers = require('./keyHandlers');
+const keyHandlers = require('./lib/keyHandlers');
 // Require the set of keys to listen for on keypress event for keys to ignore that custom handlers listen for
-const customKeys = require('./handledKeysSet');
+const customKeys = require('./lib/handledKeysSet');
 // Require the custom modular blessed components
-const MainWindow = require('./mainWindow');
-const TextArea = require('./textArea');
-const MenuBar = require('./menuBar');
-const StatusBar = require('./statusBar');
+const MainWindow = require('./ui-components/mainWindow');
+const TextArea = require('./ui-components/textArea');
+const MenuBar = require('./ui-components/menuBar');
+const StatusBar = require('./ui-components/statusBar');
 
 let program = blessed.program();
 // Create a screen object to work with blessed
@@ -227,7 +227,7 @@ textArea.key(['C-w'], () => {
 
 // Test file writing functions
 textArea.key(['C-s'], () => {
-    
+
     // Remove the cursor from the text that for SOME REASON shows up
     fs.writeFileSync('test', textArea.content.replace('', ''));
 });
