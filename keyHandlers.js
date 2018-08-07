@@ -123,10 +123,12 @@ function upArrowHandler(cursor, program, screen, textArea) {
             program.cursorUp();
         }
     }
-    // 
-    else {
-        screen.render();
+    // Scroll the text up by one (sort of, not just yet)
+    else if (cursor.y == 3 && textArea.getScrollPerc() > 1) {
+        // TODO: this needs to position the cursor's Y at the bottom of the screen to keep scrolling
         textArea.scroll(-1);
+        screen.render();
+        program.cursorPos(3, cursor.x);
         screen.render();
     }
 }
@@ -169,6 +171,7 @@ function downArrowHandler(cursor, program, screen, textArea) {
         else {
             program.cursorDown();
         }
+        // Scroll the text down by one
     } else if (cursor.y == screen.height - 1) {
         screen.render();
         textArea.scroll(1);
