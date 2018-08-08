@@ -57,6 +57,7 @@ const MainWindow = require('./ui-components/mainWindow');
 const TextArea = require('./ui-components/textArea');
 const MenuBar = require('./ui-components/menuBar');
 const StatusBar = require('./ui-components/statusBar');
+const OpenDialog = require('./ui-components/openDialog');
 
 let program = blessed.program();
 // Create a screen object to work with blessed
@@ -86,6 +87,7 @@ let mainWindow = new MainWindow(screen).mainWindow;
 let menuBar = new MenuBar(screen).menuBar;
 let statusBar = new StatusBar(screen).statusBar;
 let introBox = new IntroBox(screen, textArea, statusBar).introBox;
+let openDialog = new OpenDialog(screen, textArea, statusBar).openDialog;
 
 // Append the needed UI elements to the screen (in visual order)
 screen.append(mainWindow);
@@ -94,6 +96,10 @@ screen.append(textArea);
 screen.append(statusBar);
 // Make sure the intro box is shown in the front 
 screen.append(introBox);
+screen.append(openDialog);
+openDialog.hide()
+
+
 // Reset the cursor after appending all of the UI elements
 program.resetCursor();
 
@@ -234,6 +240,12 @@ textArea.key(['C-s'], () => {
 
 textArea.key(['f4'], () => {
     return process.exit();
+});
+
+screen.key(['C-o'], () => {
+    openDialog.toggle();
+    openDialog.focus();
+    screen.render();
 });
 
 // Render the screen

@@ -10,8 +10,9 @@ const blessed = require('neo-blessed');
 
 // This needs to be a class because on construction blessed tries to attach this to a parent screen
 class OpenDialog {
-    constructor(parent) {
+    constructor(parent, nextFocusElement, statusBar) {
         this.parent = parent;
+        this.nextFocusElement = nextFocusElement;
 
         this.openDialog = blessed.box({
             parent: this.parent,
@@ -19,9 +20,9 @@ class OpenDialog {
             top: 'center',
             left: 'center',
             width: '50%',
+            // Left-align the text
+            align: 'left',
             height: 9,
-            align: 'center',
-            valign: 'middle',
             style: {
                 fg: 'black',
                 bg: 'light-grey',
@@ -31,8 +32,15 @@ class OpenDialog {
                     bg: 'light-grey'
                 },
             },
+            valign: 'middle',
+            label: 'AAAAAA',
             shadow: true,
-            content: 'AAAAAAAAAA',
+            content: 'Test',
+        });
+
+        this.openDialog.key(['C-o'], () => {
+            this.nextFocusElement.focus();
+            this.parent.render();
         });
     }
 }
