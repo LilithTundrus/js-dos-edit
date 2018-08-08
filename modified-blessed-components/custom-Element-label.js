@@ -37,7 +37,7 @@ Element.prototype.setLabel = function (options) {
     });
 
     if (options.side !== 'right') {
-        this._label.rleft = Math.round(this.screen.width / 2 - (this._label.content.length / 2));
+        this._label.rleft = Math.round(this._getWidth() / 2 - (this._label.content.length / 2));
     } else {
         this._label.rright = 2 - this.iright;
     }
@@ -46,7 +46,7 @@ Element.prototype.setLabel = function (options) {
 
     if (!this.screen.autoPadding) {
         if (options.side !== 'right') {
-            this._label.rleft = Math.round(this.screen.width / 2 - (this._label.content.length / 2));
+            this._label.rleft = Math.round(this._getWidth() / 2 - (this._label.content.length / 2));
         } else {
             this._label.rright = 2;
         }
@@ -61,4 +61,14 @@ Element.prototype.setLabel = function (options) {
         }
         self.screen.render();
     };
-}
+
+    this.on('scroll', this._labelScroll = function () {
+        reposition();
+    });
+
+    this.on('resize', this._labelResize = function () {
+        nextTick(function () {
+            reposition();
+        });
+    });
+};
