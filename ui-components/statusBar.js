@@ -10,6 +10,12 @@ const blessed = require('neo-blessed');
 
 // This needs to be a class because on construction blessed tries to attach this to a parent screen
 class StatusBar {
+
+    /** Creates an instance of TextArea. This is the main text entry box
+     * @param {*} parent Blessed screen parent to attach the element to
+     * @param {*} fileLabel The filename to set the textAreas's label to
+     * @memberof TextArea
+     */
     constructor(parent) {
         this.parent = parent;
 
@@ -32,7 +38,7 @@ class StatusBar {
                 fg: 'black',
                 bg: 'light-grey',
             },
-            // Placeholder content (mayb not even be needed)
+            // Placeholder content (may not even be needed)
             content: `Unsaved Document\t\t\t< Press Ctrl + W to quit >\t\t\t Line 0 | Col 0`
         });
     }

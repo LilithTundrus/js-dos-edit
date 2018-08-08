@@ -9,7 +9,15 @@ const blessed = require('neo-blessed');
 // Create the textArea textbox, where the actual text being edited will be displayed
 
 // This needs to be a class because on construction blessed tries to attach this to a parent screen
+
+// TODO: At some point, the scrollbar(s) should always show no matter the content length
 class TextArea {
+
+    /** Creates an instance of TextArea. This is the main text entry box
+     * @param {*} parent Blessed screen parent to attach the element to
+     * @param {*} fileLabel The filename to set the textAreas's label to
+     * @memberof TextArea
+     */
     constructor(parent, fileLabel) {
         this.parent = parent;
 
@@ -17,8 +25,8 @@ class TextArea {
         this.textArea = blessed.box({
             // The top of this element should be the screen width plus 1
             top: 1,
+            // Mark the element as keyable to the screen passes down any keypresses to the box
             keyable: true,
-            // keys: true,
             label: fileLabel,
             // Left-align the text
             align: 'left',
@@ -28,6 +36,7 @@ class TextArea {
             height: '100%-1',
             // Don't capture SGR blessed escape codes, that could cause issues
             tags: false,
+            // This style matches the DOS edit theme
             style: {
                 fg: 'bold',
                 bg: 'blue',
@@ -43,7 +52,7 @@ class TextArea {
                 type: 'line'
             },
             scrollable: true,
-            // Scrollbar styles
+            // Scrollbar styles, using extended characters here
             scrollbar: {
                 ch: '█',
                 track: {

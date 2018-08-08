@@ -9,7 +9,15 @@ const blessed = require('neo-blessed');
 // Create the menuBar box, a single-height box that spans the entire window
 
 // This needs to be a class because on construction blessed tries to attach this to a parent screen
+
+// TODO: The call-key for alt+ the menu key shouldn't be red until the alt key is held down
 class MenuBar {
+    
+    /**
+     *Creates an instance of MenuBar. This is where the menu options like, file, edit, etc.
+     * @param {*} parent Blessed screen parent to attach the element to
+     * @memberof MenuBar
+     */
     constructor(parent) {
         this.parent = parent;
 
@@ -28,6 +36,7 @@ class MenuBar {
                 left: 1,
                 right: 1
             },
+            // This style matches the DOS edit theme
             style: {
                 fg: 'black',
                 bg: 'light-grey',
