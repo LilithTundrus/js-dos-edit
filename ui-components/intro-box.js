@@ -10,50 +10,64 @@ const blessed = require('neo-blessed');
 
 class IntroBox {
     /** Creates an instance of IntroBox. The parent should always bes the blessed screen object
-     * @param {*} parent
-     * @param {*} nextFocusElement
+     * @param {*} parent Blessed screen parent to attach the element to
+     * @param {*} nextFocusElement Next blessed element to focus after the box is cleared
+     * @param {*} statusBar StatusBar to change the text of when the intro box is focused
      * @memberof IntroBox
-     */
+    */
     constructor(parent, nextFocusElement, statusBar) {
         this.parent = parent;
         this.nextFocusElement = nextFocusElement;
+
         // Create the introBox element and return it using the parent
         this.introBox = blessed.box({
             parent: this.parent,
             border: 'line',
+            // Top of the box is the cetner of the screen
             top: 'center',
+            // Center the box to the left and right of the screen
             left: 'center',
+            right: 'center',
+            // Width of the box should be 50% of the screen
             width: '50%',
+            // Height of 9 since this doesn't need to be any taller
             height: 9,
+            // Center align the box's text
             align: 'center',
+            // Vertically center the text
             valign: 'middle',
+            // This matches the DOS edit theme
             style: {
                 fg: 'black',
                 bg: 'light-grey',
                 border: {
-                    // This matches the DOS edit theme
                     fg: 'black',
-                    bg: 'light-grey'
+                    bg: 'light-grey',
                 },
             },
+            // Draw a black shadow around the box
             shadow: true,
             content: 'Welcome to JS DOS Edit\n\nPlease note that this is still in early development!',
         });
 
         // Create a button to append to the message box
         let button = blessed.button({
+            // The parent of the button should be the generated introBox
             parent: this.introBox,
             // Using extended characters here
             content: `► OK ◄`,
+            // Allow the button to shrink when needed
             shrink: true,
+            // Center the button
             left: 'center',
             style: {
                 fg: 'black',
+                // Cyan
                 bg: '#33F0FF',
             },
-            // shadow: true,
+            // Button should only be a height of 1
             height: 1,
-            // Try to center the button in the most elegant way possible
+            // Center the button in the most elegant way possible
             top: Math.round(this.introBox.height / 2),
         });
 
@@ -72,4 +86,5 @@ class IntroBox {
     }
 }
 
+// Export the blessed component(s)
 module.exports = IntroBox;
