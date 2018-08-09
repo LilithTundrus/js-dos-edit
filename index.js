@@ -10,39 +10,32 @@
 // NOTE: blessed is weird, if you make a change and it doesn't happen, try rendering in between each of
 // the steps, they may not occur otherwise
 
-// TODO: Scrollbars should have up/down arrows and be all the way to the right of the screen instead of right - 1
 // TODO: support files being opened from the command line
-// TODO: figure how to handle lines being longer than the window width 
-// TODO: get scolling working (also move the scrollbar to the right)
-// TODO: implement a horizontal scrollbar (looking at the blessed scrollbar code could yield assistance)
 // TODO: add more info to the statusBar area (if we can get the cursor to stop moving when it updates)
-// TODO: get scrolling working (may end up being really hard because of how text is edited)
 // TODO: figure out how to properly insert tabs
-// TODO: Create a folder structure for this project
-// TODO: documents keyhandlers better
+// TODO: document keyhandlers better
 // TODO: fix this bug:
 // TypeError: this._clines.rtof is not a function
 // TODO: handle that when the textArea is in a scrolling state, text entry gets messed up 
 // (it likely has to do with how we're not accounting for the scrolling index with the relative cursor
 // position)
-// TODO: get scrolling/custom scrolling working
+// TODO: Get scrolling/custom horizontal scrolling working
 // TODO: Modify blessed's borders to support a 'window' at the top (no border line being drawn)
 // TODO: Add half-width shadows for buttons
+// TODO: Get the scroll arrows to 'blink' on arrow key events (works but annoyingly moves the cursor around to make the change)
 
 /* Current working list:
 
 Right now I think the main idea is that before working on the rest of the text editor, the 
 actual text editing needs to be addressed. So I'll make sure that's perfect first
 
-First basic editing controls, - DONE (sort of)
+First basic editing controls, - DONE (sort of) -- not working with scrolling yet
 then scrolling (and scrollbars), - WORKING ON
 then horizontal scrolling,
 menus,
 error handling,
 user-facing error handling
 then the rest
-
-For editing controls, the priorities are fixing backspace, getting basic entry to insert _per line_ not at the end of the file
 */
 // Node/NPM package requires
 const fs = require('fs');
@@ -61,6 +54,7 @@ const MenuBar = require('./ui-components/menuBar');
 const StatusBar = require('./ui-components/statusBar');
 const OpenDialog = require('./ui-components/openDialog');
 const ScrollArrowUp = require('./ui-components/scrollArrowUp');
+const ScrollArrowDown = require('./ui-components/scrollArrowDown');
 
 let program = blessed.program();
 // Create a screen object to work with blessed
@@ -92,6 +86,7 @@ let statusBar = new StatusBar(screen).statusBar;
 let introBox = new IntroBox(screen, textArea, statusBar).introBox;
 let openDialog = new OpenDialog(screen, textArea, statusBar).openDialog;
 let scrollArrowUp = new ScrollArrowUp(screen).scrollArrowUp;
+let scrollArrowDown = new ScrollArrowDown(screen).scrollArrowDown;
 
 // Append the needed UI elements to the screen (in visual order)
 screen.append(mainWindow);
@@ -104,8 +99,10 @@ screen.append(openDialog);
 
 // Scrolling arrows, these don't do much just yet except appear on the screen for the scrollbar
 screen.append(scrollArrowUp);
-openDialog.hide();
+screen.append(scrollArrowDown);
 
+// Hide any dialogs just to be sure
+openDialog.hide();
 
 // Reset the cursor after appending all of the UI elements
 program.resetCursor();
