@@ -19,7 +19,7 @@ class IntroBox {
         this.parent = parent;
         this.nextFocusElement = nextFocusElement;
 
-        // Create the introBox element and return it using the parent
+        // Create the introBox UI component as a blessed box element type
         this.introBox = blessed.box({
             parent: this.parent,
             border: 'line',

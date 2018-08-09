@@ -10,10 +10,16 @@ const blessed = require('neo-blessed');
 
 // This needs to be a class because on construction blessed tries to attach this to a parent screen
 class OpenDialog {
+
+    /** Creates an instance of OpenDialog. This is the main text entry box
+     * @param {*} parent Blessed screen parent to attach the element to
+     * @memberof OpenDialog
+     */
     constructor(parent, nextFocusElement, statusBar) {
         this.parent = parent;
         this.nextFocusElement = nextFocusElement;
 
+        // Create the openDialog box
         this.openDialog = blessed.box({
             parent: this.parent,
             border: 'line',
@@ -29,14 +35,20 @@ class OpenDialog {
                 border: {
                     // This matches the DOS edit theme
                     fg: 'black',
-                    bg: 'light-grey'
+                    bg: 'light-grey',
                 },
+                // label: {
+                //     fg: 'black',
+                //     bg: 'light-grey'
+                // }
             },
             valign: 'middle',
-            label: 'AAAAAA',
             shadow: true,
             content: 'Test',
         });
+
+        this.openDialog.setLabel('Open...')
+
 
         this.openDialog.key(['C-o'], () => {
             this.nextFocusElement.focus();

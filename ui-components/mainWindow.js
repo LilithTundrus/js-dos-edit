@@ -11,16 +11,17 @@ const blessed = require('neo-blessed');
 // This needs to be a class because on construction blessed tries to attach this to a parent screen
 class MainWindow {
 
-    /** Creates an instance of TextArea. This is the main text entry box
+    /** Creates an instance of MainWindow. This is the main text entry box
      * @param {*} parent Blessed screen parent to attach the element to
      * @memberof MainWindow
      */
     constructor(parent) {
         this.parent = parent;
 
+        // Create the mainWindow UI component as a blessed box element type
         this.mainWindow = blessed.box({
             parent: this.parent,
-            // Set the element centered
+            // Set the element to be centered 
             top: 'center',
             left: 'center',
             // Set the width and height to 100% of the screen

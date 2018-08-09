@@ -13,8 +13,7 @@ const blessed = require('neo-blessed');
 // TODO: The call-key for alt+ the menu key shouldn't be red until the alt key is held down
 class MenuBar {
     
-    /**
-     *Creates an instance of MenuBar. This is where the menu options like, file, edit, etc.
+    /** Creates an instance of MenuBar. This is where the menu options like, file, edit, etc.
      * @param {*} parent Blessed screen parent to attach the element to
      * @memberof MenuBar
      */

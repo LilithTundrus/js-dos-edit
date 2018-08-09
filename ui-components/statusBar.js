@@ -11,15 +11,15 @@ const blessed = require('neo-blessed');
 // This needs to be a class because on construction blessed tries to attach this to a parent screen
 class StatusBar {
 
-    /** Creates an instance of TextArea. This is the main text entry box
+    /** Creates an instance of StatusBar. This is the main text entry box
      * @param {*} parent Blessed screen parent to attach the element to
      * @param {*} fileLabel The filename to set the textAreas's label to
-     * @memberof TextArea
+     * @memberof StatusBar
      */
     constructor(parent) {
         this.parent = parent;
 
-        // Create the menu strip box
+        // Create the statusBar UI element as a blessed box element type
         this.statusBar = blessed.text({
             // Place the bottom of this element at the bottom of the screen, but up by one
             bottom: 'bottom' - 1,

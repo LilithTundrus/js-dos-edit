@@ -21,8 +21,9 @@ class TextArea {
     constructor(parent, fileLabel) {
         this.parent = parent;
 
-        // Create the menu strip box
+        // Create the textArea UI element as a blessed box element type
         this.textArea = blessed.box({
+            parent: parent,
             // The top of this element should be the screen width plus 1
             top: 1,
             // Mark the element as keyable to the screen passes down any keypresses to the box
