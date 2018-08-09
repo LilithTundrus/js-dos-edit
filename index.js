@@ -26,6 +26,8 @@
 // (it likely has to do with how we're not accounting for the scrolling index with the relative cursor
 // position)
 // TODO: get scrolling/custom scrolling working
+// TODO: Modify blessed's borders to support a 'window' at the top (no border line being drawn)
+// TODO: Add half-width shadows for buttons
 
 /* Current working list:
 
@@ -58,6 +60,7 @@ const TextArea = require('./ui-components/textArea');
 const MenuBar = require('./ui-components/menuBar');
 const StatusBar = require('./ui-components/statusBar');
 const OpenDialog = require('./ui-components/openDialog');
+const ScrollArrowUp = require('./ui-components/scrollArrowUp');
 
 let program = blessed.program();
 // Create a screen object to work with blessed
@@ -88,6 +91,7 @@ let menuBar = new MenuBar(screen).menuBar;
 let statusBar = new StatusBar(screen).statusBar;
 let introBox = new IntroBox(screen, textArea, statusBar).introBox;
 let openDialog = new OpenDialog(screen, textArea, statusBar).openDialog;
+let scrollArrowUp = new ScrollArrowUp(screen).scrollArrowUp;
 
 // Append the needed UI elements to the screen (in visual order)
 screen.append(mainWindow);
@@ -97,7 +101,10 @@ screen.append(statusBar);
 // Make sure the intro box is shown in the front 
 screen.append(introBox);
 screen.append(openDialog);
-openDialog.hide()
+
+// Scrolling arrows, these don't do much just yet except appear on the screen for the scrollbar
+screen.append(scrollArrowUp);
+openDialog.hide();
 
 
 // Reset the cursor after appending all of the UI elements
@@ -146,7 +153,7 @@ textArea.key('up', () => {
     program.getCursor((err, data) => {
         if (err) return;
         // Use the custom up keyHandler, passing the needed objects for blessed operations
-        return keyHandlers.upArrowHandler(data, program, screen, textArea);
+        return keyHandlers.upArrowHandler(data, program, screen, textArea, scrollArrowUp);
     });
 });
 
