@@ -23,6 +23,8 @@
 // TODO: Modify blessed's borders to support a 'window' at the top (no border line being drawn)
 // TODO: Add half-width shadows for buttons
 // TODO: Get the scroll arrows to 'blink' on arrow key events (works but annoyingly moves the cursor around to make the change)
+// TODO: fix title bars 'moving' on screen re-render when scrolling (blessed internal thing)
+// TODO: better figure out DOS edit's behaviour to better match it
 
 /* Current working list:
 
