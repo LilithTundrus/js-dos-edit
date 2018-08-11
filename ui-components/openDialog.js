@@ -29,7 +29,7 @@ class OpenDialog {
         // Create the openDialog box
         this.openDialog = blessed.box({
             parent: this.parent,
-            border: 'line',
+            border: 'none',
             top: 'center',
             left: 'center',
             width: '70%',
@@ -45,20 +45,42 @@ class OpenDialog {
                     bg: 'light-grey',
                 },
                 label: {
-                    bg: 'black',
-                    fg: 'light-grey'
+                    bg: 'cyan',
+                    fg: 'grey'
                 }
             },
             valign: 'middle',
             shadow: true,
         });
 
-        // PlaceHolder
-        this.openDialog.setLabel('Open...');
+        // Make the titlebar box (custom -- better than labels because COLOR)
+        let titleBar = blessed.box({
+            // The parent of the titlebar should be the generated openDialog
+            parent: this.openDialog,
+            // Top of the titlebar should be 0 (-1 because autoPadding I, I think)
+            top: -1,
+            // The width of the titlebar should match the width of the dialog box
+            width: this.openDialog.width,
+            // Titlebar should only be 1 character tall
+            height: 1,
+            // Remove the padding from the left offset
+            left: -1,
+            // Sanity check
+            padding: 0,
+            // Center align the text
+            align: 'center',
+            // Cyan title bar with black text
+            style: {
+                fg: 'black',
+                bg: 'cyan',
+            },
+            // Set the content of the titlebar
+            content: 'Open....'
+        })
 
         // Okay button to handle confirmation of the file being opened
         let okButton = blessed.button({
-            // The parent of the button should be the generated introBox
+            // The parent of the button should be the generated openDialog
             parent: this.openDialog,
             // Using extended characters here
             content: '  OK  ',
@@ -79,7 +101,7 @@ class OpenDialog {
 
         // Cancel button, should simply close the dialog window
         let cancelButton = blessed.button({
-            // The parent of the button should be the generated introBox
+            // The parent of the button should be the generated openDialog
             parent: this.openDialog,
             // Using extended characters here
             content: '  Cancel  ',
@@ -102,7 +124,7 @@ class OpenDialog {
         this.openDialog.append(okButton);
         this.openDialog.append(cancelButton);
 
-        // On focus the OK butto/current element should change color
+        // On focus the OK butto/current element should change color/ Have arrows marking them as active
 
         this.openDialog.key(['C-o'], () => {
             this.nextFocusElement.focus();
