@@ -13,7 +13,7 @@ const blessed = require('neo-blessed');
 // Filename text entry box
 // Directory select/traversal
 // File select
-// OK/cancel button
+// OK/cancel buttons
 
 // This needs to be a class because on construction blessed tries to attach this to a parent screen
 class OpenDialog {
@@ -53,8 +53,10 @@ class OpenDialog {
             shadow: true,
         });
 
+        // PlaceHolder
         this.openDialog.setLabel('Open...');
 
+        // Okay button to handle confirmation of the file being opened
         let okButton = blessed.button({
             // The parent of the button should be the generated introBox
             parent: this.openDialog,
@@ -63,7 +65,7 @@ class OpenDialog {
             // Allow the button to shrink when needed
             shrink: true,
             // Center the button
-            left: 'left+5',
+            left: Math.round(this.openDialog.width / 2 - 14),
             style: {
                 fg: 'black',
                 // Cyan
@@ -71,9 +73,34 @@ class OpenDialog {
             },
             // Button should only be a height of 1
             height: 1,
-            // Place the Buttons near the bottom of the box
+            // Place the button near the bottom of the box
             top: Math.round(this.openDialog.height - 4),
-        })
+        });
+
+        // Cancel button, should simply close the dialog window
+        let cancelButton = blessed.button({
+            // The parent of the button should be the generated introBox
+            parent: this.openDialog,
+            // Using extended characters here
+            content: '  Cancel  ',
+            // Allow the button to shrink when needed
+            shrink: true,
+            // Left of this button shouldn't overlap with the ok button
+            left: Math.round(this.openDialog.width / 2),
+
+            style: {
+                fg: 'black',
+                // Cyan
+                bg: '#33F0FF',
+            },
+            // Button should only be a height of 1
+            height: 1,
+            // Place the button near the bottom of the box
+            top: Math.round(this.openDialog.height - 4),
+        });
+
+        this.openDialog.append(okButton);
+        this.openDialog.append(cancelButton);
 
         // On focus the OK butto/current element should change color
 
