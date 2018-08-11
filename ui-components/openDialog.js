@@ -8,6 +8,13 @@ const blessed = require('neo-blessed');
 
 // Create the open dialog window, where the user can select a file to open
 
+// Hierarchy is:
+// Dialog box
+// Filename text entry box
+// Directory select/traversal
+// File select
+// OK/cancel button
+
 // This needs to be a class because on construction blessed tries to attach this to a parent screen
 class OpenDialog {
 
@@ -25,10 +32,10 @@ class OpenDialog {
             border: 'line',
             top: 'center',
             left: 'center',
-            width: '50%',
+            width: '70%',
             // Left-align the text
             align: 'left',
-            height: 9,
+            height: this.parent.height / 2 + 5,
             style: {
                 fg: 'black',
                 bg: 'light-grey',
@@ -38,16 +45,37 @@ class OpenDialog {
                     bg: 'light-grey',
                 },
                 label: {
-                    fg: 'black',
-                    bg: 'light-grey'
+                    bg: 'black',
+                    fg: 'light-grey'
                 }
             },
             valign: 'middle',
             shadow: true,
-            content: 'Test',
         });
 
         this.openDialog.setLabel('Open...');
+
+        let okButton = blessed.button({
+            // The parent of the button should be the generated introBox
+            parent: this.openDialog,
+            // Using extended characters here
+            content: '  OK  ',
+            // Allow the button to shrink when needed
+            shrink: true,
+            // Center the button
+            left: 'left+5',
+            style: {
+                fg: 'black',
+                // Cyan
+                bg: '#33F0FF',
+            },
+            // Button should only be a height of 1
+            height: 1,
+            // Place the Buttons near the bottom of the box
+            top: Math.round(this.openDialog.height - 4),
+        })
+
+        // On focus the OK butto/current element should change color
 
         this.openDialog.key(['C-o'], () => {
             this.nextFocusElement.focus();
@@ -59,6 +87,12 @@ class OpenDialog {
             this.openDialog.toggle();
             this.parent.render();
         });
+
+        // On the tab key, focus should be toggled between the elements of the dialog box
+        this.openDialog.key(['tab'], () => {
+
+        });
+
     }
 }
 
