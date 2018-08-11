@@ -25,6 +25,7 @@ class OpenDialog {
     constructor(parent, nextFocusElement, statusBar) {
         this.parent = parent;
         this.nextFocusElement = nextFocusElement;
+        this.statusBar = statusBar;
 
         // Create the openDialog box
         this.openDialog = blessed.box({
@@ -53,7 +54,7 @@ class OpenDialog {
             shadow: true,
         });
 
-        // Make the titlebar box (custom -- better than labels because COLOR)
+        // Make the titlebar box (custom, better than labels because COLOR)
         let titleBar = blessed.box({
             // The parent of the titlebar should be the generated openDialog
             parent: this.openDialog,
@@ -76,7 +77,12 @@ class OpenDialog {
             },
             // Set the content of the titlebar
             content: 'Open....'
-        })
+        });
+
+        // List of files in the current directory for selection
+        let fileList = blessed.list({
+
+        });
 
         // Okay button to handle confirmation of the file being opened
         let okButton = blessed.button({
@@ -121,27 +127,48 @@ class OpenDialog {
             top: Math.round(this.openDialog.height - 4),
         });
 
+        this.openDialog.append(titleBar);
         this.openDialog.append(okButton);
         this.openDialog.append(cancelButton);
 
-        // On focus the OK butto/current element should change color/ Have arrows marking them as active
+        okButton.on('focus', () => {
+            okButton.setContent('► OK ◄');
+            cancelButton.setContent('  Cancel  ');
+            parent.render();
+        });
+
+        cancelButton.on('focus', () => {
+            cancelButton.setContent('► Cancel ◄');
+            okButton.setContent('  OK  ');
+            parent.render();
+        });
 
         this.openDialog.key(['C-o'], () => {
             this.nextFocusElement.focus();
             this.parent.render();
+            this.focusIndex = 0;
         });
 
         this.openDialog.key(['escape'], () => {
             this.nextFocusElement.focus();
             this.openDialog.toggle();
             this.parent.render();
+            this.focusIndex = 0;
         });
 
         // On the tab key, focus should be toggled between the elements of the dialog box
         this.openDialog.key(['tab'], () => {
-
+            okButton.focus();
         });
 
+        // On the tab key, focus should be toggled between the elements of the dialog box
+        okButton.key(['tab'], () => {
+            cancelButton.focus();
+        });
+
+        cancelButton.key(['tab'], () => {
+            this.openDialog.focus();
+        });
     }
 }
 
