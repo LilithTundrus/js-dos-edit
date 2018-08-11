@@ -25,6 +25,7 @@
 // TODO: Get the scroll arrows to 'blink' on arrow key events (works but annoyingly moves the cursor around to make the change)
 // TODO: fix title bars 'moving' on screen re-render when scrolling (blessed internal thing)
 // TODO: better figure out DOS edit's behaviour to better match it
+// TODO: handle resizing a bit better at some point
 
 /* Current working list:
 
