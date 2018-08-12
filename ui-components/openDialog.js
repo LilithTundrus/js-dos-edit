@@ -1,6 +1,8 @@
 // Using ES5 strict mode
 'use strict';
 
+// Node/NPM package requires
+const fs = require('fs');
 const blessed = require('neo-blessed');
 
 // This file contains one of the blessed components for constructing the UI in an effort to
@@ -81,13 +83,32 @@ class OpenDialog {
 
         // List of files in the current directory for selection
         let fileList = blessed.filemanager({
+            // Give the filemanager a border to be styled
+            border: 'line',
+            // The parent of the titlebar should be the generated openDialog
             parent: this.openDialog,
+            // Top of this element will be the 1st line of the dialog box
             top: 1,
+            // Use the full width but leave some padding
             width: this.openDialog.width - 2,
-            height: 7,
+            // Static height 
+            height: 9,
+            // Use the default keys for the belssed filemanager
             keys: true,
-            cwd: '/',
+            // Use scrollbars for the list
+            scrollbar: {
+                ch: '█',
+                track: {
+                    fg: 'lightgrey',
+                    bg: 'black',
+                    ch: '░'
+                },
+            },
             style: {
+                border: {
+                    fg: 'black',
+                    bg: 'lightgrey'
+                },
                 selected: {
                     fg: 'black',
                     bg: 'cyan'
@@ -102,8 +123,8 @@ class OpenDialog {
         // Get the current directory 
         // TODO: in the future have this REMEMBER where the user was last
         fileList.refresh('./', () => {
-            // 
-        })
+            // callback would go here
+        });
 
         // Okay button to handle confirmation of the file being opened
         let okButton = blessed.button({
@@ -146,22 +167,27 @@ class OpenDialog {
             top: Math.round(this.openDialog.height - 4),
         });
 
+        // Append each UI subcomponent to the openDialog box
         this.openDialog.append(titleBar);
         this.openDialog.append(okButton);
         this.openDialog.append(cancelButton);
 
+        // Handle anything that needs to happen on focus of the okButton
         okButton.on('focus', () => {
             okButton.setContent('► OK ◄');
             cancelButton.setContent('  Cancel  ');
             parent.render();
         });
 
+        // Handle anything that needs to happen on focus of the cancelButton
         cancelButton.on('focus', () => {
             cancelButton.setContent('► Cancel ◄');
             okButton.setContent('  OK  ');
             parent.render();
         });
 
+        // TODO: this is kind of janky and could lead to problems later
+        // Handle anything that needs to happen on focus of the openDialog
         this.openDialog.on('focus', () => {
             // Clear buttons of any potential focus indication
             cancelButton.setContent('  Cancel  ');
@@ -171,11 +197,18 @@ class OpenDialog {
             fileList.focus();
         });
 
+        // Handle anything that needs to happen on focus of the fileList
         fileList.on('focus', () => {
             // Clear buttons of any potential focus indication
             cancelButton.setContent('  Cancel  ');
             okButton.setContent('  OK  ');
             parent.render();
+
+            fileList.pick('./', (err, file) => {
+                let contents = fs.readFileSync(file, 'UTF-8');
+                nextFocusElement.setContent(contents, false, true);
+                parent.render();
+            })
         });
 
         this.openDialog.key(['C-o'], () => {
@@ -213,6 +246,10 @@ class OpenDialog {
         okButton.key(['tab'], () => {
             cancelButton.focus();
         });
+
+        // okButton.key(['enter'], () => {
+
+        // });
 
         cancelButton.key(['tab'], () => {
             fileList.focus();
