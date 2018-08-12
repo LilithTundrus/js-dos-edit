@@ -109,10 +109,12 @@ class OpenDialog {
                     fg: 'black',
                     bg: 'lightgrey'
                 },
+                // Style of the currently selected list item
                 selected: {
                     fg: 'black',
                     bg: 'cyan'
                 },
+                // Style of any other listItem
                 item: {
                     fg: 'black',
                     bg: 'lightgrey'
@@ -172,37 +174,7 @@ class OpenDialog {
         this.openDialog.append(okButton);
         this.openDialog.append(cancelButton);
 
-        // Handle anything that needs to happen on focus of the okButton
-        okButton.on('focus', () => {
-            // Remove the focus indications on the fileList UI element
-            fileList.style.border = {
-                fg: 'black',
-                bg: 'lightgrey'
-            };
-            fileList.style.selected = {
-                fg: 'black',
-                bg: 'lightgrey'
-            };
-            okButton.setContent('► OK ◄');
-            cancelButton.setContent('  Cancel  ');
-            parent.render();
-        });
-
-        // Handle anything that needs to happen on focus of the cancelButton
-        cancelButton.on('focus', () => {
-            // Remove the focus indications on the fileList UI element
-            fileList.style.border = {
-                fg: 'black',
-                bg: 'lightgrey'
-            };
-            fileList.style.selected = {
-                fg: 'black',
-                bg: 'lightgrey'
-            };
-            cancelButton.setContent('► Cancel ◄');
-            okButton.setContent('  OK  ');
-            parent.render();
-        });
+        // OpenDialog handlers
 
         // TODO: this is kind of janky and could lead to problems later
         // Handle anything that needs to happen on focus of the openDialog
@@ -211,9 +183,24 @@ class OpenDialog {
             cancelButton.setContent('  Cancel  ');
             okButton.setContent('  OK  ');
             parent.render();
-            // Focus the first element that makes the most sense (the file select probably)
+            // Focus the first element that makes the most sense (the file select)
             fileList.focus();
         });
+
+        this.openDialog.key(['C-o'], () => {
+            this.nextFocusElement.focus();
+            this.parent.render();
+        });
+
+        // Close the dialog box on escape key 
+        this.openDialog.key(['escape'], () => {
+            this.nextFocusElement.focus();
+            this.openDialog.toggle();
+            this.parent.render();
+        });
+
+
+        // FileMenu handlers
 
         // Handle anything that needs to happen on focus of the fileList
         fileList.on('focus', () => {
@@ -239,14 +226,8 @@ class OpenDialog {
             });
         });
 
-        this.openDialog.key(['C-o'], () => {
+        fileList.key(['C-o'], () => {
             this.nextFocusElement.focus();
-            this.parent.render();
-        });
-
-        this.openDialog.key(['escape'], () => {
-            this.nextFocusElement.focus();
-            this.openDialog.toggle();
             this.parent.render();
         });
 
@@ -256,18 +237,33 @@ class OpenDialog {
             this.parent.render();
         });
 
-        fileList.key(['C-o'], () => {
-            this.nextFocusElement.focus();
-            this.parent.render();
-        });
-
-        // On the tab key, focus should be toggled between the elements of the dialog box
-        this.openDialog.key(['tab'], () => {
-            okButton.focus();
-        });
-
         fileList.key(['tab'], () => {
             okButton.focus();
+        });
+
+
+        // OkButton handlers
+
+        // Handle anything that needs to happen on focus of the okButton
+        okButton.on('focus', () => {
+            // Remove the focus indications on the fileList UI element
+            fileList.style.border = {
+                fg: 'black',
+                bg: 'lightgrey'
+            };
+            fileList.style.selected = {
+                fg: 'black',
+                bg: 'lightgrey'
+            };
+            okButton.setContent('► OK ◄');
+            cancelButton.setContent('  Cancel  ');
+            parent.render();
+        });
+
+        okButton.key(['escape'], () => {
+            this.nextFocusElement.focus();
+            this.openDialog.toggle();
+            this.parent.render();
         });
 
         // On the tab key, focus should be toggled between the elements of the dialog box
@@ -275,9 +271,35 @@ class OpenDialog {
             cancelButton.focus();
         });
 
+        // TODO: get this to work
         // okButton.key(['enter'], () => {
-
+        // Get the current selected item from the fileList
         // });
+
+
+        // CancelButton handlers
+
+        // Handle anything that needs to happen on focus of the cancelButton
+        cancelButton.on('focus', () => {
+            // Remove the focus indications on the fileList UI element
+            fileList.style.border = {
+                fg: 'black',
+                bg: 'lightgrey'
+            };
+            fileList.style.selected = {
+                fg: 'black',
+                bg: 'lightgrey'
+            };
+            cancelButton.setContent('► Cancel ◄');
+            okButton.setContent('  OK  ');
+            parent.render();
+        });
+
+        cancelButton.key(['escape'], () => {
+            this.nextFocusElement.focus();
+            this.openDialog.toggle();
+            this.parent.render();
+        });
 
         cancelButton.key(['tab'], () => {
             fileList.focus();
