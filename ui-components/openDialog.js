@@ -80,9 +80,30 @@ class OpenDialog {
         });
 
         // List of files in the current directory for selection
-        let fileList = blessed.list({
-
+        let fileList = blessed.filemanager({
+            parent: this.openDialog,
+            top: 1,
+            width: this.openDialog.width - 2,
+            height: 7,
+            keys: true,
+            cwd: '/',
+            style: {
+                selected: {
+                    fg: 'black',
+                    bg: 'cyan'
+                },
+                item: {
+                    fg: 'black',
+                    bg: 'lightgrey'
+                }
+            }
         });
+
+        // Get the current directory 
+        // TODO: in the future have this REMEMBER where the user was last
+        fileList.refresh('./', () => {
+            // 
+        })
 
         // Okay button to handle confirmation of the file being opened
         let okButton = blessed.button({
@@ -96,8 +117,7 @@ class OpenDialog {
             left: Math.round(this.openDialog.width / 2 - 14),
             style: {
                 fg: 'black',
-                // Cyan
-                bg: '#33F0FF',
+                bg: 'cyan',
             },
             // Button should only be a height of 1
             height: 1,
@@ -118,8 +138,7 @@ class OpenDialog {
 
             style: {
                 fg: 'black',
-                // Cyan
-                bg: '#33F0FF',
+                bg: 'cyan',
             },
             // Button should only be a height of 1
             height: 1,
@@ -143,21 +162,50 @@ class OpenDialog {
             parent.render();
         });
 
+        this.openDialog.on('focus', () => {
+            // Clear buttons of any potential focus indication
+            cancelButton.setContent('  Cancel  ');
+            okButton.setContent('  OK  ');
+            parent.render();
+            // Focus the first element that makes the most sense (the file select probably)
+            fileList.focus();
+        });
+
+        fileList.on('focus', () => {
+            // Clear buttons of any potential focus indication
+            cancelButton.setContent('  Cancel  ');
+            okButton.setContent('  OK  ');
+            parent.render();
+        });
+
         this.openDialog.key(['C-o'], () => {
             this.nextFocusElement.focus();
             this.parent.render();
-            this.focusIndex = 0;
         });
 
         this.openDialog.key(['escape'], () => {
             this.nextFocusElement.focus();
             this.openDialog.toggle();
             this.parent.render();
-            this.focusIndex = 0;
+        });
+
+        fileList.key(['escape'], () => {
+            this.nextFocusElement.focus();
+            this.openDialog.toggle();
+            this.parent.render();
+        });
+
+        fileList.key(['C-o'], () => {
+            this.nextFocusElement.focus();
+            this.parent.render();
         });
 
         // On the tab key, focus should be toggled between the elements of the dialog box
         this.openDialog.key(['tab'], () => {
+            okButton.focus();
+        });
+
+        fileList.key(['tab'], () => {
             okButton.focus();
         });
 
@@ -167,7 +215,7 @@ class OpenDialog {
         });
 
         cancelButton.key(['tab'], () => {
-            this.openDialog.focus();
+            fileList.focus();
         });
     }
 }
