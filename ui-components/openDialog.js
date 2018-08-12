@@ -29,6 +29,26 @@ class OpenDialog {
         this.nextFocusElement = nextFocusElement;
         this.statusBar = statusBar;
 
+        this.fileMenuFocusedBorderStyle = {
+            fg: 'cyan',
+            bg: 'lightgrey'
+        };
+
+        this.fileMenuFocusedItemStyle = {
+            fg: 'black',
+            bg: 'cyan'
+        };
+
+        this.fileMenuUnfocusedBorderStyle = {
+            fg: 'black',
+            bg: 'lightgrey'
+        };
+
+        this.fileMenuUnfocusedItemStyle = {
+            fg: 'black',
+            bg: 'lightgrey'
+        };
+
         // Create the openDialog box
         this.openDialog = blessed.box({
             parent: this.parent,
@@ -174,7 +194,7 @@ class OpenDialog {
         this.openDialog.append(okButton);
         this.openDialog.append(cancelButton);
 
-        // OpenDialog handlers
+        // OpenDialog handlers, these simply are a catch-all and may not be needed later on
 
         // TODO: this is kind of janky and could lead to problems later
         // Handle anything that needs to happen on focus of the openDialog
@@ -210,19 +230,20 @@ class OpenDialog {
             parent.render();
 
             // Show that the element is focused
-            fileList.style.border = {
-                fg: 'cyan',
-                bg: 'lightgrey'
-            };
-            fileList.style.selected = {
-                fg: 'black',
-                bg: 'cyan'
-            };
+            fileList.style.border = this.fileMenuFocusedBorderStyle;
+            fileList.style.selected = this.fileMenuFocusedItemStyle;
 
             fileList.pick('./', (err, file) => {
-                let contents = fs.readFileSync(file, 'UTF-8');
-                nextFocusElement.setContent(contents, false, true);
-                parent.render();
+                if (file) {
+                    // TODO: eventually this should be able to ready anything!
+                    let contents = fs.readFileSync(file, 'UTF-8');
+                    nextFocusElement.setContent(contents, false, true);
+                    this.parent.render();
+                } else {
+                    // this.nextFocusElement.focus();
+                    // this.openDialog.toggle();
+                    // this.parent.render();
+                }
             });
         });
 
@@ -247,14 +268,10 @@ class OpenDialog {
         // Handle anything that needs to happen on focus of the okButton
         okButton.on('focus', () => {
             // Remove the focus indications on the fileList UI element
-            fileList.style.border = {
-                fg: 'black',
-                bg: 'lightgrey'
-            };
-            fileList.style.selected = {
-                fg: 'black',
-                bg: 'lightgrey'
-            };
+            fileList.style.border = this.fileMenuUnfocusedBorderStyle;
+            fileList.style.selected = this.fileMenuUnfocusedItemStyle;
+
+            // Focus the OK button and remove focus indications from the cancel button
             okButton.setContent('► OK ◄');
             cancelButton.setContent('  Cancel  ');
             parent.render();
@@ -282,14 +299,10 @@ class OpenDialog {
         // Handle anything that needs to happen on focus of the cancelButton
         cancelButton.on('focus', () => {
             // Remove the focus indications on the fileList UI element
-            fileList.style.border = {
-                fg: 'black',
-                bg: 'lightgrey'
-            };
-            fileList.style.selected = {
-                fg: 'black',
-                bg: 'lightgrey'
-            };
+            fileList.style.border = this.fileMenuUnfocusedBorderStyle;
+            fileList.style.selected = this.fileMenuUnfocusedItemStyle;
+
+            // Focus the cancel button and remove focus indications from the OK button
             cancelButton.setContent('► Cancel ◄');
             okButton.setContent('  OK  ');
             parent.render();
@@ -303,6 +316,12 @@ class OpenDialog {
 
         cancelButton.key(['tab'], () => {
             fileList.focus();
+        });
+
+        cancelButton.key(['enter'], () => {
+            this.nextFocusElement.focus();
+            this.openDialog.toggle();
+            this.parent.render();
         });
     }
 }
