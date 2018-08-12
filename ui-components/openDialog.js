@@ -174,6 +174,15 @@ class OpenDialog {
 
         // Handle anything that needs to happen on focus of the okButton
         okButton.on('focus', () => {
+            // Remove the focus indications on the fileList UI element
+            fileList.style.border = {
+                fg: 'black',
+                bg: 'lightgrey'
+            };
+            fileList.style.selected = {
+                fg: 'black',
+                bg: 'lightgrey'
+            };
             okButton.setContent('► OK ◄');
             cancelButton.setContent('  Cancel  ');
             parent.render();
@@ -181,6 +190,15 @@ class OpenDialog {
 
         // Handle anything that needs to happen on focus of the cancelButton
         cancelButton.on('focus', () => {
+            // Remove the focus indications on the fileList UI element
+            fileList.style.border = {
+                fg: 'black',
+                bg: 'lightgrey'
+            };
+            fileList.style.selected = {
+                fg: 'black',
+                bg: 'lightgrey'
+            };
             cancelButton.setContent('► Cancel ◄');
             okButton.setContent('  OK  ');
             parent.render();
@@ -204,11 +222,21 @@ class OpenDialog {
             okButton.setContent('  OK  ');
             parent.render();
 
+            // Show that the element is focused
+            fileList.style.border = {
+                fg: 'cyan',
+                bg: 'lightgrey'
+            };
+            fileList.style.selected = {
+                fg: 'black',
+                bg: 'cyan'
+            };
+
             fileList.pick('./', (err, file) => {
                 let contents = fs.readFileSync(file, 'UTF-8');
                 nextFocusElement.setContent(contents, false, true);
                 parent.render();
-            })
+            });
         });
 
         this.openDialog.key(['C-o'], () => {
