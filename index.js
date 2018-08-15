@@ -10,22 +10,22 @@
 // NOTE: blessed is weird, if you make a change and it doesn't happen, try rendering in between each of
 // the steps, they may not occur otherwise
 
-// TODO: support files being opened from the command line
-// TODO: add more info to the statusBar area (if we can get the cursor to stop moving when it updates)
-// TODO: figure out how to properly insert tabs
-// TODO: document keyhandlers better
-// TODO: fix this bug:
+// TODO: Support files being opened from the command line
+// TODO: Add more info to the statusBar area (if we can get the cursor to stop moving when it updates)
+// TODO: Figure out how to properly insert tabs
+// TODO: Document keyhandlers better
+// TODO: Fix this bug:
 // TypeError: this._clines.rtof is not a function
 // TODO: handle that when the textArea is in a scrolling state, text entry gets messed up 
 // (it likely has to do with how we're not accounting for the scrolling index with the relative cursor
 // position)
-// TODO: Get scrolling/custom horizontal scrolling working
-// TODO: Modify blessed's borders to support a 'window' at the top (no border line being drawn)
+// TODO: Get custom horizontal scrolling working
 // TODO: Add half-width shadows for buttons
 // TODO: Get the scroll arrows to 'blink' on arrow key events (works but annoyingly moves the cursor around to make the change)
-// TODO: fix title bars 'moving' on screen re-render when scrolling (blessed internal thing)
-// TODO: better figure out DOS edit's behaviour to better match it
-// TODO: handle resizing a bit better at some point
+// TODO: Fix title bars 'moving' on screen re-render when scrolling (blessed internal thing)
+// TODO: Better figure out DOS edit's behaviour to better match it
+// TODO: Handle resizing a bit better at some point
+// TODO: Get saving/opening documents working as well as checking if the currently edited document is saved or not
 
 /* Current working list:
 

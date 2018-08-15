@@ -240,9 +240,13 @@ class OpenDialog {
 
             fileList.pick('./', (err, file) => {
                 if (file) {
-                    // TODO: eventually this should be able to ready anything!
+                    // TODO: eventually this should be able to read any format
+                    // TODO: this is where we should eventually have a check to make sure before
+                    // opening a file that the current file is saved
                     let contents = fs.readFileSync(file, 'UTF-8');
                     nextFocusElement.setContent(contents, false, true);
+                    this.nextFocusElement.focus();
+                    this.openDialog.toggle();
                     this.parent.render();
                 } else {
                     // this.nextFocusElement.focus();
