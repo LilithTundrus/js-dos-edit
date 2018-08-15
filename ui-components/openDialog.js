@@ -17,6 +17,10 @@ const blessed = require('neo-blessed');
 // File select
 // OK/cancel buttons
 
+// TODO: remove the OK button
+// TODO: Fill in the statusbar with information
+// TODO: Fix the focus/unfocus of this box being weird
+
 // This needs to be a class because on construction blessed tries to attach this to a parent screen
 class OpenDialog {
 
@@ -205,6 +209,7 @@ class OpenDialog {
             parent.render();
             // Focus the first element that makes the most sense (the file select)
             fileList.focus();
+            statusBar.setContent(`ENTER = Select a file\tTAB = Change target\t`)
         });
 
         this.openDialog.key(['C-o'], () => {
@@ -289,9 +294,10 @@ class OpenDialog {
         });
 
         // TODO: get this to work
-        // okButton.key(['enter'], () => {
-        // Get the current selected item from the fileList
-        // });
+        okButton.key(['enter'], () => {
+            // Get the current selected item from the fileList
+            console.log(fileList.getItem(1).content)
+        });
 
 
         // CancelButton handlers
