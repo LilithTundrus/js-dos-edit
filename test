@@ -1,27 +1,20 @@
+// Using ES5 strict mode
+'use strict';
 
-let x = 5;
-console.log(x);
+// Set of keyname strings for checking against within the main keypress event
+// Any keys that AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA custom code should go here
 
+let customKeys = new Set();
+customKeys.add('pageup');
+customKeys.add('pagedown');
+customKeys.add('left');
+customKeys.add('right');
+customKeys.add('up');
+customKeys.add('down');
+customKeys.add('enter');
+customKeys.add('backspace');
+customKeys.add('tab');
+customKeys.add('space');
 
-
-
-
-
-qqq
-
-
-
-
-
-wwww
-
-ththht
-
-
-
-
-
-thi
-
-s is 
-a test
+// Export the set to be used by the main script/wherever else it's needed
+module.exports = customKeys;
