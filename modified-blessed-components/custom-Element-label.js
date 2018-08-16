@@ -11,7 +11,7 @@ Element.prototype.setLabel = function (options) {
     if (this._label) {
         this._label.setContent(options.text);
         if (options.side !== 'right') {
-            this._label.rleft = 2 + (this.border ? -1 : 0);
+            this._label.rleft = Math.round(this._getWidth() / 2 - (this._label.content.length));
             this._label.position.right = undefined;
             if (!this.screen.autoPadding) {
                 this._label.rleft = 2;
@@ -37,7 +37,7 @@ Element.prototype.setLabel = function (options) {
     });
 
     if (options.side !== 'right') {
-        this._label.rleft = Math.round(this._getWidth() / 2 - (this._label.content.length / 2));
+        this._label.rleft = Math.round(this._getWidth() / 2 - (this._label.content.length));
     } else {
         this._label.rright = 2 - this.iright;
     }
@@ -46,7 +46,7 @@ Element.prototype.setLabel = function (options) {
 
     if (!this.screen.autoPadding) {
         if (options.side !== 'right') {
-            this._label.rleft = Math.round(this._getWidth() / 2 - (this._label.content.length / 2));
+            this._label.rleft = Math.round(this._getWidth() / 2 - (this._label.content.length));
         } else {
             this._label.rright = 2;
         }
