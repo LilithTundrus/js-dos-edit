@@ -32,10 +32,11 @@
 Right now I think the main idea is that before working on the rest of the text editor, the 
 actual text editing needs to be addressed. So I'll make sure that's perfect first
 
-First basic editing controls, - DONE (sort of) -- not working with scrolling yet
-then scrolling (and scrollbars), - WORKING ON
+First basic editing controls, - DONE (sort of) -- have bugs to iron out
+then scrolling (and scrollbars), - DONE (mostly) -- still a bit of weirdness that needs to be worked through
+then opening/reading files,
+then menus,
 then horizontal scrolling,
-menus,
 error handling,
 user-facing error handling
 then the rest
@@ -213,6 +214,7 @@ textArea.key('space', () => {
 });
 
 // TODO: have this make sure it won't breach any bounds
+// TODO: on empty lines, better check for how tab inserts work (it gets janky)
 textArea.key('tab', () => {
     // This callback returns an err and data object, the data object has the x/y position of the cursor
     program.getCursor((err, data) => {
