@@ -241,6 +241,26 @@ textArea.on('keypress', (ch, key) => {
     screen.render();
 });
 
+// Home/End keys used to get to the beginning/end of a line
+textArea.key('home', () => {
+    // This callback returns an err and data object, the data object has the x/y position of the cursor
+    program.getCursor((err, data) => {
+        if (err) return;
+        // Use the custom left keyHandler, passing the needed objects for blessed operations
+        return keyHandlers.homeHandler(data, program, screen, textArea);
+    });
+});
+
+textArea.key('end', () => {
+    // This callback returns an err and data object, the data object has the x/y position of the cursor
+    program.getCursor((err, data) => {
+        if (err) return;
+        // Use the custom left keyHandler, passing the needed objects for blessed operations
+        return keyHandlers.endHandler(data, program, screen, textArea);
+    });
+});
+
+
 // Function for getting the Line/Column count for the editing window
 // TODO: handle scrolling/text bigger than the editing window
 // TODO: handle the filename
