@@ -79,10 +79,10 @@ program.on('resize', () => {
 });
 
 // Create instances of the UI elements, passing the screen as the parent
-let textArea;
+let textArea = new TextArea(screen, 'UNTITLED').textArea;
 let mainWindow = new MainWindow(screen).mainWindow;
 let menuBar = new MenuBar(screen).menuBar;
-let statusBar;
+let statusBar = new StatusBar(screen).statusBar;
 let introBox = new IntroBox(screen, textArea, statusBar).introBox;
 let openDialog = new OpenDialog(screen, textArea, statusBar).openDialog;
 let scrollArrowUp = new ScrollArrowUp(screen).scrollArrowUp;
@@ -90,14 +90,19 @@ let scrollArrowDown = new ScrollArrowDown(screen).scrollArrowDown;
 
 // This is the main function that gets exported for 'exposing' this code to be called from the CLI
 function startEditor(fileName) {
+
+    // If the fileName is not the default
+    if (fileName !== 'Untitled') {
+        // Try to read the file's contents
+        // TODO: this should support multiple encodings of text!
+        let contents = fs.readFileSync(fileName, 'UTF-8');
+        textArea.setContent(contents, false, true);
+    }
     // This function trusts its input since it's only ever called by index.js
 
     // Set the title of the terminal window (if any) -- this will eventually take cli arguments for reading a file to be edited
     screen.title = `EDIT - ${fileName}`;
-    // Create the textArea with the given filename
-    textArea = new TextArea(screen, `${fileName}`).textArea;
-    statusBar = new StatusBar(screen, `${fileName}`).statusBar;
-
+    textArea.setLabel(`${fileName}`);
 
     // Append the needed UI elements to the screen (in visual order)
     screen.append(mainWindow);
@@ -250,7 +255,7 @@ textArea.key(['C-w'], () => {
 
 // Test file writing functions
 textArea.key(['C-s'], () => {
-
+    // TODO: this needs to be doing a lot more eventually
     // Remove the cursor from the text that for SOME REASON shows up
     fs.writeFileSync('test', textArea.content.replace('', ''));
 });
@@ -268,4 +273,5 @@ screen.key(['C-o'], () => {
 // Render the screen
 screen.render();
 
+// Export the main module
 module.exports.startEditor = startEditor;

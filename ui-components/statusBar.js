@@ -13,11 +13,12 @@ class StatusBar {
 
     /** Creates an instance of StatusBar. This is the main text entry box
      * @param {*} parent Blessed screen parent to attach the element to
-     * @param {*} fileLabel The filename to set the textAreas's label to
+     * @param {*} fileName The filename to set the statusBar's filename indicator to
      * @memberof StatusBar
      */
-    constructor(parent) {
+    constructor(parent, fileName) {
         this.parent = parent;
+        this.fileName = fileName;
 
         // Create the statusBar UI element as a blessed box element type
         this.statusBar = blessed.text({
@@ -39,7 +40,7 @@ class StatusBar {
                 bg: 'light-grey',
             },
             // Placeholder content (may not even be needed)
-            content: `Unsaved Document\t\t\t< Press Ctrl + W to quit >\t\t\t Line 0 | Col 0`
+            content: `${this.fileName}t\t\t\t< Press Ctrl + W to quit >\t\t\t Line 0 | Col 0`
         });
     }
 }
