@@ -12,6 +12,7 @@ const editor = require('./editor');
 if (process.argv[2]) {
     // Try and read the file as a path
 
+    // TODO: Verify the contents here before passing to the editor
     if (fs.existsSync(process.argv[2])) {
         editor.startEditor(process.argv[2]);
     }
@@ -20,5 +21,3 @@ if (process.argv[2]) {
 } else {
     editor.startEditor('Untitled');
 }
-
-
