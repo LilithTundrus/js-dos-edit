@@ -90,15 +90,20 @@ let scrollArrowDown = new ScrollArrowDown(screen).scrollArrowDown;
 
 // This is the main function that gets exported for 'exposing' this code to be called from the CLI
 function startEditor(fileName) {
+    // This function trusts its input since it's only ever called by index.js
 
     // If the fileName is not the default
     if (fileName !== 'Untitled') {
         // Try to read the file's contents
         // TODO: this should support multiple encodings of text!
+        // TODO: also verify the file can be read
+        // TODO: Figure out how to handle large files (fs read stream maybe?)
+        // TODO: have this save to the file in the passed path
+        // TODO: if the data is changed and the editor is about to be exited, have a save dialog popup
         let contents = fs.readFileSync(fileName, 'UTF-8');
         textArea.setContent(contents, false, true);
     }
-    // This function trusts its input since it's only ever called by index.js
+    // Else, just launch a blank editor and set the edit mode to not have a file saved yet
 
     // Set the title of the terminal window (if any) -- this will eventually take cli arguments for reading a file to be edited
     screen.title = `EDIT - ${fileName}`;
@@ -207,14 +212,14 @@ textArea.key('space', () => {
     });
 });
 
-// TODO: Fix this!
+// TODO: have this make sure it won't breach any bounds
 textArea.key('tab', () => {
-    // TODO: have this make sure it won't breach any bounds
-    // TODO: Figure out how to get this to use actual tabs
-    // cursorForwardTab doesn't actually seem to insert a \t correctly, so it's done by advancing the cursor
-    // by a tab width of 4 spaces
-    textArea.setText(textArea.content + '    ');
-    program.cursorForward(4);
+    // This callback returns an err and data object, the data object has the x/y position of the cursor
+    program.getCursor((err, data) => {
+        if (err) return;
+        // Use the custom space keyHandler, passing the needed objects for blessed operations
+        return keyHandlers.tabHandler(data, program, screen, textArea);
+    });
 });
 
 // This catches all keypresses
