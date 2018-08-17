@@ -214,7 +214,6 @@ textArea.key('space', () => {
 });
 
 // TODO: have this make sure it won't breach any bounds
-// TODO: on empty lines, better check for how tab inserts work (it gets janky)
 textArea.key('tab', () => {
     // This callback returns an err and data object, the data object has the x/y position of the cursor
     program.getCursor((err, data) => {
