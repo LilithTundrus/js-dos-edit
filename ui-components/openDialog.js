@@ -15,10 +15,9 @@ const blessed = require('neo-blessed');
 // Filename text entry box
 // Directory select/traversal
 // File select
-// OK/cancel buttons
+// Cancel button
 
-// TODO: remove the OK button
-// TODO: Fill in the statusbar with information
+// TODO: Fill in the statusbar with MORE/BETTER information
 // TODO: Fix the focus/unfocus of this box being weird
 
 // This needs to be a class because on construction blessed tries to attach this to a parent screen
@@ -152,26 +151,6 @@ class OpenDialog {
             // callback would go here
         });
 
-        // Okay button to handle confirmation of the file being opened
-        let okButton = blessed.button({
-            // The parent of the button should be the generated openDialog
-            parent: this.openDialog,
-            // Using extended characters here
-            content: '  OK  ',
-            // Allow the button to shrink when needed
-            shrink: true,
-            // Center the button
-            left: Math.round(this.openDialog.width / 2 - 14),
-            style: {
-                fg: 'black',
-                bg: 'cyan',
-            },
-            // Button should only be a height of 1
-            height: 1,
-            // Place the button near the bottom of the box
-            top: Math.round(this.openDialog.height - 4),
-        });
-
         // Cancel button, should simply close the dialog window
         let cancelButton = blessed.button({
             // The parent of the button should be the generated openDialog
@@ -180,9 +159,8 @@ class OpenDialog {
             content: '  Cancel  ',
             // Allow the button to shrink when needed
             shrink: true,
-            // Left of this button shouldn't overlap with the ok button
-            left: Math.round(this.openDialog.width / 2),
-
+            // Center the cancel button
+            left: 'center',
             style: {
                 fg: 'black',
                 bg: 'cyan',
@@ -195,7 +173,6 @@ class OpenDialog {
 
         // Append each UI subcomponent to the openDialog box
         this.openDialog.append(titleBar);
-        this.openDialog.append(okButton);
         this.openDialog.append(cancelButton);
 
         // OpenDialog handlers, these simply are a catch-all and may not be needed later on
@@ -205,7 +182,6 @@ class OpenDialog {
         this.openDialog.on('focus', () => {
             // Clear buttons of any potential focus indication
             cancelButton.setContent('  Cancel  ');
-            okButton.setContent('  OK  ');
             parent.render();
             // Focus the first element that makes the most sense (the file select)
             fileList.focus();
@@ -231,7 +207,6 @@ class OpenDialog {
         fileList.on('focus', () => {
             // Clear buttons of any potential focus indication
             cancelButton.setContent('  Cancel  ');
-            okButton.setContent('  OK  ');
             parent.render();
 
             // Show that the element is focused
@@ -268,39 +243,7 @@ class OpenDialog {
         });
 
         fileList.key(['tab'], () => {
-            okButton.focus();
-        });
-
-
-        // OkButton handlers
-
-        // Handle anything that needs to happen on focus of the okButton
-        okButton.on('focus', () => {
-            // Remove the focus indications on the fileList UI element
-            fileList.style.border = this.fileMenuUnfocusedBorderStyle;
-            fileList.style.selected = this.fileMenuUnfocusedItemStyle;
-
-            // Focus the OK button and remove focus indications from the cancel button
-            okButton.setContent('► OK ◄');
-            cancelButton.setContent('  Cancel  ');
-            parent.render();
-        });
-
-        okButton.key(['escape'], () => {
-            this.nextFocusElement.focus();
-            this.openDialog.toggle();
-            this.parent.render();
-        });
-
-        // On the tab key, focus should be toggled between the elements of the dialog box
-        okButton.key(['tab'], () => {
             cancelButton.focus();
-        });
-
-        // TODO: get this to work
-        okButton.key(['enter'], () => {
-            // Get the current selected item from the fileList
-            console.log(fileList.getItem(1).content)
         });
 
 
@@ -312,9 +255,8 @@ class OpenDialog {
             fileList.style.border = this.fileMenuUnfocusedBorderStyle;
             fileList.style.selected = this.fileMenuUnfocusedItemStyle;
 
-            // Focus the cancel button and remove focus indications from the OK button
+            // Focus the cancel button
             cancelButton.setContent('► Cancel ◄');
-            okButton.setContent('  OK  ');
             parent.render();
         });
 
