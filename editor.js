@@ -20,12 +20,12 @@
 // TODO: Get custom horizontal scrolling working
 // TODO: Add half-width shadows for buttons
 // TODO: Get the scroll arrows to 'blink' on arrow key events (works but annoyingly moves the cursor around to make the change)
-// TODO: Fix title bars 'moving' on screen re-render when scrolling (blessed internal thing)
 // TODO: Better figure out DOS edit's behaviour to better match it
 // TODO: Handle resizing a bit better at some point
 // TODO: Get saving/opening documents working as well as checking if the currently edited document is saved or not
 // TODO: Redo how cursor reflowing on the up/down arrow works (more like vim/vscode)
 // TODO: This will require a lot of polish that's going to take a lot of time to work through
+// TODO: Standardize blessed component geneeration order of options for components!
 
 /* Current working list:
 
@@ -59,6 +59,7 @@ const StatusBar = require('./ui-components/statusBar');
 const OpenDialog = require('./ui-components/openDialog');
 const ScrollArrowUp = require('./ui-components/scrollArrowUp');
 const ScrollArrowDown = require('./ui-components/scrollArrowDown');
+const FileMenu = require('./ui-components/fileMenu');
 
 let program = blessed.program();
 // Create a screen object to work with blessed
@@ -88,6 +89,8 @@ let introBox = new IntroBox(screen, textArea, statusBar).introBox;
 let openDialog = new OpenDialog(screen, textArea, statusBar).openDialog;
 let scrollArrowUp = new ScrollArrowUp(screen).scrollArrowUp;
 let scrollArrowDown = new ScrollArrowDown(screen).scrollArrowDown;
+let fileMenu = new FileMenu(screen, textArea, statusBar).fileMenu;
+
 
 // Testing 'knowing' what the file is like before being inserted into the editor
 let file;
@@ -122,13 +125,15 @@ function startEditor(fileName) {
     // Make sure the intro box is shown in the front 
     screen.append(introBox);
     screen.append(openDialog);
+    screen.append(fileMenu);
 
     // Scrolling arrows, these don't do much just yet except appear on the screen for the scrollbar
     screen.append(scrollArrowUp);
     screen.append(scrollArrowDown);
 
-    // Hide any dialogs just to be sure
+    // Hide any dialogs/menus just to be sure
     openDialog.hide();
+    fileMenu.hide();
 
     // Reset the cursor after appending all of the UI elements
     program.resetCursor();
@@ -302,6 +307,18 @@ textArea.key(['f4'], () => {
 screen.key(['C-o'], () => {
     openDialog.toggle();
     openDialog.focus();
+    screen.render();
+});
+
+screen.key(['M-f'], () => {
+    if (fileMenu.hidden) {
+        fileMenu.show();
+        fileMenu.focus();
+
+    } else {
+        fileMenu.hide();
+        textArea.focus();
+    }
     screen.render();
 });
 

@@ -36,7 +36,6 @@ class FileMenu {
         // Create the fileMenuBox
         this.fileMenu = blessed.box({
             parent: this.parent,
-            // border: 'line',
             top: 1,
             left: 1,
             width: 15,
@@ -53,7 +52,7 @@ class FileMenu {
         });
 
         this.menuList = blessed.list({
-            // No borders
+            // Borders to match how DOS Edit has borders for its menus
             border: 'line',
             padding: 'none',
             // The parent of the titlebar should be the generated fileMenu
@@ -80,10 +79,11 @@ class FileMenu {
             }
         });
 
+        // Set the items for the menu list
         this.menuList.setItems(['New', 'Open...', 'Save', 'Save As...', 'Exit']);
 
         // Append each UI subcomponent to the fileMenu box
-        // this.fileMenu.append(this.menuList);
+        this.fileMenu.append(this.menuList);
 
         // Handle anything that needs to happen on focus of the fileMenu
         this.fileMenu.on('focus', () => {
@@ -93,17 +93,21 @@ class FileMenu {
             statusBar.setContent(`File Menu...`);
         });
 
-        // Close the menu on escape key 
+        // // Close the menu on escape key 
         this.fileMenu.key(['escape'], () => {
             this.nextFocusElement.focus();
-            this.fileMenu.toggle();
+            this.fileMenu.hide();
             this.parent.render();
         });
 
         this.menuList.key(['escape'], () => {
             this.nextFocusElement.focus();
-            this.fileMenu.toggle();
+            this.fileMenu.hide();
             this.parent.render();
+        });
+
+        this.menuList.on('select', (item) => {
+            // The text parse is item.content
         });
     }
 }
