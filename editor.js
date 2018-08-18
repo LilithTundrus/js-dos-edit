@@ -10,9 +10,7 @@
 // NOTE: blessed is weird, if you make a change and it doesn't happen, try rendering in between each of
 // the steps, they may not occur otherwise
 
-// TODO: Support files being opened from the command line
 // TODO: Add more info to the statusBar area (if we can get the cursor to stop moving when it updates)
-// TODO: Figure out how to properly insert tabs
 // TODO: Document keyhandlers better
 // TODO: Fix this bug:
 // TypeError: this._clines.rtof is not a function
@@ -26,6 +24,8 @@
 // TODO: Better figure out DOS edit's behaviour to better match it
 // TODO: Handle resizing a bit better at some point
 // TODO: Get saving/opening documents working as well as checking if the currently edited document is saved or not
+// TODO: Redo how cursor reflowing on the up/down arrow works (more like vim/vscode)
+// TODO: This will require a lot of polish that's going to take a lot of time to work through
 
 /* Current working list:
 
@@ -260,7 +260,6 @@ textArea.key('end', () => {
     });
 });
 
-
 // Function for getting the Line/Column count for the editing window
 // TODO: handle scrolling/text bigger than the editing window
 // TODO: handle the filename
@@ -280,15 +279,20 @@ textArea.key(['C-w'], () => {
 });
 
 // Test file writing functions
+// TODO: This should be aware of whether or not the editor has a file already/etc.
 textArea.key(['C-s'], () => {
     // TODO: this needs to be doing a lot more eventually
     // Remove the cursor from the text that for SOME REASON shows up
     fs.writeFileSync('test', textArea.content.replace('', ''));
 });
 
+// Quit on F4
 textArea.key(['f4'], () => {
     return process.exit();
 });
+
+// Show the open dialog on ctrl + o
+// TODO: This should be aware of whether or not the editor has a file that isn't saved/etc.
 
 screen.key(['C-o'], () => {
     openDialog.toggle();
