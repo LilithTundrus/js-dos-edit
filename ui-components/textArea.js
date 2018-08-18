@@ -37,6 +37,8 @@ class TextArea {
             height: '100%-1',
             // Don't capture SGR blessed escape codes, that could cause issues
             tags: false,
+
+            wrap: false,
             // This style matches the DOS edit theme
             style: {
                 fg: 'bold',
