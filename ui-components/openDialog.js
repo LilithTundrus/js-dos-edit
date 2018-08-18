@@ -115,7 +115,7 @@ class OpenDialog {
             // Use the full width but leave some padding
             width: this.openDialog.width - 2,
             // Static height 
-            height: 11,
+            height: '70%',
             // Use the default keys for the belssed filemanager
             keys: true,
             // Use scrollbars for the list
