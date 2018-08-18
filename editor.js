@@ -89,6 +89,9 @@ let openDialog = new OpenDialog(screen, textArea, statusBar).openDialog;
 let scrollArrowUp = new ScrollArrowUp(screen).scrollArrowUp;
 let scrollArrowDown = new ScrollArrowDown(screen).scrollArrowDown;
 
+// Testing 'knowing' what the file is like before being inserted into the editor
+let file;
+
 // This is the main function that gets exported for 'exposing' this code to be called from the CLI
 function startEditor(fileName) {
     // This function trusts its input since it's only ever called by index.js
@@ -102,6 +105,7 @@ function startEditor(fileName) {
         // TODO: have this save to the file in the passed path
         // TODO: if the data is changed and the editor is about to be exited, have a save dialog popup
         let contents = fs.readFileSync(fileName, 'UTF-8');
+        file = contents.split('\n');
         textArea.setContent(contents, false, true);
     }
     // Else, just launch a blank editor and set the edit mode to not have a file saved yet
@@ -236,7 +240,7 @@ textArea.on('keypress', (ch, key) => {
     // This callback returns an err and data object, the data object has the x/y position of the cursor
     program.getCursor((err, data) => {
         if (err) return;
-        return keyHandlers.mainKeyHandler(data, program, screen, textArea, ch);
+        return keyHandlers.mainKeyHandler(data, program, screen, textArea, ch, file);
     });
     screen.render();
 });
@@ -284,6 +288,7 @@ textArea.key(['C-s'], () => {
     // TODO: this needs to be doing a lot more eventually
     // Remove the cursor from the text that for SOME REASON shows up
     fs.writeFileSync('test', textArea.content.replace('', ''));
+    file = textArea.getText();
 });
 
 // Quit on F4

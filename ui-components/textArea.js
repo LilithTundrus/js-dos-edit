@@ -37,7 +37,7 @@ class TextArea {
             height: '100%-1',
             // Don't capture SGR blessed escape codes, that could cause issues
             tags: false,
-
+            // No text wrapping (this isn't documented in blessed?)
             wrap: false,
             // This style matches the DOS edit theme
             style: {
