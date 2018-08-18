@@ -65,11 +65,6 @@ class OpenDialog {
             style: {
                 fg: 'black',
                 bg: 'light-grey',
-                border: {
-                    // This matches the DOS edit theme
-                    fg: 'black',
-                    bg: 'light-grey',
-                },
                 label: {
                     bg: 'cyan',
                     fg: 'grey'
