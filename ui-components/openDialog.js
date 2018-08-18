@@ -115,7 +115,7 @@ class OpenDialog {
             // Use the full width but leave some padding
             width: this.openDialog.width - 2,
             // Static height 
-            height: 9,
+            height: 11,
             // Use the default keys for the belssed filemanager
             keys: true,
             // Use scrollbars for the list
@@ -148,7 +148,7 @@ class OpenDialog {
         // Get the current directory 
         // TODO: in the future have this REMEMBER where the user was last
         fileList.refresh('./', () => {
-            // callback would go here
+            // Callback would go here
         });
 
         // Cancel button, should simply close the dialog window
@@ -255,7 +255,7 @@ class OpenDialog {
             fileList.style.border = this.fileMenuUnfocusedBorderStyle;
             fileList.style.selected = this.fileMenuUnfocusedItemStyle;
 
-            // Focus the cancel button
+            // Focus the cancel button and visually change how the button looks
             cancelButton.setContent('► Cancel ◄');
             parent.render();
         });
