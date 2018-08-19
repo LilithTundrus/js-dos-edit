@@ -71,7 +71,7 @@ class OpenDialog {
                 }
             },
             valign: 'middle',
-            shadow: true,
+            shadow: true
         });
 
         // Make the titlebar box (custom, better than labels because COLOR)
@@ -163,7 +163,7 @@ class OpenDialog {
             // Button should only be a height of 1
             height: 1,
             // Place the button near the bottom of the box
-            top: Math.round(this.openDialog.height - 4),
+            top: Math.round(this.openDialog.height - 4)
         });
 
         // Append each UI subcomponent to the openDialog box
@@ -180,11 +180,12 @@ class OpenDialog {
             parent.render();
             // Focus the first element that makes the most sense (the file select)
             fileList.focus();
-            statusBar.setContent(`ENTER = Select a file\tTAB = Change target\t`)
+            statusBar.setContent(`ENTER = Select a file\tTAB = Change target\t`);
         });
 
         this.openDialog.key(['C-o'], () => {
             this.nextFocusElement.focus();
+            this.openDialog.hide();
             this.parent.render();
         });
 
@@ -228,6 +229,7 @@ class OpenDialog {
 
         fileList.key(['C-o'], () => {
             this.nextFocusElement.focus();
+            this.openDialog.hide();
             this.parent.render();
         });
 
@@ -257,7 +259,7 @@ class OpenDialog {
 
         cancelButton.key(['escape'], () => {
             this.nextFocusElement.focus();
-            this.openDialog.toggle();
+            this.openDialog.hide();
             this.parent.render();
         });
 
@@ -267,7 +269,7 @@ class OpenDialog {
 
         cancelButton.key(['enter'], () => {
             this.nextFocusElement.focus();
-            this.openDialog.toggle();
+            this.openDialog.hide();
             this.parent.render();
         });
     }

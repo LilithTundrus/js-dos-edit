@@ -269,6 +269,10 @@ textArea.key('end', () => {
     });
 });
 
+// TODO: On escape, the cursor moves to the start of the current line (this needs to be fixed here)
+textArea.key('escape', () => {
+});
+
 // Function for getting the Line/Column count for the editing window
 // TODO: handle scrolling/text bigger than the editing window
 // TODO: handle the filename
@@ -305,8 +309,14 @@ textArea.key(['f4'], () => {
 // TODO: This should be aware of whether or not the editor has a file that isn't saved/etc.
 
 screen.key(['C-o'], () => {
-    openDialog.toggle();
-    openDialog.focus();
+    if (openDialog.hidden) {
+        openDialog.show();
+        openDialog.focus();
+
+    } else {
+        openDialog.hide();
+        textArea.focus();
+    }
     screen.render();
 });
 
