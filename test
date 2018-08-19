@@ -1,4 +1,4 @@
-// Using ES5 strict mode
+Using ES5 strict modeaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaabbbbbb
 'use strict';
 
 // Set of keyname strings for checking against within the main keypress event

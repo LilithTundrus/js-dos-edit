@@ -108,6 +108,18 @@ class FileMenu {
 
         this.menuList.on('select', (item) => {
             // The text parse is item.content
+
+            // TODO: This needs to make sure the file is properly saved before exiting
+            if (item.content == 'Exit') return process.exit();
+
+            // TODO: This needs to make sure the file is properly saved before making changes
+            if (item.content == 'New') {
+                nextFocusElement.setContent('');
+                this.fileMenu.hide();
+                // Reset what the textarea says
+                // reset the cursor
+                this.parent.render();
+            }
         });
     }
 }
