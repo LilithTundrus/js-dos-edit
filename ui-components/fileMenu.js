@@ -36,9 +36,13 @@ class FileMenu {
         // Create the fileMenuBox
         this.fileMenu = blessed.box({
             parent: this.parent,
+            // Top of this element should be 1 below the top of the screen
             top: 1,
+            // Left start of this element should be 1 to the left of the screen for padding/looks
             left: 1,
+            // Fixed width because the box's contents will be static
             width: 15,
+            // Fixed height because the box's contents will be static
             height: 7,
             style: {
                 fg: 'black',
@@ -85,19 +89,13 @@ class FileMenu {
         // Append each UI subcomponent to the fileMenu box
         this.fileMenu.append(this.menuList);
 
+        // TODO: this should change the color of the top row to indicate that the file menu is open!!
         // Handle anything that needs to happen on focus of the fileMenu
         this.fileMenu.on('focus', () => {
             parent.render();
             // Focus the first element that makes the most sense (the file select)
             this.menuList.focus();
             statusBar.setContent(`File Menu...`);
-        });
-
-        // // Close the menu on escape key 
-        this.fileMenu.key(['escape'], () => {
-            this.nextFocusElement.focus();
-            this.fileMenu.hide();
-            this.parent.render();
         });
 
         this.menuList.key(['escape'], () => {
