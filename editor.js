@@ -14,9 +14,6 @@
 // TODO: Document keyhandlers better
 // TODO: Fix this bug:
 // TypeError: this._clines.rtof is not a function
-// TODO: handle that when the textArea is in a scrolling state, text entry gets messed up 
-// (it likely has to do with how we're not accounting for the scrolling index with the relative cursor
-// position)
 // TODO: Get custom horizontal scrolling working
 // TODO: Add half-width shadows for buttons
 // TODO: Get the scroll arrows to 'blink' on arrow key events (works but annoyingly moves the cursor around to make the change)
@@ -61,12 +58,15 @@ const ScrollArrowUp = require('./ui-components/scrollArrowUp');
 const ScrollArrowDown = require('./ui-components/scrollArrowDown');
 const FileMenu = require('./ui-components/fileMenu');
 
+// Create the blessed program object to associate with the blessed screen
 let program = blessed.program();
 // Create a screen object to work with blessed
 let screen = blessed.screen({
     smartCSR: true,
+    // Autopad screen elements unless no padding it explicitly required
     autoPadding: true,
     program: program,
+    // Used, but often doesn't work
     cursor: {
         artificial: true,
         shape: 'line',
@@ -91,7 +91,6 @@ let scrollArrowUp = new ScrollArrowUp(screen).scrollArrowUp;
 let scrollArrowDown = new ScrollArrowDown(screen).scrollArrowDown;
 let fileMenu = new FileMenu(screen, textArea, statusBar).fileMenu;
 
-
 // Testing 'knowing' what the file is like before being inserted into the editor
 let file;
 
@@ -102,11 +101,12 @@ function startEditor(fileName) {
     // If the fileName is not the default
     if (fileName !== 'Untitled') {
         // Try to read the file's contents
-        // TODO: this should support multiple encodings of text!
-        // TODO: also verify the file can be read
+        // TODO: This should support multiple encodings of text!
+        // TODO: Also verify the file can be read
         // TODO: Figure out how to handle large files (fs read stream maybe?)
-        // TODO: have this save to the file in the passed path
-        // TODO: if the data is changed and the editor is about to be exited, have a save dialog popup
+        // TODO: Have this save to the file in the passed path
+        // TODO: If the data is changed and the editor is about to be exited, have a save dialog popup
+        // TODO: this function should not have to do this, index.js should
         let contents = fs.readFileSync(fileName, 'UTF-8');
         file = contents.split('\n');
         textArea.setContent(contents, false, true);
@@ -122,7 +122,7 @@ function startEditor(fileName) {
     screen.append(menuBar);
     screen.append(textArea);
     screen.append(statusBar);
-    // Make sure the intro box is shown in the front 
+    // Make sure the intro box is shown in the front
     screen.append(introBox);
     screen.append(openDialog);
     screen.append(fileMenu);
@@ -140,7 +140,7 @@ function startEditor(fileName) {
 }
 
 textArea.on('focus', () => {
-    //TODO: When a file is opened, start at the top of the first line, but at the end
+    // TODO: When a file is opened, start at the top of the first line, but at the end of that line
     // Get the top and bottom + left/right of the screen to reset the cursor
     // Pull the cursor all the way to the top left no matter where it is
     program.getCursor((err, data) => {
@@ -151,11 +151,12 @@ textArea.on('focus', () => {
         program.cursorDown(2);
         screen.render();
     });
+
     // Reset the content of the statusBar (the numbers are placeholders)
     // TODO: make the numbers + filename no longer be placeholders
     statusBar.setContent(`Unsaved Document\t\t\t< Ctrl+W=Quit  F1=Help >\t\t\t Line 1 | Col 1`);
     screen.render();
-    // Destroy the introBox completely
+    // Destroy the introBox completely (it's not needed more than once)
     introBox = null;
 });
 
@@ -251,6 +252,7 @@ textArea.on('keypress', (ch, key) => {
 });
 
 // Home/End keys used to get to the beginning/end of a line
+// TODO: These need to handle horizontal scrolling
 textArea.key('home', () => {
     // This callback returns an err and data object, the data object has the x/y position of the cursor
     program.getCursor((err, data) => {
@@ -287,6 +289,7 @@ textArea.key('escape', () => {
 // }
 
 // Quit on Control-W
+// TODO: This should be aware of whether or not the editor has a file that isn't saved/etc.
 textArea.key(['C-w'], () => {
     return process.exit(0);
 });
@@ -301,18 +304,17 @@ textArea.key(['C-s'], () => {
 });
 
 // Quit on F4
+// TODO: This should be aware of whether or not the editor has a file that isn't saved/etc.
 textArea.key(['f4'], () => {
     return process.exit();
 });
 
 // Show the open dialog on ctrl + o
 // TODO: This should be aware of whether or not the editor has a file that isn't saved/etc.
-
 screen.key(['C-o'], () => {
     if (openDialog.hidden) {
         openDialog.show();
         openDialog.focus();
-
     } else {
         openDialog.hide();
         textArea.focus();
@@ -320,11 +322,11 @@ screen.key(['C-o'], () => {
     screen.render();
 });
 
+// On Alt + f, open/close the file menu
 screen.key(['M-f'], () => {
     if (fileMenu.hidden) {
         fileMenu.show();
         fileMenu.focus();
-
     } else {
         fileMenu.hide();
         textArea.focus();
