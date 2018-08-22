@@ -2,6 +2,7 @@
 'use strict';
 
 // Node/NPM package requires
+const fs = require('fs');
 const blessed = require('neo-blessed');
 
 // Require the functions to handle each keypress
@@ -30,7 +31,7 @@ class TextArea {
 
         // Create the textArea UI element as a blessed box element type
         this.textArea = blessed.box({
-            parent: parent,
+            parent: this.parent,
             // The top of this element should be the parent width plus 1
             top: 1,
             // Mark the element as keyable to the parent passes down any keypresses to the box
@@ -83,12 +84,12 @@ class TextArea {
             // Get the top and bottom + left/right of the parent to reset the cursor
             // Pull the cursor all the way to the top left no matter where it is
             this.parent.program.getCursor((err, data) => {
-                this.parent.program.cursorUp(parent.height);
-                this.parent.program.cursorBackward(parent.width);
+                this.parent.program.cursorUp(this.parent.height);
+                this.parent.program.cursorBackward(this.parent.width);
                 // Put the cursor at line 1 column one of the editing window
                 this.parent.program.cursorForward(1);
                 this.parent.program.cursorDown(2);
-                parent.render();
+                this.parent.render();
             });
 
             // Reset the content of the statusBar (the numbers are placeholders)
@@ -104,7 +105,7 @@ class TextArea {
             this.parent.program.getCursor((err, data) => {
                 if (err) return;
                 // Use the custom left keyHandler, passing the needed objects for blessed operations
-                return keyHandlers.leftArrowHandler(data, this.parent.program, parent, this.textArea);
+                return keyHandlers.leftArrowHandler(data, this.parent.program, this.parent, this.textArea);
             });
         });
 
@@ -187,7 +188,7 @@ class TextArea {
                 if (err) return;
                 return keyHandlers.mainKeyHandler(data, this.parent.program, this.parent, this.textArea, ch, null);
             });
-            parent.render();
+            this.parent.render();
         });
 
         // Home/End keys used to get to the beginning/end of a line
@@ -197,7 +198,7 @@ class TextArea {
             this.parent.program.getCursor((err, data) => {
                 if (err) return;
                 // Use the custom left keyHandler, passing the needed objects for blessed operations
-                return keyHandlers.homeHandler(data, this.parent.program,  this.parent,  this.textArea);
+                return keyHandlers.homeHandler(data, this.parent.program, this.parent, this.textArea);
             });
         });
 
@@ -206,7 +207,7 @@ class TextArea {
             this.parent.program.getCursor((err, data) => {
                 if (err) return;
                 // Use the custom left keyHandler, passing the needed objects for blessed operations
-                return keyHandlers.endHandler(data, this.parent.program,  this.parent,  this.textArea);
+                return keyHandlers.endHandler(data, this.parent.program, this.parent, this.textArea);
             });
         });
 
@@ -219,6 +220,21 @@ class TextArea {
         this.textArea.key(['C-w'], () => {
             return process.exit(0);
         });
+
+        // Test file writing function
+        // TODO: This should be aware of whether or not the editor has a file already/etc.
+        this.textArea.key(['C-s'], () => {
+            // TODO: this needs to be doing a lot more eventually
+            // Remove the cursor from the text that for SOME REASON shows up
+            fs.writeFileSync('test', this.textArea.content.replace('', ''));
+        });
+
+        // Quit on F4
+        // TODO: This should be aware of whether or not the editor has a file that isn't saved/etc.
+        this.textArea.key(['f4'], () => {
+            return process.exit();
+        });
+
     }
 }
 
