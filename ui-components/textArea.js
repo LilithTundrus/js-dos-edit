@@ -197,7 +197,7 @@ class TextArea {
             // This callback returns an err and data object, the data object has the x/y position of the cursor
             this.parent.program.getCursor((err, data) => {
                 if (err) return;
-                // Use the custom left keyHandler, passing the needed objects for blessed operations
+                // Use the custom home keyHandler, passing the needed objects for blessed operations
                 return keyHandlers.homeHandler(data, this.parent.program, this.parent, this.textArea);
             });
         });
@@ -206,13 +206,18 @@ class TextArea {
             // This callback returns an err and data object, the data object has the x/y position of the cursor
             this.parent.program.getCursor((err, data) => {
                 if (err) return;
-                // Use the custom left keyHandler, passing the needed objects for blessed operations
+                // Use the custom end keyHandler, passing the needed objects for blessed operations
                 return keyHandlers.endHandler(data, this.parent.program, this.parent, this.textArea);
             });
         });
 
-        // TODO: On escape, the cursor moves to the start of the current line (this needs to be fixed here)
+        // On escape, the cursor can do some weird things, so that gets prevented here (hopefully)
         this.textArea.key('escape', () => {
+            this.parent.program.getCursor((err, data) => {
+                if (err) return;
+                this.parent.program.resetCursor();
+                this.parent.program.cursorPos(data.y - 1, data.x - 1);
+            });
         });
 
         // Quit on Control-W
