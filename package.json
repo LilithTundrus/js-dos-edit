@@ -29,6 +29,7 @@
   },
   "homepage": "https://github.com/LilithTundrus/js-dos-edit#readme",
   "dependencies": {
+    "chardet": "^0.7.0",
     "neo-blessed": "^0.2.0"
   }
 }
