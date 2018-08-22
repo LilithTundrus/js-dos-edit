@@ -1,32 +1,39 @@
 // Using ES5 strict mode
 'use strict';
 
+// Node/NPM package requires
 const blessed = require('neo-blessed');
+
+// Require the functions to handle each keypress
+const keyHandlers = require('../lib/keyHandlers');
+// Require the set of keys to listen for on keypress event for keys to ignore that custom handlers listen for
+const customKeys = require('../lib/handledKeysSet');
 
 // This file contains one of the blessed components for constructing the UI in an effort to
 // keep this project modular
 
 // Create the textArea textbox, where the actual text being edited will be displayed
 
-// This needs to be a class because on construction blessed tries to attach this to a parent screen
+// This needs to be a class because on construction blessed tries to attach this to a parent parent
 
 // TODO: At some point, the scrollbar(s) should always show no matter the content length
 class TextArea {
 
     /** Creates an instance of TextArea. This is the main text entry box
-     * @param {*} parent Blessed screen parent to attach the element to
+     * @param {*} parent Blessed parent parent to attach the element to
      * @param {*} fileLabel The filename to set the textAreas's label to
      * @memberof TextArea
      */
-    constructor(parent, fileLabel) {
+    constructor(parent, fileLabel, statusBar) {
         this.parent = parent;
+        this.statusBar = statusBar;
 
         // Create the textArea UI element as a blessed box element type
         this.textArea = blessed.box({
             parent: parent,
-            // The top of this element should be the screen width plus 1
+            // The top of this element should be the parent width plus 1
             top: 1,
-            // Mark the element as keyable to the screen passes down any keypresses to the box
+            // Mark the element as keyable to the parent passes down any keypresses to the box
             keyable: true,
             label: fileLabel,
             // Left-align the text
@@ -67,6 +74,150 @@ class TextArea {
             baseLimit: 16000,
             // This fixes any issues with the box not scrolling on scroll method calls
             alwaysScroll: true,
+        });
+
+        // Key/Event handlers
+
+        this.textArea.on('focus', () => {
+            // TODO: When a file is opened, start at the top of the first line, but at the end of that line
+            // Get the top and bottom + left/right of the parent to reset the cursor
+            // Pull the cursor all the way to the top left no matter where it is
+            this.parent.program.getCursor((err, data) => {
+                this.parent.program.cursorUp(parent.height);
+                this.parent.program.cursorBackward(parent.width);
+                // Put the cursor at line 1 column one of the editing window
+                this.parent.program.cursorForward(1);
+                this.parent.program.cursorDown(2);
+                parent.render();
+            });
+
+            // Reset the content of the statusBar (the numbers are placeholders)
+            // TODO: make the numbers + filePath no longer be placeholders
+            this.statusBar.setContent(`Unsaved Document\t\t\t< Ctrl+W=Quit  F1=Help >\t\t\t Line 1 | Col 1`);
+            this.parent.render();
+            // // Destroy the introBox completely (it's not needed more than once)
+            // introBox = null;
+        });
+
+        this.textArea.key('left', () => {
+            // This callback returns an err and data object, the data object has the x/y position of the cursor
+            this.parent.program.getCursor((err, data) => {
+                if (err) return;
+                // Use the custom left keyHandler, passing the needed objects for blessed operations
+                return keyHandlers.leftArrowHandler(data, this.parent.program, parent, this.textArea);
+            });
+        });
+
+        this.textArea.key('right', () => {
+            // This callback returns an err and data object, the data object has the x/y position of the cursor
+            this.parent.program.getCursor((err, data) => {
+                if (err) return;
+                // Use the custom right keyHandler, passing the needed objects for blessed operations
+                return keyHandlers.rightArrowHandler(data, this.parent.program, this.parent, this.textArea);
+            });
+        });
+
+        this.textArea.key('up', () => {
+            // This callback returns an err and data object, the data object has the x/y position of the cursor
+            this.parent.program.getCursor((err, data) => {
+                if (err) return;
+                // Use the custom up keyHandler, passing the needed objects for blessed operations
+                return keyHandlers.upArrowHandler(data, this.parent.program, this.parent, this.textArea, null);
+            });
+        });
+
+        this.textArea.key('down', () => {
+            // This callback returns an err and data object, the data object has the x/y position of the cursor
+            this.parent.program.getCursor((err, data) => {
+                if (err) return;
+                // Use the custom down keyHandler, passing the needed objects for blessed operations
+                return keyHandlers.downArrowHandler(data, this.parent.program, this.parent, this.textArea);
+            });
+        });
+
+        this.textArea.key('enter', () => {
+            // This callback returns an err and data object, the data object has the x/y position of the cursor
+            this.parent.program.getCursor((err, data) => {
+                if (err) return;
+                return keyHandlers.enterHandler(data, this.parent.program, this.parent, this.textArea);
+            });
+        });
+
+        this.textArea.key('backspace', () => {
+            // This callback returns an err and data object, the data object has the x/y position of the cursor
+            this.parent.program.getCursor((err, data) => {
+                if (err) return;
+                // Use the custom backspace keyHandler, passing the needed objects for blessed operations
+                return keyHandlers.backspaceHandler(data, this.parent.program, this.parent, this.textArea);
+            });
+        });
+
+        // TODO: have this make sure it won't breach any bounds
+        this.textArea.key('space', () => {
+            // This callback returns an err and data object, the data object has the x/y position of the cursor
+            this.parent.program.getCursor((err, data) => {
+                if (err) return;
+                // Use the custom space keyHandler, passing the needed objects for blessed operations
+                return keyHandlers.spaceHandler(data, this.parent.program, this.parent, this.textArea);
+            });
+        });
+
+        // TODO: have this make sure it won't breach any bounds
+        this.textArea.key('tab', () => {
+            // This callback returns an err and data object, the data object has the x/y position of the cursor
+            this.parent.program.getCursor((err, data) => {
+                if (err) return;
+                // Use the custom space keyHandler, passing the needed objects for blessed operations
+                return keyHandlers.tabHandler(data, this.parent.program, this.parent, this.textArea);
+            });
+        });
+
+        // This catches all keypresses
+        this.textArea.on('keypress', (ch, key) => {
+            // Return, these are keys we can handle elsewhere (undefined means it isn't a display character)
+            if (ch == undefined) return;
+            // If the key is already handled elsewhere, return
+            else if (customKeys.has(key.name)) return;
+            // This shouldn't be needed, but the \r code sometimes gets into here
+            if (ch === '\r') return;
+
+            // Determine where to insert the character that was entered based on the cursor position
+            // This callback returns an err and data object, the data object has the x/y position of the cursor
+            this.parent.program.getCursor((err, data) => {
+                if (err) return;
+                return keyHandlers.mainKeyHandler(data, this.parent.program, this.parent, this.textArea, ch, null);
+            });
+            parent.render();
+        });
+
+        // Home/End keys used to get to the beginning/end of a line
+        // TODO: These need to handle horizontal scrolling
+        this.textArea.key('home', () => {
+            // This callback returns an err and data object, the data object has the x/y position of the cursor
+            this.parent.program.getCursor((err, data) => {
+                if (err) return;
+                // Use the custom left keyHandler, passing the needed objects for blessed operations
+                return keyHandlers.homeHandler(data, this.parent.program,  this.parent,  this.textArea);
+            });
+        });
+
+        this.textArea.key('end', () => {
+            // This callback returns an err and data object, the data object has the x/y position of the cursor
+            this.parent.program.getCursor((err, data) => {
+                if (err) return;
+                // Use the custom left keyHandler, passing the needed objects for blessed operations
+                return keyHandlers.endHandler(data, this.parent.program,  this.parent,  this.textArea);
+            });
+        });
+
+        // TODO: On escape, the cursor moves to the start of the current line (this needs to be fixed here)
+        this.textArea.key('escape', () => {
+        });
+
+        // Quit on Control-W
+        // TODO: This should be aware of whether or not the editor has a file that isn't saved/etc.
+        this.textArea.key(['C-w'], () => {
+            return process.exit(0);
         });
     }
 }
