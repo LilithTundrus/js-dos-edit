@@ -31,7 +31,7 @@ actual text editing needs to be addressed. So I'll make sure that's perfect firs
 
 First basic editing controls, - DONE (sort of) -- have bugs to iron out
 then scrolling (and scrollbars), - DONE (mostly) -- still a bit of weirdness that needs to be worked through
-then opening/reading files,
+then opening/reading files, - WORKING ON -- need the logic to check on the status of files + saving to user-defined files
 then menus,
 then horizontal scrolling,
 error handling,
@@ -89,17 +89,17 @@ let introBox = new IntroBox(screen, textArea, statusBar).introBox;
 let openDialog = new OpenDialog(screen, textArea, statusBar).openDialog;
 let scrollArrowUp = new ScrollArrowUp(screen).scrollArrowUp;
 let scrollArrowDown = new ScrollArrowDown(screen).scrollArrowDown;
-let fileMenu = new FileMenu(screen, textArea, statusBar).fileMenu;
+let fileMenu = new FileMenu(screen, textArea, statusBar, menuBar).fileMenu;
 
 // Testing 'knowing' what the file is like before being inserted into the editor
 let file;
 
 // This is the main function that gets exported for 'exposing' this code to be called from the CLI
-function startEditor(fileName) {
+function startEditor(filePath) {
     // This function trusts its input since it's only ever called by index.js
 
-    // If the fileName is not the default
-    if (fileName !== 'Untitled') {
+    // If the filePath is not the default
+    if (filePath !== 'Untitled') {
         // Try to read the file's contents
         // TODO: This should support multiple encodings of text!
         // TODO: Also verify the file can be read
@@ -107,15 +107,17 @@ function startEditor(fileName) {
         // TODO: Have this save to the file in the passed path
         // TODO: If the data is changed and the editor is about to be exited, have a save dialog popup
         // TODO: this function should not have to do this, index.js should
-        let contents = fs.readFileSync(fileName, 'UTF-8');
+        // TODO: Only get the end of the filePath for the editor's label
+        // let encodingType = fileHelpers.getFileEncodingType(filePath);
+        let contents = fs.readFileSync(filePath, 'UTF-8');
         file = contents.split('\n');
         textArea.setContent(contents, false, true);
     }
     // Else, just launch a blank editor and set the edit mode to not have a file saved yet
 
     // Set the title of the terminal window (if any) -- this will eventually take cli arguments for reading a file to be edited
-    screen.title = `EDIT - ${fileName}`;
-    textArea.setLabel(`${fileName}`);
+    screen.title = `EDIT - ${filePath}`;
+    textArea.setLabel(`${filePath}`);
 
     // Append the needed UI elements to the screen (in visual order)
     screen.append(mainWindow);
@@ -153,7 +155,7 @@ textArea.on('focus', () => {
     });
 
     // Reset the content of the statusBar (the numbers are placeholders)
-    // TODO: make the numbers + filename no longer be placeholders
+    // TODO: make the numbers + filePath no longer be placeholders
     statusBar.setContent(`Unsaved Document\t\t\t< Ctrl+W=Quit  F1=Help >\t\t\t Line 1 | Col 1`);
     screen.render();
     // Destroy the introBox completely (it's not needed more than once)
@@ -277,7 +279,7 @@ textArea.key('escape', () => {
 
 // Function for getting the Line/Column count for the editing window
 // TODO: handle scrolling/text bigger than the editing window
-// TODO: handle the filename
+// TODO: handle the filePath
 // TODO: fix this being weird and controlling the cursor, maybe a custom cursor save if we really fucking have to
 // function updateStatusBarRowsAndColumns(documentName) {
 //     program.getCursor((err, data) => {

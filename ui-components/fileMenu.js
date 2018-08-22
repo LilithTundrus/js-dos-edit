@@ -4,7 +4,6 @@
 // Node/NPM package requires
 const fs = require('fs');
 const blessed = require('neo-blessed');
-let checkIfFileMatchesContents = require('../lib/checkIfFileMatchesContents');
 
 // This file contains one of the blessed components for constructing the UI in an effort to
 // keep this project modular
@@ -117,11 +116,10 @@ class FileMenu {
             if (item.content == 'New') {
 
                 // Make sure the currently edited file has not changed
-                let test = checkIfFileMatchesContents('./test');
 
                 this.fileMenu.hide();
                 // Reset what the textarea contains
-                nextFocusElement.setContent(test);
+                nextFocusElement.setContent('');
                 // Focus the textArea
                 nextFocusElement.focus();
 

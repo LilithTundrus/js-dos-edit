@@ -12,9 +12,11 @@ const editor = require('./editor');
 if (process.argv[2]) {
     // Try and read the file as a path
 
+
     // TODO: Verify the contents here before passing to the editor
-    if (fs.existsSync(process.argv[2])) {
-        editor.startEditor(process.argv[2]);
+    if (fs.existsSync(`${__dirname}/${process.argv[2]}`)) {
+        // console.log(`${__dirname}/${process.argv[2]}`);
+        return editor.startEditor(`${__dirname}/${process.argv[2]}`);
     }
     // If nothing is found, start the editor in an error state OR just print an error message
 
