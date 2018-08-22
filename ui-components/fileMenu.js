@@ -61,6 +61,7 @@ class FileMenu {
             padding: 'none',
             // The parent of the titlebar should be the generated fileMenu
             parent: this.fileMenu,
+            // Width and height should be the same as the parent
             width: this.fileMenu.width,
             height: this.fileMenu.height,
             // Use the default keys for the belssed fileMenu
@@ -112,10 +113,15 @@ class FileMenu {
 
             // TODO: This needs to make sure the file is properly saved before making changes
             if (item.content == 'New') {
-                nextFocusElement.setContent('');
                 this.fileMenu.hide();
-                // Reset what the textarea says
-                // reset the cursor
+                // Reset what the textarea contains
+                nextFocusElement.setContent('');
+                // Focus the textArea
+                nextFocusElement.focus();
+                // Reset the cursor
+                this.parent.program.cursorPos(1, 1);
+                // Reset the label for the textArea
+                this.nextFocusElement.setLabel('Untitled')
                 this.parent.render();
             }
         });
