@@ -24,6 +24,7 @@ const FileMenu = require('./ui-components/fileMenu');
 // This is the main editor class that puts all of the pieces together
 
 class Editor {
+
     constructor(program, screen, currentFilePath) {
         // Initialize everything that's needed to get the editor working
         this.program = program;
@@ -32,23 +33,57 @@ class Editor {
         this.editingMode = '';
 
         // Create instances of the UI elements, passing the screen as the parent
-        this.textArea = new TextArea(this.screen, this.currentFilePath).textArea;
+        // Each of these has their own set of key and event handlers
+        this.statusBar = new StatusBar(this.screen).statusBar;
+        this.textArea = new TextArea(this.screen, this.currentFilePath, this.statusBar).textArea;
         this.mainWindow = new MainWindow(this.screen).mainWindow;
         this.menuBar = new MenuBar(this.screen).menuBar;
-        this.statusBar = new StatusBar(this.screen).statusBar;
         this.introBox = new IntroBox(this.screen, this.textArea, this.statusBar).introBox;
         this.openDialog = new OpenDialog(this.screen, this.textArea, this.statusBar).openDialog;
         this.scrollArrowUp = new ScrollArrowUp(this.screen).scrollArrowUp;
         this.scrollArrowDown = new ScrollArrowDown(this.screen).scrollArrowDown;
         this.fileMenu = new FileMenu(this.screen, this.textArea, this.statusBar, this.menuBar).fileMenu;
 
-        // Quit on Control-W
+        // TODO: Figure out why this doesn't work
+        this.program.on('resize', () => {
+            this.program.cursorPos(3, 2);
+            this.screen.render();
+        });
+
+        // Key combinations that should be handled anywhere
+
+        // Show the open dialog on ctrl + o
         // TODO: This should be aware of whether or not the editor has a file that isn't saved/etc.
-        this.textArea.key(['C-w'], () => {
-            return process.exit(0);
+        this.screen.key(['C-o'], () => {
+            if (this.openDialog.hidden) {
+                this.openDialog.show();
+                this.openDialog.focus();
+            } else {
+                this.openDialog.hide();
+                this.textArea.focus();
+            }
+            this.screen.render();
+        });
+
+        // On Alt + f, open/close the file menu
+        this.screen.key(['M-f'], () => {
+            if (this.fileMenu.hidden) {
+                this.fileMenu.show();
+                this.fileMenu.focus();
+            } else {
+                this.fileMenu.hide();
+                this.textArea.focus();
+            }
+            this.screen.render();
         });
     }
 
+    /** Start the editor
+     * @param {*} fileName
+     * @param {*} filePath
+     * @param {*} windowTitle
+     * @memberof Editor
+     */
     start(fileName, filePath, windowTitle) {
         // This function trusts its input 
         if (this.currentFilePath !== 'Untitled') {
@@ -59,6 +94,7 @@ class Editor {
             this.textArea.setContent(contents, false, true);
         }
         // Else, just launch a blank editor and set the edit mode to not have a file saved yet
+        this.editingMode == 'new';
 
         // Set the title of the terminal window (if any) -- this will eventually take cli arguments for reading a file to be edited
         this.screen.title = `EDIT - ${filePath}`;
@@ -85,6 +121,21 @@ class Editor {
         // Reset the cursor after appending all of the UI elements
         this.program.resetCursor();
     }
+
+    // Function for getting the Line/Column count for the editing window
+    // TODO: handle scrolling/text bigger than the editing window
+    // TODO: handle the filePath
+    // TODO: fix this being weird and controlling the cursor, maybe a custom cursor save if we really fucking have to
+    // function updateStatusBarRowsAndColumns(documentName) {
+    //     program.getCursor((err, data) => {
+    //         let currentLineTextLength = textArea.getLine(data.y - 3).length;
+    //         statusBar.setContent(`${documentName}\t\t\t< Press Ctrl + W to quit >\t\t\t Line ${data.x - 1} | Col ${currentLineTextLength}`);
+    //         program.restoreCursorA();
+    //         screen.render();
+    //     });
+    // }
+
+    // TODO: ADD MORE USEFUL METHODS
 }
 
 module.exports = Editor;
