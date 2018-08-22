@@ -23,6 +23,7 @@
 // TODO: Redo how cursor reflowing on the up/down arrow works (more like vim/vscode)
 // TODO: This will require a lot of polish that's going to take a lot of time to work through
 // TODO: Standardize blessed component geneeration order of options for components!
+// TODO: FIX THER ORGANIZATION OF THIS PROJECT AAAAA
 
 /* Current working list:
 
@@ -93,7 +94,9 @@ let fileMenu = new FileMenu(screen, textArea, statusBar, menuBar).fileMenu;
 
 // Testing 'knowing' what the file is like before being inserted into the editor
 let file;
+let path;
 
+// TODO: this should PROBABLY be a class.
 // This is the main function that gets exported for 'exposing' this code to be called from the CLI
 function startEditor(filePath) {
     // This function trusts its input since it's only ever called by index.js
@@ -108,9 +111,9 @@ function startEditor(filePath) {
         // TODO: If the data is changed and the editor is about to be exited, have a save dialog popup
         // TODO: this function should not have to do this, index.js should
         // TODO: Only get the end of the filePath for the editor's label
-        // let encodingType = fileHelpers.getFileEncodingType(filePath);
         let contents = fs.readFileSync(filePath, 'UTF-8');
         file = contents.split('\n');
+        path = filePath;
         textArea.setContent(contents, false, true);
     }
     // Else, just launch a blank editor and set the edit mode to not have a file saved yet
