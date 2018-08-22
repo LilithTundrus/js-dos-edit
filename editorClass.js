@@ -25,17 +25,17 @@ const FileMenu = require('./ui-components/fileMenu');
 
 class Editor {
 
-    constructor(program, screen, currentFilePath) {
+    constructor(program, screen) {
         // Initialize everything that's needed to get the editor working
         this.program = program;
         this.screen = screen;
-        this.currentFilePath = currentFilePath;
+        this.currentFilePath;
         this.editingMode = '';
 
         // Create instances of the UI elements, passing the screen as the parent
         // Each of these has their own set of key and event handlers
         this.statusBar = new StatusBar(this.screen).statusBar;
-        this.textArea = new TextArea(this.screen, this.currentFilePath, this.statusBar).textArea;
+        this.textArea = new TextArea(this.screen, '', this.statusBar).textArea;
         this.mainWindow = new MainWindow(this.screen).mainWindow;
         this.menuBar = new MenuBar(this.screen).menuBar;
         this.introBox = new IntroBox(this.screen, this.textArea, this.statusBar).introBox;
@@ -86,19 +86,19 @@ class Editor {
      */
     start(fileName, filePath, windowTitle) {
         // This function trusts its input 
-        if (this.currentFilePath !== 'Untitled') {
+        if (filePath !== 'Untitled') {
             this.editingMode == 'existing';
 
             let contents = fs.readFileSync(filePath, 'UTF-8');
             this.currentFilePath = filePath;
             this.textArea.setContent(contents, false, true);
+        } else {
+            this.editingMode == 'new';
         }
-        // Else, just launch a blank editor and set the edit mode to not have a file saved yet
-        this.editingMode == 'new';
 
         // Set the title of the terminal window (if any) -- this will eventually take cli arguments for reading a file to be edited
-        this.screen.title = `EDIT - ${filePath}`;
-        this.textArea.setLabel(`${filePath}`);
+        this.screen.title = `EDIT - ${fileName}`;
+        this.textArea.setLabel(`${fileName}`);
 
         // Append the needed UI elements to the screen (in visual order)
         this.screen.append(this.mainWindow);

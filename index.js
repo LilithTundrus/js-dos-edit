@@ -70,12 +70,17 @@ if (process.argv[2]) {
 
     // TODO: Verify the contents here before passing to the editor
     if (fs.existsSync(`${__dirname}/${process.argv[2]}`)) {
-        let editor = new Editor(program, screen, `${__dirname}/${process.argv[2]}`)
+        let editor = new Editor(program, screen, `${__dirname}/${process.argv[2]}`);
 
-        return editor.start(null, `${__dirname}/${process.argv[2]}`, null);
+        // Get the file's name from the argument
+        let splitFileName = process.argv[2].split('/');
+        let fileName = splitFileName[splitFileName.length - 1];
+
+        return editor.start(fileName, `${__dirname}/${process.argv[2]}`, null);
     }
     // If nothing is found, start the editor in an error state OR just print an error message
 
 } else {
-    editor.startEditor('Untitled');
+    let editor = new Editor(program, screen, 'Untitled');
+    editor.start('Untitled', 'Untitled', null);
 }
