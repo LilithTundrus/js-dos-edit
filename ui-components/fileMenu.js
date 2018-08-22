@@ -4,6 +4,7 @@
 // Node/NPM package requires
 const fs = require('fs');
 const blessed = require('neo-blessed');
+let checkIfFileMatchesContents = require('../lib/checkIfFileMatchesContents');
 
 // This file contains one of the blessed components for constructing the UI in an effort to
 // keep this project modular
@@ -28,10 +29,11 @@ class FileMenu {
      * @param {*} parent Blessed screen parent to attach the element to
      * @memberof FileMenu
      */
-    constructor(parent, nextFocusElement, statusBar) {
+    constructor(parent, nextFocusElement, statusBar, menuBar) {
         this.parent = parent;
         this.nextFocusElement = nextFocusElement;
         this.statusBar = statusBar;
+        this.menuBar = menuBar;
 
         // Create the fileMenuBox
         this.fileMenu = blessed.box({
@@ -96,7 +98,7 @@ class FileMenu {
             parent.render();
             // Focus the first element that makes the most sense (the file select)
             this.menuList.focus();
-            statusBar.setContent(`File Menu...`);
+            statusBar.setContent(`Use arrow keys to select an option...`);
         });
 
         this.menuList.key(['escape'], () => {
@@ -113,11 +115,19 @@ class FileMenu {
 
             // TODO: This needs to make sure the file is properly saved before making changes
             if (item.content == 'New') {
+
+                // Make sure the currently edited file has not changed
+                let test = checkIfFileMatchesContents('./test');
+
                 this.fileMenu.hide();
                 // Reset what the textarea contains
-                nextFocusElement.setContent('');
+                nextFocusElement.setContent(test);
                 // Focus the textArea
                 nextFocusElement.focus();
+
+                // Reset the max padding to only be the width of the screen
+                this.nextFocusElement.width = '100%+1';
+
                 // Reset the cursor
                 this.parent.program.cursorPos(1, 1);
                 // Reset the label for the textArea
