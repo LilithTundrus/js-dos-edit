@@ -28,7 +28,7 @@ class Editor {
         this.contents = '';
         this.originalContents = '';
         // May not be needed, just testing stuff out
-        this.shadowContents = '';
+        this.shadowContents = [];
         this.editingMode = '';
         this.leftPadOffset = 0;
         // TODO: add a max string length var for the longset length sctring in the doc
@@ -97,6 +97,7 @@ class Editor {
             // Start the editor out where the read content and the current content is the same
             this.contents = contents;
             this.originalContents = contents;
+            this.shadowContents = contents.split('\n');
         } else {
             this.editingMode == 'new';
         }
@@ -132,7 +133,12 @@ class Editor {
     }
 
     getTextAreaShadowText() {
-        
+        // Return the array of Shadow text (the entire line)
+        return this.shadowContents;
+    }
+
+    setShadowTextLine(lineIndex, text) {
+        this.shadowContents[lineIndex] == text;
     }
 
     // This should basically represent the original file that was read
@@ -140,7 +146,7 @@ class Editor {
         return this.originalContents;
     }
 
-    
+
 
     // Function for getting the Line/Column count for the editing window
     // TODO: handle scrolling/text bigger than the editing window
