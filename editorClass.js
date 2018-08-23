@@ -3,14 +3,9 @@
 
 // Node/NPM package requires
 const fs = require('fs');
-const blessed = require('neo-blessed');
 
 // Require the class created for the introduction box blessed component that appears first on start
 const IntroBox = require('./ui-components/intro-box');
-// Require the functions to handle each keypress
-const keyHandlers = require('./lib/keyHandlers');
-// Require the set of keys to listen for on keypress event for keys to ignore that custom handlers listen for
-const customKeys = require('./lib/handledKeysSet');
 // Require the custom modular blessed components
 const MainWindow = require('./ui-components/mainWindow');
 const TextArea = require('./ui-components/textArea');
@@ -34,6 +29,7 @@ class Editor {
 
         // Create instances of the UI elements, passing the screen as the parent
         // Each of these has their own set of key and event handlers
+        // TODO: This needs a logical cleanup
         this.statusBar = new StatusBar(this.screen).statusBar;
         this.textArea = new TextArea(this.screen, '', this.statusBar).textArea;
         this.mainWindow = new MainWindow(this.screen).mainWindow;

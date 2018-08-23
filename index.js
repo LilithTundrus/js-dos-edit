@@ -25,6 +25,8 @@
 // TODO: This will require a lot of polish that's going to take a lot of time to work through
 // TODO: Standardize blessed component geneeration order of options for components!
 // TODO: FIX THER ORGANIZATION OF THIS PROJECT AAAAA
+// TODO: Make a lot of stuff accessible by the subclasses by passing the main class to them so they 
+// have access to methods like getCurrentFile/etc. that should help (I hope)
 
 /* Current working list:
 
