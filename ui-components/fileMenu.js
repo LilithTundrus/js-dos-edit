@@ -28,12 +28,13 @@ class FileMenu {
      * @param {*} parent Blessed screen parent to attach the element to
      * @memberof FileMenu
      */
-    constructor(parent, nextFocusElement, statusBar, menuBar, currentFilePath) {
+    constructor(parent, nextFocusElement, statusBar, menuBar, currentFilePath, openDialog) {
         this.parent = parent;
         this.nextFocusElement = nextFocusElement;
         this.statusBar = statusBar;
         this.menuBar = menuBar;
         this.currentFilePath = currentFilePath;
+        this.openDialog = openDialog;
 
         // Create the fileMenuBox
         this.fileMenu = blessed.box({
@@ -114,23 +115,28 @@ class FileMenu {
             if (item.content == 'Exit') return process.exit();
 
             // TODO: This needs to make sure the file is properly saved before making changes
-            if (item.content == 'New') {
+            else if (item.content == 'New') {
 
                 // Make sure the currently edited file has not changed
-
-                    this.fileMenu.hide();
+                this.fileMenu.hide();
                 // Reset what the textarea contains
                 nextFocusElement.setContent('');
                 // Focus the textArea
                 nextFocusElement.focus();
 
                 // Reset the max padding to only be the width of the screen
+                // Eventually this will set the padding for the file as well (max horizontal scroll width)
                 this.nextFocusElement.width = '100%+1';
 
                 // Reset the cursor
                 this.parent.program.cursorPos(1, 1);
                 // Reset the label for the textArea
                 this.nextFocusElement.setLabel('Untitled');
+                this.parent.render();
+            } else if (item.content == 'Open...') {
+                this.openDialog.show();
+                this.menuList.hide();
+                this.openDialog.focus();
                 this.parent.render();
             }
         });
