@@ -127,9 +127,20 @@ class Editor {
         this.program.resetCursor();
     }
 
-    getTextAreaText() {
+    getTextAreaVisibleText() {
         return this.textArea.getText();
     }
+
+    getTextAreaShadowText() {
+        
+    }
+
+    // This should basically represent the original file that was read
+    getOriginalText() {
+        return this.originalContents;
+    }
+
+    
 
     // Function for getting the Line/Column count for the editing window
     // TODO: handle scrolling/text bigger than the editing window

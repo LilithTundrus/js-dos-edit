@@ -25,25 +25,25 @@ class TextArea {
      * @param {*} fileLabel The filename to set the textAreas's label to
      * @memberof TextArea
      */
-    constructor(parent, fileLabel, statusBar) {
+    constructor(parent, fileLabel, statusBar, editor) {
         this.parent = parent;
         this.statusBar = statusBar;
+        this.editor = editor;
 
         // Create the textArea UI element as a blessed box element type
         this.textArea = blessed.box({
             parent: this.parent,
             // The top of this element should be the parent width plus 1
             top: 1,
-            shrink: false,
-            autopadding: false,
             bold: true,
+            shrink: false,
             // Mark the element as keyable to the parent passes down any keypresses to the box
             keyable: true,
             label: fileLabel,
             // Left-align the text
             align: 'left',
             // Keep the width of this element to 100% of the screen
-            width: '100%+10',
+            width: '100%+1',
             // Height should be the entire screen minus 1 because of the statusBar (not doing this hide part of the text entry window)
             height: '100%-1',
             // Don't capture SGR blessed escape codes, that could cause issues
@@ -117,7 +117,7 @@ class TextArea {
             this.parent.program.getCursor((err, data) => {
                 if (err) return;
                 // Use the custom right keyHandler, passing the needed objects for blessed operations
-                return keyHandlers.rightArrowHandler(data, this.parent.program, this.parent, this.textArea);
+                return keyHandlers.rightArrowHandler(data, this.parent.program, this.parent, this.textArea, this.editor);
             });
         });
 

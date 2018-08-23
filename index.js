@@ -27,6 +27,8 @@
 // TODO: FIX THER ORGANIZATION OF THIS PROJECT AAAAA
 // TODO: Make a lot of stuff accessible by the subclasses by passing the main class to them so they 
 // have access to methods like getCurrentFile/etc. that should help (I hope)
+// TODO: Have everything only work through the editor class for updating the textArea/
+// doing stuff with the program.
 
 /* Current working list:
 
