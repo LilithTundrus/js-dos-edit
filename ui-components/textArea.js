@@ -34,13 +34,16 @@ class TextArea {
             parent: this.parent,
             // The top of this element should be the parent width plus 1
             top: 1,
+            shrink: false,
+            autopadding: false,
+            bold: true,
             // Mark the element as keyable to the parent passes down any keypresses to the box
             keyable: true,
             label: fileLabel,
             // Left-align the text
             align: 'left',
             // Keep the width of this element to 100% of the screen
-            width: '100%+1',
+            width: '100%+10',
             // Height should be the entire screen minus 1 because of the statusBar (not doing this hide part of the text entry window)
             height: '100%-1',
             // Don't capture SGR blessed escape codes, that could cause issues

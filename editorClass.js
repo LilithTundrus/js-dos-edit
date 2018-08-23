@@ -25,13 +25,19 @@ class Editor {
         this.program = program;
         this.screen = screen;
         this.currentFilePath;
+        this.contents = '';
+        this.originalContents = '';
+        // May not be needed, just testing stuff out
+        this.shadowContents = '';
         this.editingMode = '';
+        this.leftPadOffset = 0;
+        // TODO: add a max string length var for the longset length sctring in the doc
 
         // Create instances of the UI elements, passing the screen as the parent
         // Each of these has their own set of key and event handlers
         // TODO: This needs a logical cleanup
         this.statusBar = new StatusBar(this.screen).statusBar;
-        this.textArea = new TextArea(this.screen, '', this.statusBar).textArea;
+        this.textArea = new TextArea(this.screen, '', this.statusBar, this).textArea;
         this.mainWindow = new MainWindow(this.screen).mainWindow;
         this.menuBar = new MenuBar(this.screen).menuBar;
         this.introBox = new IntroBox(this.screen, this.textArea, this.statusBar).introBox;
@@ -86,7 +92,11 @@ class Editor {
 
             let contents = fs.readFileSync(filePath, 'UTF-8');
             this.currentFilePath = filePath;
-            this.textArea.setContent(contents, false, true);
+            this.textArea.setText(contents, false, true);
+
+            // Start the editor out where the read content and the current content is the same
+            this.contents = contents;
+            this.originalContents = contents;
         } else {
             this.editingMode == 'new';
         }
@@ -115,6 +125,10 @@ class Editor {
 
         // Reset the cursor after appending all of the UI elements
         this.program.resetCursor();
+    }
+
+    getTextAreaText() {
+        return this.textArea.getText();
     }
 
     // Function for getting the Line/Column count for the editing window
