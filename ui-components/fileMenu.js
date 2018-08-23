@@ -135,7 +135,7 @@ class FileMenu {
                 this.parent.render();
             } else if (item.content == 'Open...') {
                 this.openDialog.show();
-                this.menuList.hide();
+                this.fileMenu.hide();
                 this.openDialog.focus();
                 this.parent.render();
             }

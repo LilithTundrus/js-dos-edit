@@ -42,7 +42,7 @@ class Editor {
         this.openDialog = new OpenDialog(this.screen, this.textArea, this.statusBar).openDialog;
         this.scrollArrowUp = new ScrollArrowUp(this.screen).scrollArrowUp;
         this.scrollArrowDown = new ScrollArrowDown(this.screen).scrollArrowDown;
-        this.fileMenu = new FileMenu(this.screen, this.textArea, this.statusBar, this.menuBar).fileMenu;
+        this.fileMenu = new FileMenu(this.screen, this.textArea, this.statusBar, this.menuBar, null, this.openDialog).fileMenu;
 
         // TODO: Figure out why this doesn't work
         this.program.on('resize', () => {
@@ -81,10 +81,9 @@ class Editor {
     /** Start the editor
      * @param {*} fileName
      * @param {*} filePath
-     * @param {*} windowTitle
      * @memberof Editor
      */
-    start(fileName, filePath, windowTitle) {
+    start(fileName, filePath) {
         // This function trusts its input 
         if (filePath !== 'Untitled') {
             this.editingMode == 'existing';
