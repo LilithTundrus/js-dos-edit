@@ -76,6 +76,7 @@ if (process.argv[2]) {
 
         // Get the file's name from the argument
         let splitFileName = process.argv[2].split('/');
+        // Get the last array entry from the path split
         let fileName = splitFileName[splitFileName.length - 1];
 
         return editor.start(fileName, `${__dirname}/${process.argv[2]}`, null);
