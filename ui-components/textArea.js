@@ -108,7 +108,7 @@ class TextArea {
             this.parent.program.getCursor((err, data) => {
                 if (err) return;
                 // Use the custom left keyHandler, passing the needed objects for blessed operations
-                return keyHandlers.leftArrowHandler(data, this.parent.program, this.parent, this.textArea);
+                return keyHandlers.leftArrowHandler(data, this.parent.program, this.parent, this.textArea, this.editor);
             });
         });
 

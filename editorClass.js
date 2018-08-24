@@ -141,11 +141,14 @@ class Editor {
         this.shadowContents[lineIndex] == text;
     }
 
+    getShadowTextLineRange(start, stop) {
+        return this.shadowContents.slice(start, stop + 1);
+    }
+
     // This should basically represent the original file that was read
     getOriginalText() {
         return this.originalContents;
     }
-
 
 
     // Function for getting the Line/Column count for the editing window
