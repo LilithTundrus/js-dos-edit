@@ -55,7 +55,7 @@ class OpenDialog {
         // Create the openDialog box
         this.openDialog = blessed.box({
             parent: this.parent,
-            border: 'none',
+            // border: 'none',
             top: 'center',
             left: 'center',
             width: '70%',
@@ -85,7 +85,7 @@ class OpenDialog {
             // Titlebar should only be 1 character tall
             height: 1,
             // Remove the padding from the left offset
-            left: -1,
+            left: 0,
             // Sanity check
             padding: 0,
             // Center align the text
