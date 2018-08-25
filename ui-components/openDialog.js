@@ -65,10 +65,6 @@ class OpenDialog {
             style: {
                 fg: 'black',
                 bg: 'light-grey',
-                label: {
-                    bg: 'cyan',
-                    fg: 'grey'
-                }
             },
             valign: 'middle',
             shadow: true
