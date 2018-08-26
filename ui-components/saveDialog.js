@@ -14,7 +14,6 @@ class SaveDialog {
     constructor(editor) {
         this.editor = editor;
 
-
         // Create the saveDialog box
         this.saveDialog = blessed.box({
             parent: this.editor.screen,
@@ -23,7 +22,7 @@ class SaveDialog {
             width: '70%',
             // Left-align the text
             align: 'left',
-            height: this.editor.screen.height / 2 + 5,
+            height: this.editor.screen.height / 2 + 7,
             style: {
                 fg: 'black',
                 bg: 'light-grey',
@@ -56,6 +55,20 @@ class SaveDialog {
             // Set the content of the titlebar
             content: 'Save As...'
         });
+
+        // Create the filename select textarea
+        let fileNameTextEntry = blessed.textarea({
+            // The parent of the titlebar should be the generated saveDialog
+            parent: this.saveDialog,
+            top: 3,
+            left: 2,
+            height: 1,
+            width: this.saveDialog.width - 6,
+            style: {
+                bg: 'black',
+                fg: 'lightgrey',
+            },
+        })
 
         // List of files in the current directory for selection
         let fileList = blessed.filemanager({
@@ -147,6 +160,8 @@ class SaveDialog {
 
         // Append each UI subcomponent to the saveDialog box
         this.saveDialog.append(titleBar);
+        this.saveDialog.append(fileNameTextEntry);
+        this.saveDialog.append(fileList);
         this.saveDialog.append(okButton);
         this.saveDialog.append(cancelButton);
 
@@ -160,6 +175,8 @@ class SaveDialog {
             this.editor.statusBar.setContent(`ENTER = Select A Directory\tTAB = Change target\t`);
         });
     }
+
+    // TODO: Add listeners for each of these
 }
 
 module.exports = SaveDialog;
