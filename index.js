@@ -37,6 +37,7 @@ actual text editing needs to be addressed. So I'll make sure that's perfect firs
 
 First basic editing controls, - DONE (sort of) -- have bugs to iron out
 then scrolling (and scrollbars), - DONE (mostly) -- still a bit of weirdness that needs to be worked through
+then, fixing text entry/arrow keys to work with the horizontal scrolling
 then opening/reading files, - WORKING ON -- need the logic to check on the status of files + saving to user-defined files
 then menus,
 then horizontal scrolling,

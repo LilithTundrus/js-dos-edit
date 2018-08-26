@@ -12,6 +12,7 @@ const TextArea = require('./ui-components/textArea');
 const MenuBar = require('./ui-components/menuBar');
 const StatusBar = require('./ui-components/statusBar');
 const OpenDialog = require('./ui-components/openDialog');
+const SaveDialog = require('./ui-components/saveDialog');
 const ScrollArrowUp = require('./ui-components/scrollArrowUp');
 const ScrollArrowDown = require('./ui-components/scrollArrowDown');
 const FileMenu = require('./ui-components/fileMenu');
@@ -41,6 +42,7 @@ class Editor {
         this.mainWindow = new MainWindow(this.screen).mainWindow;
         this.menuBar = new MenuBar(this.screen).menuBar;
         this.introBox = new IntroBox(this.screen, this.textArea, this.statusBar).introBox;
+        this.saveDialog = new SaveDialog(this).saveDialog;
         this.openDialog = new OpenDialog(this.screen, this.textArea, this.statusBar).openDialog;
         this.scrollArrowUp = new ScrollArrowUp(this.screen).scrollArrowUp;
         this.scrollArrowDown = new ScrollArrowDown(this.screen).scrollArrowDown;
@@ -62,6 +64,17 @@ class Editor {
                 this.openDialog.focus();
             } else {
                 this.openDialog.hide();
+                this.textArea.focus();
+            }
+            this.screen.render();
+        });
+
+        this.screen.key(['C-s'], () => {
+            if (this.saveDialog.hidden) {
+                this.saveDialog.show();
+                this.saveDialog.focus();
+            } else {
+                this.saveDialog.hide();
                 this.textArea.focus();
             }
             this.screen.render();
@@ -113,6 +126,7 @@ class Editor {
         this.screen.append(this.statusBar);
         // Make sure the intro box is shown in the front
         this.screen.append(this.introBox);
+        this.screen.append(this.saveDialog);
         this.screen.append(this.openDialog);
         this.screen.append(this.fileMenu);
 
@@ -121,6 +135,7 @@ class Editor {
         this.screen.append(this.scrollArrowDown);
 
         // Hide any dialogs/menus just to be sure
+        this.saveDialog.hide();
         this.openDialog.hide();
         this.fileMenu.hide();
 
