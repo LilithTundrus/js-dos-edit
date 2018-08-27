@@ -56,20 +56,6 @@ class SaveDialog {
             content: 'Save As...'
         });
 
-        // Create the filename select textarea
-        let fileNameTextEntry = blessed.textarea({
-            // The parent of the titlebar should be the generated saveDialog
-            parent: this.saveDialog,
-            top: 3,
-            left: 2,
-            height: 1,
-            width: this.saveDialog.width - 6,
-            style: {
-                bg: 'black',
-                fg: 'lightgrey',
-            },
-        })
-
         // List of files in the current directory for selection
         let fileList = blessed.filemanager({
             // Give the filemanager a border to be styled
@@ -112,6 +98,20 @@ class SaveDialog {
             }
         });
 
+        // Create the filename select textarea
+        let fileNameTextEntry = blessed.textarea({
+            // The parent of the titlebar should be the generated saveDialog
+            parent: this.saveDialog,
+            top: Math.round(this.saveDialog.height - 4),
+            left: 2,
+            height: 1,
+            width: this.saveDialog.width - 6,
+            style: {
+                bg: 'black',
+                fg: 'lightgrey',
+            },
+        });
+
         // Get the current directory 
         // TODO: in the future have this REMEMBER where the user was last
         fileList.refresh('./', () => {
@@ -135,7 +135,7 @@ class SaveDialog {
             // Button should only be a height of 1
             height: 1,
             // Place the button near the bottom of the box
-            top: Math.round(this.saveDialog.height - 4)
+            top: Math.round(this.saveDialog.height - 2)
         });
 
         // Cancel button, should simply close the dialog window
@@ -155,7 +155,7 @@ class SaveDialog {
             // Button should only be a height of 1
             height: 1,
             // Place the button near the bottom of the box
-            top: Math.round(this.saveDialog.height - 4)
+            top: Math.round(this.saveDialog.height - 2)
         });
 
         // Append each UI subcomponent to the saveDialog box
