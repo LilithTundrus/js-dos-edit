@@ -10,6 +10,8 @@ const blessed = require('neo-blessed');
 
 // Create the save dialog window, where the user can select a location to save a file to
 
+// TODO: Clean this up and get it working
+
 class SaveDialog {
     constructor(editor) {
         this.editor = editor;
@@ -19,7 +21,7 @@ class SaveDialog {
             parent: this.editor.screen,
             top: 'center',
             left: 'center',
-            width: '70%',
+            width: '80%',
             // Left-align the text
             align: 'left',
             height: this.editor.screen.height / 2 + 7,
@@ -27,8 +29,7 @@ class SaveDialog {
                 fg: 'black',
                 bg: 'light-grey',
             },
-            valign: 'middle',
-            shadow: true
+            shadow: true,
         });
 
         // Make the titlebar box (custom, better than labels because COLOR)
@@ -60,11 +61,11 @@ class SaveDialog {
         let fileList = blessed.filemanager({
             // Give the filemanager a border to be styled
             border: 'line',
-            label: 'Select A Directory...',
             // The parent of the titlebar should be the generated saveDialog
             parent: this.saveDialog,
             // Top of this element will be the 1st line of the dialog box
-            top: 1,
+            top: 5,
+            left: 1,
             // Use the full width but leave some padding
             width: this.saveDialog.width - 2,
             // Static height 
@@ -102,14 +103,25 @@ class SaveDialog {
         let fileNameTextEntry = blessed.textarea({
             // The parent of the titlebar should be the generated saveDialog
             parent: this.saveDialog,
-            top: Math.round(this.saveDialog.height - 4),
-            left: 2,
-            height: 1,
+            // Give the filemanager a border to be styled
+            border: 'line',
+            top: 1,
+            left: 3,
+            height: 3,
             width: this.saveDialog.width - 6,
             style: {
-                bg: 'black',
-                fg: 'lightgrey',
+                bg: 'lightgrey',
+                fg: 'black',
+                border: {
+                    bg: 'lightgrey',
+                    fg: 'black'
+                },
+                label: {
+                    bg: 'lightgrey',
+                    fg: 'black'
+                }
             },
+            label: 'File Name'
         });
 
         // Get the current directory 
@@ -171,9 +183,12 @@ class SaveDialog {
             cancelButton.setContent('  Cancel  ');
             this.editor.screen.render();
             // Focus the first element that makes the most sense (the file select)
-            fileList.focus();
+            fileNameTextEntry.focus();
             this.editor.statusBar.setContent(`ENTER = Select A Directory\tTAB = Change target\t`);
+            fileNameTextEntry.readInput()
         });
+
+        fileList.on('')
     }
 
     // TODO: Add listeners for each of these
