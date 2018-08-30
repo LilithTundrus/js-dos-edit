@@ -29,6 +29,7 @@
 // have access to methods like getCurrentFile/etc. that should help (I hope)
 // TODO: Have everything only work through the editor class for updating the textArea/
 // doing stuff with the program.
+// TODO: REWORK ALL OF THIS BEFORE MOVING FORWARD
 
 /* Current working list:
 

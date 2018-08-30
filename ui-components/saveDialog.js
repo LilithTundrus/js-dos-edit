@@ -57,6 +57,32 @@ class SaveDialog {
             content: 'Save As...'
         });
 
+        // TODO: this may need to be a custom thing (ugh)
+        // Create the filename select textarea
+        let fileNameTextEntry = blessed.textarea({
+            // The parent of the titlebar should be the generated saveDialog
+            parent: this.saveDialog,
+            // Give the filemanager a border to be styled
+            border: 'line',
+            top: 1,
+            left: 3,
+            height: 3,
+            width: this.saveDialog.width - 6,
+            style: {
+                bg: 'lightgrey',
+                fg: 'black',
+                border: {
+                    bg: 'lightgrey',
+                    fg: 'black'
+                },
+                label: {
+                    bg: 'lightgrey',
+                    fg: 'black'
+                }
+            },
+            label: 'File Name'
+        });
+
         // List of files in the current directory for selection
         let fileList = blessed.filemanager({
             // Give the filemanager a border to be styled
@@ -97,31 +123,6 @@ class SaveDialog {
                     bg: 'lightgrey'
                 }
             }
-        });
-
-        // Create the filename select textarea
-        let fileNameTextEntry = blessed.textarea({
-            // The parent of the titlebar should be the generated saveDialog
-            parent: this.saveDialog,
-            // Give the filemanager a border to be styled
-            border: 'line',
-            top: 1,
-            left: 3,
-            height: 3,
-            width: this.saveDialog.width - 6,
-            style: {
-                bg: 'lightgrey',
-                fg: 'black',
-                border: {
-                    bg: 'lightgrey',
-                    fg: 'black'
-                },
-                label: {
-                    bg: 'lightgrey',
-                    fg: 'black'
-                }
-            },
-            label: 'File Name'
         });
 
         // Get the current directory 
@@ -181,14 +182,40 @@ class SaveDialog {
             // Clear buttons of any potential focus indication
             okButton.setContent('  OK  ');
             cancelButton.setContent('  Cancel  ');
+            // Make sure the button reset is rendered
             this.editor.screen.render();
-            // Focus the first element that makes the most sense (the file select)
-            fileNameTextEntry.focus();
-            this.editor.statusBar.setContent(`ENTER = Select A Directory\tTAB = Change target\t`);
-            fileNameTextEntry.readInput()
+            // Set the status bar to something relevant
+            this.editor.statusBar.setContent(`Enter a name to save the file as...\tTAB = Change target\t`);
+            // Read the input for the file name text entry (also focuses the element)
+            fileNameTextEntry.readInput();
+            // Move the cursor back where it belongs (no idea why it can stray off)
+            this.editor.program.cursorPos(fileNameTextEntry.atop, fileNameTextEntry.aleft);
+            // Make sure the cursor move renders
+            this.editor.screen.render();
         });
 
-        fileList.on('')
+        fileNameTextEntry.on('escape', () => {
+            this.saveDialog.hide();
+            this.editor.textArea.focus();
+            this.editor.screen.render();
+        });
+
+
+        fileNameTextEntry.on('tab', () => {
+            fileList.focus();
+        });
+
+        fileList.on('focus', () => {
+            fileList.pick('./', (err, file) => {
+                if (file) {
+                    console.log(file)
+                } else {
+                    // this.nextFocusElement.focus();
+                    // this.openDialog.toggle();
+                    // this.parent.render();
+                }
+            });
+        });
     }
 
     // TODO: Add listeners for each of these
