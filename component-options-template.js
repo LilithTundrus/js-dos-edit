@@ -11,19 +11,25 @@ let options = {
     right,
     top,
     bottom,
+    position,
 
     // Component size options
     width,
     height,
+    padding,
 
     // Key related options
+    input,
     keys,
     keyable,
 
     // Content control options
+    name,
     tags,
     shrink,
     wrap,
+    visible,
+    detatched,
 
     // Alignment options
     align,
@@ -66,5 +72,4 @@ let options = {
     // Content/label options
     label,
     content,
-
 };
