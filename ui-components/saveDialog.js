@@ -59,7 +59,7 @@ class SaveDialog {
 
         // TODO: this may need to be a custom thing (ugh)
         // Create the filename select textarea
-        let fileNameTextEntry = blessed.textarea({
+        let fileNameTextEntry = blessed.textbox({
             // The parent of the titlebar should be the generated saveDialog
             parent: this.saveDialog,
             // Give the filemanager a border to be styled
@@ -67,6 +67,7 @@ class SaveDialog {
             top: 1,
             left: 3,
             height: 3,
+            keys: false,
             width: this.saveDialog.width - 6,
             style: {
                 bg: 'lightgrey',
@@ -178,6 +179,7 @@ class SaveDialog {
         this.saveDialog.append(okButton);
         this.saveDialog.append(cancelButton);
 
+        // TODO: if the editor has a filename/directory already, default to that
         this.saveDialog.on('focus', () => {
             // Clear buttons of any potential focus indication
             okButton.setContent('  OK  ');
@@ -187,32 +189,52 @@ class SaveDialog {
             // Set the status bar to something relevant
             this.editor.statusBar.setContent(`Enter a name to save the file as...\tTAB = Change target\t`);
             // Read the input for the file name text entry (also focuses the element)
-            fileNameTextEntry.readInput();
+
+            // TODO: this may need to be something custom that we do
+            fileNameTextEntry.readInput((err, data) => {
+                // fileNameTextEntry.setValue(data);
+                // Focus the next element
+                // fileList.focus();
+                // this.editor.screen.render();
+            });
             // Move the cursor back where it belongs (no idea why it can stray off)
             this.editor.program.cursorPos(fileNameTextEntry.atop, fileNameTextEntry.aleft);
             // Make sure the cursor move renders
             this.editor.screen.render();
         });
 
-        fileNameTextEntry.on('escape', () => {
+        fileNameTextEntry.on('cancel', () => {
             this.saveDialog.hide();
             this.editor.textArea.focus();
             this.editor.screen.render();
         });
 
+        fileNameTextEntry.on('submit', (err, data) => {
+            fileNameTextEntry.setValue(data);
+            // Focus the next element
+
+            // No idea why it's this complicated, but this is how to focus the next element
+            this.saveDialog.hide();
+            fileList.focus();
+            this.saveDialog.show();
+            this.editor.screen.render();
+        });
 
         fileNameTextEntry.on('tab', () => {
             fileList.focus();
         });
 
         fileList.on('focus', () => {
+
+            // Change the color of the other elements to not indicate focus
+            
             fileList.pick('./', (err, file) => {
                 if (file) {
-                    console.log(file)
+                    // Just get the directory
                 } else {
-                    // this.nextFocusElement.focus();
-                    // this.openDialog.toggle();
-                    // this.parent.render();
+                    this.saveDialog.hide();
+                    this.editor.textArea.focus();
+                    this.editor.screen.render();
                 }
             });
         });
