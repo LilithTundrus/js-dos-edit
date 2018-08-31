@@ -22,7 +22,6 @@
 // TODO: Handle resizing a bit better at some point
 // TODO: Get saving/opening documents working as well as checking if the currently edited document is saved or not
 // TODO: Redo how cursor reflowing on the up/down arrow works (more like vim/vscode)
-// TODO: This will require a lot of polish that's going to take a lot of time to work through
 // TODO: Standardize blessed component geneeration order of options for components!
 // TODO: FIX THER ORGANIZATION OF THIS PROJECT AAAAA
 // TODO: Make a lot of stuff accessible by the subclasses by passing the main class to them so they 
@@ -35,6 +34,8 @@
 
 Right now I think the main idea is that before working on the rest of the text editor, the 
 actual text editing needs to be addressed. So I'll make sure that's perfect first
+
+FIRST A REFACTOR
 
 First basic editing controls, - DONE (sort of) -- have bugs to iron out
 then scrolling (and scrollbars), - DONE (mostly) -- still a bit of weirdness that needs to be worked through
@@ -58,13 +59,14 @@ let screen = blessed.screen({
     smartCSR: true,
     // Autopad screen elements unless no padding it explicitly required
     autoPadding: true,
+    // Associate the generated program to the screen
     program: program,
     // Used, but often doesn't work
     cursor: {
         artificial: true,
         shape: 'line',
         blink: false
-    },
+    }
 });
 
 // Main editor file import
@@ -75,19 +77,20 @@ if (process.argv[2]) {
     // Try and read the file as a path
 
     // TODO: Verify the contents here before passing to the editor
-    if (fs.existsSync(`${__dirname}/${process.argv[2]}`)) {
-        let editor = new Editor(program, screen, `${__dirname}/${process.argv[2]}`);
+    let path = `${__dirname}/${process.argv[2]}`;
+    if (fs.existsSync(path)) {
+        let editor = new Editor(program, screen, path);
 
         // Get the file's name from the argument
         let splitFileName = process.argv[2].split('/');
         // Get the last array entry from the path split
         let fileName = splitFileName[splitFileName.length - 1];
 
-        return editor.start(fileName, `${__dirname}/${process.argv[2]}`, null);
+        return editor.start(fileName, path, null);
     }
-    // If nothing is found, start the editor in an error state OR just print an error message
-
-} else {
+}
+// If nothing is found, start the editor in an error state OR just print an error message
+else {
     let editor = new Editor(program, screen, 'Untitled');
     editor.start('Untitled', 'Untitled', null);
 }
