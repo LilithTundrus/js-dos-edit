@@ -83,7 +83,7 @@ class TextArea {
         // Key/Event handlers
 
         this.textArea.on('focus', () => {
-            // TODO: When a file is opened, start at the top of the first line, but at the end of that line
+            // TODO: When a file is opened, start at the top of the first line, column 0
             // Get the top and bottom + left/right of the parent to reset the cursor
             // Pull the cursor all the way to the top left no matter where it is
             this.parent.program.getCursor((err, data) => {
