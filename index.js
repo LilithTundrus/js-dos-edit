@@ -11,7 +11,11 @@
 // NOTE: blessed is weird, if you make a change and it doesn't happen, try rendering in between each of
 // the steps, they may not occur otherwise
 
+// TODO: Get this to an MVP state (I wanna finish this aaaaaaaa)
+
+
 // TODO: Add more info to the statusBar area (if we can get the cursor to stop moving when it updates)
+// There should be an easy way to do this by storing the cursor
 // TODO: Document keyhandlers better
 // TODO: Fix this bug:
 // TypeError: this._clines.rtof is not a function
@@ -61,7 +65,7 @@ let screen = blessed.screen({
     autoPadding: true,
     // Associate the generated program to the screen
     program: program,
-    // Used, but often doesn't work
+    // Used, but often doesn't work in windows
     cursor: {
         artificial: true,
         shape: 'line',
