@@ -99,8 +99,6 @@ class TextArea {
             // TODO: make the numbers + filePath no longer be placeholders
             this.statusBar.setContent(`Unsaved Document\t\t\t< Ctrl+W=Quit  F1=Help >\t\t\t Line 1 | Col 1`);
             this.parent.render();
-            // // Destroy the introBox completely (it's not needed more than once)
-            // introBox = null;
         });
 
         this.textArea.key('left', () => {
@@ -235,12 +233,6 @@ class TextArea {
             // TODO: this needs to be doing a lot more eventually
             // Remove the cursor from the text that for SOME REASON shows up
             fs.writeFileSync('test', this.textArea.content.replace('', ''));
-        });
-
-        // Quit on F4
-        // TODO: This should be aware of whether or not the editor has a file that isn't saved/etc.
-        this.textArea.key(['f4'], () => {
-            return process.exit();
         });
 
     }
